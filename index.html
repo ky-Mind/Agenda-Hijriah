@@ -28,6 +28,7 @@
 <title>Kisah Lillah</title>
 <meta name="application-name" content="Kisah Lillah">
 <meta name="apple-mobile-web-app-title" content="Kisah Lillah">
+<!-- v5.25: KL notification icon + adhan notification presentation -->
 <!-- v5.10: client follow-up — app name + local dzikir reader populated from supplied document -->
 <style>
 :root{
@@ -2749,7 +2750,7 @@ html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
           <div><b>🔔 Izin notifikasi perangkat</b><span id="adhanPermissionText">Belum diperiksa</span></div>
           <button class="btn outline small" type="button" onclick="requestAdhanNotificationPermission()">Izinkan</button>
         </div>
-        <div class="adhan-setting-note">Notifikasi perangkat memakai izin browser/HP. Suara MP3 adzan diputar ketika aplikasi masih aktif; browser tidak menyediakan pengaturan suara MP3 khusus untuk notifikasi sistem.</div>
+        <div class="adhan-setting-note">Notifikasi mengikuti izin browser/HP dan memakai ikon KL. Saat aplikasi masih aktif, MP3 adzan dapat diputar; suara notifikasi sistem tetap mengikuti pengaturan perangkat.</div>
       </div>
       <button class="setting setting-button" type="button" onclick="closeSettings();handleProfileChipClick()"><div><b>Kelola akun & profil</b><span>Nama, foto, email, WhatsApp, dan akun lain</span></div><strong>›</strong></button>
       <button class="setting setting-button" type="button" onclick="closeSettings();openLocationPicker()"><div><b>Lokasi & jadwal salat</b><span>Atur lokasi ibadah dan sumber jadwal</span></div><strong>›</strong></button>
@@ -3787,19 +3788,72 @@ function registerAdhanServiceWorker(){
     }
   }catch(e){}
 }
+function adhanNotificationContent(name,time){
+  const prayerName=name||"Sholat";
+  const prayerTime=time||"--:--";
+  return {
+    title:`Sholat ${prayerName}`,
+    body:`${prayerTime} adalah waktunya sholat ${prayerName}`,
+    tag:`adhan-${prayerName}`
+  };
+}
 function showAdhanNotification(name,time){
   if(!("Notification" in window)||Notification.permission!=="granted")return;
-  const title=`Waktu ${name}`;
-  const body=`Sudah masuk waktu ${name}${time?` • ${time}`:""}.`;
+  const content=adhanNotificationContent(name,time);
   try{
     if(navigator.serviceWorker?.controller){
-      navigator.serviceWorker.controller.postMessage({type:"SHOW_ADHAN_NOTIFICATION",title,body,name});
+      navigator.serviceWorker.controller.postMessage({
+        type:"SHOW_ADHAN_NOTIFICATION",
+        title:content.title,
+        body:content.body,
+        name,
+        time,
+        tag:content.tag
+      });
     }else{
-      new Notification(title,{body,tag:`adhan-${name}`,renotify:false});
+      new Notification(content.title,{
+        body:content.body,
+        tag:content.tag,
+        renotify:true,
+        icon:"app-icon-client.png",
+        badge:"app-icon-client.png"
+      });
     }
   }catch(e){
-    try{new Notification(title,{body,tag:`adhan-${name}`})}catch(_){}
+    try{
+      new Notification(content.title,{
+        body:content.body,
+        tag:content.tag,
+        icon:"app-icon-client.png",
+        badge:"app-icon-client.png"
+      });
+    }catch(_){}
   }
+}
+async function scheduleAdhanNotificationTrigger(target){
+  if(!target||!("serviceWorker" in navigator)||!window.isSecureContext)return false;
+  if(!("TimestampTrigger" in window))return false;
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    if(!reg)return false;
+    const key=`${target.name}-${target.epoch}`;
+    const stored=localStorage.getItem("aih_adhan_trigger_v1");
+    if(stored===key)return true;
+    const content=adhanNotificationContent(target.name,target.time);
+    const controller=reg.active||navigator.serviceWorker.controller;
+    if(!controller)return false;
+    controller.postMessage({
+      type:"SCHEDULE_ADHAN_NOTIFICATION",
+      title:content.title,
+      body:content.body,
+      name:target.name,
+      time:target.time,
+      tag:content.tag,
+      timestamp:target.epoch
+    });
+    localStorage.setItem("aih_adhan_trigger_v1",key);
+    return true;
+  }catch(e){return false}
 }
 function timezoneEpochForParts(p,tz){
   // Convert local clock parts in a named timezone to an epoch.
@@ -3844,6 +3898,12 @@ function scheduleAdhanNotifications(times){
   const delay=Math.max(500,target.epoch-Date.now());
   const key=`${target.name}-${target.epoch}`;
   window.__adhanScheduledKey=key;
+
+  if(s.notifications){
+    registerAdhanServiceWorker();
+    scheduleAdhanNotificationTrigger(target);
+  }
+
   window.__adhanTimer=setTimeout(()=>{
     if(window.__adhanScheduledKey!==key)return;
     const current=getAdhanSettings();
@@ -3852,6 +3912,14 @@ function scheduleAdhanNotifications(times){
     window.__adhanTimer=null;
     setTimeout(()=>scheduleAdhanNotifications(window.__prayerTimes||[]),1500);
   },Math.min(delay,2147483647));
+}
+function initAdhanNotifications(){
+  renderAdhanSettings();
+  registerAdhanServiceWorker();
+  scheduleAdhanNotifications(window.__prayerTimes||[]);
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden)scheduleAdhanNotifications(window.__prayerTimes||[]);
+  });
 }
 function initAdhanNotifications(){
   renderAdhanSettings();

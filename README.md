@@ -1,3 +1,12 @@
+## v5.25 — KL system notification implementation
+
+- Sistem notifikasi adzan sekarang memakai **ikon KL yang sama** (`app-icon-client.png`) pada notifikasi perangkat.
+- Format notifikasi direvisi menjadi **“Sholat Isya”** dengan isi **“19:05 adalah waktunya sholat Isya”** sesuai desain client.
+- Notifikasi menyediakan aksi **Buka Kisah Lillah** dan ketika diketuk mencoba membuka/fokus kembali aplikasi.
+- Menambahkan dukungan **Notification Triggers** sebagai best-effort untuk browser yang memang mendukung penjadwalan notifikasi sistem; browser lain memakai timer halaman sebagai fallback.
+- MP3 adzan tetap hanya diputar ketika aplikasi/browser aktif karena browser web tidak menyediakan cara standar untuk menjadikan MP3 lokal sebagai suara notifikasi sistem.
+- Tidak mengubah struktur room, navigasi, layout, atau fitur lain di luar notifikasi adzan.
+
 ## v5.23 — Light mode readability + Adhan notification client revision
 
 - Memperbaiki **mode terang** pada hero Beranda dan hero Kalender Jadwal Salat agar latar menjadi terang dan seluruh teks tetap terbaca.
