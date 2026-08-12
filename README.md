@@ -1,3 +1,14 @@
+## v5.23 — Light mode readability + Adhan notification client revision
+
+- Memperbaiki **mode terang** pada hero Beranda dan hero Kalender Jadwal Salat agar latar menjadi terang dan seluruh teks tetap terbaca.
+- Menonjolkan waktu salat yang akan datang pada grid tanpa mengubah susunan grid.
+- Menambahkan pengaturan **Notifikasi adzan** dan **Suara adzan** di Pengaturan.
+- Menambahkan permintaan izin notifikasi perangkat/browser.
+- Menambahkan suara adzan utama dan suara khusus Subuh ke paket aplikasi.
+- Menambahkan helper Service Worker untuk menampilkan notifikasi adzan pada browser/PWA yang mendukung.
+- Suara MP3 diputar ketika aplikasi masih aktif dan browser mengizinkan playback. Notifikasi sistem browser tidak menyediakan API standar untuk memaksa file MP3 tertentu sebagai suara notifikasi.
+- Fitur lama, struktur room, navigasi, dan desain mode gelap tidak diubah.
+
 Agenda Hijriah — v5.13 Client Fix
 
 ## v5.13 — Profil Help & Quote / Theme / Media Fix

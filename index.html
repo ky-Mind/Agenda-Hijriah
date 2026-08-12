@@ -23,6 +23,7 @@
 </script>
 
 <link rel="apple-touch-icon" href="app-icon-client.png">
+<link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="Jurnal dan absensi ibadah harian berbasis kalender Hijriah.">
 <title>Kisah Lillah</title>
 <meta name="application-name" content="Kisah Lillah">
@@ -1658,6 +1659,125 @@ html[data-theme="dark"] .creator-copy p{color:#cfe1dc}
   }
 }
 
+
+/* Client v5.22 — light mode readability fix
+   Keep the existing structure/theme; only remove the dark page backdrop in light mode
+   so text and cards remain readable across every room/page. */
+html[data-theme="light"],
+html[data-theme="light"] body{
+  background:#ffffff !important;
+  color:var(--text);
+}
+html[data-theme="light"] .main{
+  background:transparent;
+}
+html[data-theme="light"] .topbar{
+  background:rgba(255,255,255,.96);
+  border-bottom-color:var(--line);
+}
+html[data-theme="light"] .mobile-nav{
+  background:rgba(255,255,255,.97);
+  border-top-color:var(--line);
+}
+html[data-theme="light"] .section-head h2,
+html[data-theme="light"] .page h1,
+html[data-theme="light"] .page h2,
+html[data-theme="light"] .page h3,
+html[data-theme="light"] .page h4,
+html[data-theme="light"] .page p,
+html[data-theme="light"] .page label{
+  color:var(--text);
+}
+html[data-theme="light"] .muted{
+  color:var(--muted) !important;
+}
+
+html[data-theme="light"] body,
+html:not([data-theme]) body{background:#f7faf9 !important;color:#173b36}
+html[data-theme="light"] .topbar,
+html:not([data-theme]) .topbar{background:rgba(255,255,255,.94) !important}
+
+/* v5.23 client fix — light mode readability only.
+   Keep the existing room/layout; in light mode the decorative hero surfaces
+   become light so all text remains readable. Dark mode is unchanged. */
+html[data-theme="light"] .hero,
+html:not([data-theme]) .hero{
+  background:linear-gradient(180deg,#ffffff 0%,#f7faf9 100%) !important;
+  color:#173b36 !important;
+  border:1px solid #dfeae6;
+}
+html[data-theme="light"] .hero h1,
+html[data-theme="light"] .hero p,
+html[data-theme="light"] .hero .eyebrow,
+html:not([data-theme]) .hero h1,
+html:not([data-theme]) .hero p,
+html:not([data-theme]) .hero .eyebrow{
+  color:#173b36 !important;
+  opacity:1;
+}
+html[data-theme="light"] .hero .btn.primary{
+  background:#0b6b63 !important;
+  color:#fff !important;
+  border-color:#0b6b63;
+}
+html[data-theme="light"] .hero .btn.gold{
+  color:#173b36 !important;
+}
+html[data-theme="light"] .prayer-schedule-hero,
+html:not([data-theme]) .prayer-schedule-hero{
+  background:linear-gradient(180deg,#ffffff 0%,#f7faf9 100%) !important;
+  color:#173b36 !important;
+  border:1px solid #dfeae6;
+}
+html[data-theme="light"] .prayer-schedule-hero h1,
+html[data-theme="light"] .prayer-schedule-hero p,
+html[data-theme="light"] .prayer-schedule-hero .ps-kicker,
+html[data-theme="light"] .prayer-schedule-hero .ps-location,
+html:not([data-theme]) .prayer-schedule-hero h1,
+html:not([data-theme]) .prayer-schedule-hero p,
+html:not([data-theme]) .prayer-schedule-hero .ps-kicker,
+html:not([data-theme]) .prayer-schedule-hero .ps-location{
+  color:#173b36 !important;
+  opacity:1;
+}
+html[data-theme="light"] .prayer-schedule-hero .ps-back,
+html:not([data-theme]) .prayer-schedule-hero .ps-back{
+  background:#eef6f3 !important;
+  color:#0b6b63 !important;
+  border:1px solid #dfeae6;
+}
+html[data-theme="light"] .prayer-schedule-hero .ps-location .badge,
+html:not([data-theme]) .prayer-schedule-hero .ps-location .badge{
+  background:#eef6f3 !important;
+  color:#0b6b63 !important;
+  border-color:#dfeae6 !important;
+}
+
+/* v5.23 client fix — upcoming prayer is visibly selected, but the existing
+   prayer grid/layout remains unchanged. */
+.prayer-item.next{
+  background:linear-gradient(145deg,#e8f7f3,#fff7df) !important;
+  border-color:#0b6b63 !important;
+  box-shadow:0 0 0 2px rgba(11,107,99,.12),0 7px 18px rgba(11,107,99,.12) !important;
+}
+.prayer-item.next b{color:#0b6b63 !important}
+.prayer-item.next span{color:#0b6b63 !important}
+html[data-theme="dark"] .prayer-item.next{
+  background:linear-gradient(145deg,#155047,#3f351a) !important;
+  border-color:#69c9b8 !important;
+  box-shadow:0 0 0 2px rgba(105,201,184,.14),0 7px 18px rgba(0,0,0,.2) !important;
+}
+html[data-theme="dark"] .prayer-item.next b,
+html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
+
+/* v5.23 — adhan notification preferences */
+.adhan-setting-group{display:grid;gap:8px;margin-top:12px}
+.adhan-setting-note{font-size:10px;color:var(--muted);line-height:1.45}
+.adhan-permission-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface2)}
+.adhan-permission-row b{font-size:12px}
+.adhan-permission-row span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.adhan-permission-status{font-size:10px;color:var(--muted);line-height:1.35;margin-top:4px}
+.adhan-test-btn{margin-top:4px;width:100%}
 </style>
 </head>
 <body>
@@ -2595,6 +2715,22 @@ html[data-theme="dark"] .creator-copy p{color:#cfe1dc}
         <div><b>Mode gelap</b><span id="themeSettingText">Gunakan tampilan gelap</span></div>
         <button class="toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Ubah mode tampilan"></button>
       </div>
+      <div class="setting">
+        <div><b>Notifikasi adzan</b><span id="adhanNotificationText">Pengingat waktu adzan</span></div>
+        <button class="toggle" id="adhanNotificationToggle" type="button" onclick="toggleAdhanNotifications()" aria-label="Aktifkan atau nonaktifkan notifikasi adzan"></button>
+      </div>
+      <div class="setting">
+        <div><b>Suara adzan</b><span id="adhanSoundText">Putar suara adzan saat waktunya tiba</span></div>
+        <button class="toggle" id="adhanSoundToggle" type="button" onclick="toggleAdhanSound()" aria-label="Aktifkan atau nonaktifkan suara adzan"></button>
+      </div>
+      <div class="adhan-setting-group">
+        <div class="adhan-permission-row">
+          <div><b>🔔 Izin notifikasi perangkat</b><span id="adhanPermissionText">Belum diperiksa</span></div>
+          <button class="btn outline small" type="button" onclick="requestAdhanNotificationPermission()">Izinkan</button>
+        </div>
+        <div class="adhan-setting-note">Notifikasi perangkat memakai izin browser/HP. Suara MP3 adzan diputar ketika aplikasi masih aktif; browser tidak menyediakan pengaturan suara MP3 khusus untuk notifikasi sistem.</div>
+        <button class="btn ghost small adhan-test-btn" type="button" onclick="testAdhanSound()">▶ Tes suara adzan</button>
+      </div>
       <button class="setting setting-button" type="button" onclick="closeSettings();handleProfileChipClick()"><div><b>Kelola akun & profil</b><span>Nama, foto, email, WhatsApp, dan akun lain</span></div><strong>›</strong></button>
       <button class="setting setting-button" type="button" onclick="closeSettings();openLocationPicker()"><div><b>Lokasi & jadwal salat</b><span>Atur lokasi ibadah dan sumber jadwal</span></div><strong>›</strong></button>
       <button class="setting setting-button" type="button" onclick="closeSettings();go('koleksi')"><div><b>Koleksi</b><span>Do'a, hadits, dan kata-kata mutiara</span></div><strong>›</strong></button>
@@ -3515,6 +3651,197 @@ async function sendBugReportToWhatsApp(){
   toast("WhatsApp dibuka dengan laporan ✓");
 }
 
+
+const ADHAN_SETTINGS_KEY="aih_adhan_settings_v1";
+const ADHAN_AUDIO_MAIN="assets/audio/adzan.mp3";
+const ADHAN_AUDIO_SUBUH="assets/audio/adzan-subuh.mp3";
+const ADHAN_PRAYERS=["Subuh","Dzuhur","Ashar","Maghrib","Isya"];
+
+function getAdhanSettings(){
+  try{
+    const v=JSON.parse(localStorage.getItem(ADHAN_SETTINGS_KEY)||"null");
+    return {
+      notifications:v?.notifications===true,
+      sound:v?.sound!==false
+    };
+  }catch(e){return {notifications:false,sound:true}}
+}
+function saveAdhanSettings(v){
+  const next={notifications:!!v.notifications,sound:v.sound!==false};
+  try{localStorage.setItem(ADHAN_SETTINGS_KEY,JSON.stringify(next))}catch(e){}
+  return next;
+}
+function updateAdhanToggle(id,on){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.toggle("on",!!on);
+  el.setAttribute("aria-pressed",on?"true":"false");
+}
+function renderAdhanSettings(){
+  const s=getAdhanSettings();
+  updateAdhanToggle("adhanNotificationToggle",s.notifications);
+  updateAdhanToggle("adhanSoundToggle",s.sound);
+  const nt=document.getElementById("adhanNotificationText");
+  if(nt)nt.textContent=s.notifications?"Notifikasi adzan aktif":"Pengingat waktu adzan";
+  const st=document.getElementById("adhanSoundText");
+  if(st)st.textContent=s.sound?"Suara adzan aktif":"Suara adzan dimatikan";
+  const pt=document.getElementById("adhanPermissionText");
+  if(pt){
+    if(!("Notification" in window))pt.textContent="Browser ini tidak mendukung notifikasi";
+    else pt.textContent=`Status: ${Notification.permission}`;
+  }
+}
+async function requestAdhanNotificationPermission(){
+  if(!("Notification" in window)){
+    toast("Browser ini belum mendukung notifikasi perangkat.");
+    renderAdhanSettings();return;
+  }
+  try{
+    const p=await Notification.requestPermission();
+    if(p==="granted"){
+      const s=getAdhanSettings();saveAdhanSettings({...s,notifications:true});
+      toast("Notifikasi perangkat diizinkan ✓");
+      registerAdhanServiceWorker();
+      scheduleAdhanNotifications(window.__prayerTimes||[]);
+    }else if(p==="denied"){
+      toast("Izin notifikasi ditolak. Ubah dari setelan browser/HP jika ingin mengaktifkannya.");
+    }else{
+      toast("Izin notifikasi belum diberikan.");
+    }
+  }catch(e){toast("Izin notifikasi belum bisa diminta dari browser ini.")}
+  renderAdhanSettings();
+}
+function toggleAdhanNotifications(){
+  const s=getAdhanSettings();
+  if(s.notifications){
+    saveAdhanSettings({...s,notifications:false});
+    clearAdhanSchedule();
+    toast("Notifikasi adzan dimatikan.");
+    renderAdhanSettings();
+    return;
+  }
+  if(!("Notification" in window)){toast("Browser ini tidak mendukung notifikasi perangkat.");return}
+  if(Notification.permission==="granted"){
+    saveAdhanSettings({...s,notifications:true});
+    registerAdhanServiceWorker();
+    scheduleAdhanNotifications(window.__prayerTimes||[]);
+    toast("Notifikasi adzan aktif ✓");
+    renderAdhanSettings();
+    return;
+  }
+  requestAdhanNotificationPermission();
+}
+function toggleAdhanSound(){
+  const s=getAdhanSettings();
+  saveAdhanSettings({...s,sound:!s.sound});
+  renderAdhanSettings();
+  if(s.sound)toast("Suara adzan dimatikan.");
+  else toast("Suara adzan diaktifkan ✓");
+  scheduleAdhanNotifications(window.__prayerTimes||[]);
+}
+function adhanAudioForPrayer(name){
+  return name==="Subuh"?ADHAN_AUDIO_SUBUH:ADHAN_AUDIO_MAIN;
+}
+function playAdhanSound(name){
+  const s=getAdhanSettings();
+  if(!s.sound)return;
+  try{
+    const audio=new Audio(adhanAudioForPrayer(name));
+    audio.preload="auto";
+    audio.playsInline=true;
+    audio.volume=1;
+    window.__activeAdhanAudio=audio;
+    const p=audio.play();
+    if(p&&typeof p.catch==="function"){
+      p.catch(()=>toast("Suara adzan diblokir browser. Tekan “Tes suara adzan” sekali dari Pengaturan lalu coba lagi."));
+    }
+  }catch(e){toast("Suara adzan belum bisa diputar di browser ini.")}
+}
+function testAdhanSound(){
+  playAdhanSound("Dzuhur");
+}
+function registerAdhanServiceWorker(){
+  if(!("serviceWorker" in navigator)||!window.isSecureContext)return;
+  try{
+    if(!window.__adhanSwPromise){
+      window.__adhanSwPromise=navigator.serviceWorker.register("./sw.js").catch(()=>null);
+    }
+  }catch(e){}
+}
+function showAdhanNotification(name,time){
+  if(!("Notification" in window)||Notification.permission!=="granted")return;
+  const title=`Waktu ${name}`;
+  const body=`Sudah masuk waktu ${name}${time?` • ${time}`:""}.`;
+  try{
+    if(navigator.serviceWorker?.controller){
+      navigator.serviceWorker.controller.postMessage({type:"SHOW_ADHAN_NOTIFICATION",title,body,name});
+    }else{
+      new Notification(title,{body,tag:`adhan-${name}`,renotify:false});
+    }
+  }catch(e){
+    try{new Notification(title,{body,tag:`adhan-${name}`})}catch(_){}
+  }
+}
+function timezoneEpochForParts(p,tz){
+  // Convert local clock parts in a named timezone to an epoch.
+  // The small offset calculation keeps scheduling correct when the device
+  // timezone differs from the prayer-location timezone.
+  const utcGuess=Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second||0,0);
+  try{
+    const asUtc=timezoneParts(new Date(utcGuess),tz);
+    const represented=Date.UTC(asUtc.year,asUtc.month-1,asUtc.day,asUtc.hour,asUtc.minute,asUtc.second);
+    return utcGuess-(represented-utcGuess);
+  }catch(e){return utcGuess}
+}
+function nextAdhanTarget(times){
+  const tz=window.__prayerMeta?.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||"Asia/Jakarta";
+  const now=Date.now();
+  const todayParts=timezoneParts(new Date(),tz);
+  const tracked=(times||[]).filter(x=>ADHAN_PRAYERS.includes(x.name));
+  let candidates=[];
+  for(const x of tracked){
+    const t=timeParts(x.time);if(!t)continue;
+    candidates.push({name:x.name,time:x.time,epoch:timezoneEpochForParts({...todayParts,hour:t.h,minute:t.m,second:0},tz)});
+  }
+  const future=candidates.filter(x=>x.epoch>now+500);
+  if(future.length)return future.sort((a,b)=>a.epoch-b.epoch)[0];
+  if(candidates.length){
+    const first=candidates.sort((a,b)=>a.epoch-b.epoch)[0];
+    const tomorrow=new Date(first.epoch+86400000);
+    return {...first,epoch:tomorrow.getTime()};
+  }
+  return null;
+}
+function clearAdhanSchedule(){
+  if(window.__adhanTimer){clearTimeout(window.__adhanTimer);window.__adhanTimer=null}
+  window.__adhanScheduledKey="";
+}
+function scheduleAdhanNotifications(times){
+  clearAdhanSchedule();
+  const s=getAdhanSettings();
+  if(!s.notifications&&!s.sound)return;
+  const target=nextAdhanTarget(times);
+  if(!target)return;
+  const delay=Math.max(500,target.epoch-Date.now());
+  const key=`${target.name}-${target.epoch}`;
+  window.__adhanScheduledKey=key;
+  window.__adhanTimer=setTimeout(()=>{
+    if(window.__adhanScheduledKey!==key)return;
+    const current=getAdhanSettings();
+    if(current.notifications)showAdhanNotification(target.name,target.time);
+    if(current.sound)playAdhanSound(target.name);
+    window.__adhanTimer=null;
+    setTimeout(()=>scheduleAdhanNotifications(window.__prayerTimes||[]),1500);
+  },Math.min(delay,2147483647));
+}
+function initAdhanNotifications(){
+  renderAdhanSettings();
+  registerAdhanServiceWorker();
+  scheduleAdhanNotifications(window.__prayerTimes||[]);
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden)scheduleAdhanNotifications(window.__prayerTimes||[]);
+  });
+}
+
 function getTheme(){
   return localStorage.getItem("aih_theme_v1")||"light";
 }
@@ -3525,7 +3852,7 @@ function applyTheme(theme,save=true){
   root.style.colorScheme=dark?"dark":"light";
   document.body?.classList.toggle("theme-dark",dark);
   if(save)try{localStorage.setItem("aih_theme_v1",dark?"dark":"light")}catch(e){}
-  const meta=document.getElementById("themeColorMeta");if(meta)meta.content=dark?"#061b18":"#0b4f49";
+  const meta=document.getElementById("themeColorMeta");if(meta)meta.content=dark?"#061b18":"#ffffff";
   const toggle=document.getElementById("themeToggle");
   if(toggle){
     toggle.classList.toggle("on",dark);
@@ -3543,7 +3870,7 @@ function applyTheme(theme,save=true){
 }
 function openSettings(){
   const modal=document.getElementById("settingsModal");if(!modal)return;
-  modal.classList.add("show");lockModalInteraction(modal);applyTheme(getTheme(),false);
+  modal.classList.add("show");lockModalInteraction(modal);applyTheme(getTheme(),false);renderAdhanSettings();
 }
 function closeSettings(){
   const modal=document.getElementById("settingsModal");
@@ -4965,7 +5292,7 @@ function renderPrayerTimes(times,location){
    const dateForLabel=tz?timezoneDate(tz):today();
    loc.textContent=`${location} • ${fmtGreg(dateForLabel)}`;
  }
- updatePrayerCountdown();clearInterval(window.__prayerTicker);window.__prayerTicker=setInterval(updatePrayerCountdown,1000);
+ updatePrayerCountdown();clearInterval(window.__prayerTicker);window.__prayerTicker=setInterval(updatePrayerCountdown,1000);scheduleAdhanNotifications(times);
 }
 async function loadPrayerTimes(force=false){
  const settings=prayerSettings(),locSaved=getSavedLocation(),status=document.getElementById("prayerStatus"),grid=document.getElementById("prayerGrid"),locEl=document.getElementById("prayerLocation"),metaEl=document.getElementById("prayerMeta");
@@ -5058,7 +5385,7 @@ document.getElementById("mapsUrlInput")?.addEventListener("input",previewMapsLoc
 })();
 
 window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}})
-draftRecord={...record(selectedDate)};persistAccounts();renderNav();updateProfile();renderLocationUI();renderDashboard();renderAbsensi();renderCalendar();renderRecap();hydrateProfilePhoto();loadPrayerTimes();initGoogleAuth();
+draftRecord={...record(selectedDate)};persistAccounts();renderNav();updateProfile();renderLocationUI();renderDashboard();renderAbsensi();renderCalendar();renderRecap();hydrateProfilePhoto();loadPrayerTimes();initAdhanNotifications();initGoogleAuth();
 
 /* v4.6: swipe antar room/tab utama — kiri/kanan seperti aplikasi mobile */
 function bindPageSwipe(){
