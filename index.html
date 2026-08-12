@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <!-- v5.17: prevent white browser paint before the Kisah Lillah opening screen -->
+  <style id="critical-launch-style">
+    html,body{margin:0;min-height:100%;background:#021f18!important;color:#f7f1dc;}
+    body{background-color:#021f18!important;}
+  </style>
+  <link rel="preload" as="image" href="splash-client-reference.png" fetchpriority="high">
 <meta name="theme-color" content="#0b4f49" id="themeColorMeta">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,7 +24,9 @@
 
 <link rel="apple-touch-icon" href="app-icon-client.png">
 <meta name="description" content="Jurnal dan absensi ibadah harian berbasis kalender Hijriah.">
-<title>Kisah Lillah — Catat ibadah, jaga istiqamah.</title>
+<title>Kisah Lillah</title>
+<meta name="application-name" content="Kisah Lillah">
+<meta name="apple-mobile-web-app-title" content="Kisah Lillah">
 <!-- v5.10: client follow-up — app name + local dzikir reader populated from supplied document -->
 <style>
 :root{
@@ -726,7 +734,7 @@ html[data-theme="dark"] .account-popover .field input::placeholder{color:#91aaa5
   content:"";
   position:absolute;
   inset:-3%;
-  background:#063d2f url("splash-client-reference.png") center/100% 100% no-repeat;
+  background:#021f18 url("splash-client-reference.png") center/100% 100% no-repeat;
   transform:scale(1.035);
   filter:saturate(.96) brightness(.9);
 }
@@ -916,6 +924,16 @@ html[data-theme="dark"] .prayer-item{
 }
 html[data-theme="dark"] .prayer-item b{color:#edf8f5}
 html[data-theme="dark"] .prayer-item span{color:#69c9b8}
+html[data-theme="dark"] .prayer-item.next{
+  background:linear-gradient(145deg,#e8f7f3,#cfeee7) !important;
+  border-color:#e4c76d !important;
+  box-shadow:0 0 0 2px rgba(228,199,109,.34),0 8px 20px rgba(0,0,0,.18) !important;
+  transform:translateY(-1px);
+}
+html[data-theme="dark"] .prayer-item.next b,
+html[data-theme="dark"] .prayer-item.next span{
+  color:#12483f !important;
+}
 html[data-theme="dark"] .prayer-status{background:#0c302c;color:var(--muted)}
 html[data-theme="dark"] .prayer-meta{background:#10443d;color:var(--muted)}
 html[data-theme="dark"] .prayer-note{color:#a8c0ba}
@@ -1624,6 +1642,22 @@ html[data-theme="dark"] .creator-copy p{color:#cfe1dc}
 @media(prefers-reduced-motion:reduce){
   .btn,.icon-btn,.seg,.period-btn,.collection-card,.help-bar,.help-close{transition:none!important}
 }
+
+/* v5.18 client fix — keep the account/profile panel fully visible on phone.
+   Do not change the desktop layout; only prevent the mobile panel header/name
+   from being positioned above the viewport. */
+@media (max-width:767px){
+  .account-popover{
+    top:max(12px, env(safe-area-inset-top));
+    transform:translateX(-50%);
+    max-height:calc(100dvh - 24px);
+    height:auto;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3169,11 +3203,27 @@ function renderNav(){
  document.getElementById("sideNav").innerHTML=make("");
  document.getElementById("mobileNav").innerHTML=make("");
 }
-function go(page){
+function go(page,fromHistory=false){
  const current=document.querySelector(".page.active")?.id;
  if(page!==current && dirty && page!=="absensi"){
-  openModal("Perubahan belum disimpan","Kamu sudah mengubah absensi. Jika keluar sekarang, perubahan yang belum disimpan akan dibatalkan.","Keluar tanpa menyimpan",()=>{discardDraft();go(page)});
+  if(fromHistory){
+   // Browser/Android back sudah memindahkan history ke target. Kembalikan
+   // entry halaman aktif dulu, lalu minta konfirmasi sebelum benar-benar keluar.
+   try{history.pushState({aihPage:current},"",location.href)}catch(e){}
+  }
+  openModal("Perubahan belum disimpan","Kamu sudah mengubah absensi. Jika keluar sekarang, perubahan yang belum disimpan akan dibatalkan.","Keluar tanpa menyimpan",()=>{
+    discardDraft();
+    if(fromHistory){
+      window.__allowHistoryPop=true;
+      try{history.back()}catch(e){go(page)}
+    }else{
+      go(page);
+    }
+  });
   return;
+ }
+ if(page!==current && !fromHistory){
+  try{history.pushState({aihPage:page},"",location.href)}catch(e){}
  }
  if(page==="absensi" && !dirty) draftRecord={...record(selectedDate)};
  const direction=window.__pageSwipeDirection||"";
@@ -4850,15 +4900,23 @@ function prayerTimeToMinutes(v){const m=String(v||"").match(/(\d{1,2}):(\d{2})/)
 function timeParts(v){const m=String(v||"").match(/(\d{1,2}):(\d{2})/);return m?{h:Number(m[1]),m:Number(m[2])}:null}
 function countdownText(ms){ms=Math.max(0,ms);const sec=Math.floor(ms/1000),h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
 function elapsedText(ms){const min=Math.max(0,Math.floor(ms/60000)),h=Math.floor(min/60),m=min%60;return h?`${h} jam ${m} menit yang lalu`:`${m} menit yang lalu`}
+function upcomingPrayer(times){
+ const tz=window.__prayerMeta?.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||"Asia/Jakarta";
+ const p=timezoneParts(new Date(),tz),nowSec=p.hour*3600+p.minute*60+p.second;
+ const tracked=times.filter(x=>["Imsak","Subuh","Dzuhur","Ashar","Maghrib","Isya"].includes(x.name)).map(x=>{const t=timeParts(x.time);return t?{...x,sec:t.h*3600+t.m*60}:null}).filter(Boolean);
+ for(const x of tracked){if(x.sec>nowSec)return x}
+ return tracked.length?{...tracked[0],sec:tracked[0].sec+86400}:null;
+}
 function prayerCountdownData(times){
  const tz=window.__prayerMeta?.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||"Asia/Jakarta";
  const p=timezoneParts(new Date(),tz),nowSec=p.hour*3600+p.minute*60+p.second;
  const tracked=times.filter(x=>["Imsak","Subuh","Dzuhur","Ashar","Maghrib","Isya"].includes(x.name)).map(x=>{const t=timeParts(x.time);return t?{...x,sec:t.h*3600+t.m*60}:null}).filter(Boolean);
  let previous=null,next=null;
  for(const x of tracked){if(x.sec<=nowSec)previous=x;else{next=x;break}}
- if(previous){const elapsed=(nowSec-previous.sec)*1000;if(elapsed<=45*60000)return {mode:"elapsed",prayer:previous,elapsed}}
- if(next)return {mode:"countdown",prayer:next,remaining:(next.sec-nowSec)*1000}
- if(tracked.length){next={...tracked[0],sec:tracked[0].sec+86400};return {mode:"countdown",prayer:next,remaining:(86400-nowSec+tracked[0].sec)*1000}}
+ const upcoming=next|| (tracked.length?{...tracked[0],sec:tracked[0].sec+86400}:null);
+ if(previous){const elapsed=(nowSec-previous.sec)*1000;if(elapsed<=45*60000)return {mode:"elapsed",prayer:previous,elapsed,upcoming}}
+ if(next)return {mode:"countdown",prayer:next,remaining:(next.sec-nowSec)*1000,upcoming:next}
+ if(upcoming)return {mode:"countdown",prayer:upcoming,remaining:(86400-nowSec+tracked[0].sec)*1000,upcoming}
  return null;
 }
 function updatePrayerCountdown(){
@@ -4866,13 +4924,25 @@ function updatePrayerCountdown(){
  if(!box||!main||!sub||!window.__prayerTimes||!window.__prayerTimes.length){if(box)box.hidden=true;return}
  const d=prayerCountdownData(window.__prayerTimes);if(!d){box.hidden=true;return}
  box.hidden=false;
+ const grid=document.getElementById("prayerGrid");
+ if(grid){
+   grid.querySelectorAll(".prayer-item.next").forEach(el=>el.classList.remove("next"));
+   const upcoming=d.upcoming||upcomingPrayer(window.__prayerTimes);
+   if(upcoming){
+     const items=grid.querySelectorAll(".prayer-item");
+     items.forEach(el=>{
+       const name=el.querySelector("b")?.textContent?.trim();
+       if(name===upcoming.name)el.classList.add("next");
+     });
+   }
+ }
  if(d.mode==="elapsed"){
    box.classList.add("elapsed");if(label)label.textContent="Waktu yang baru lewat";main.textContent=elapsedText(d.elapsed);sub.textContent=`${d.prayer.name} • ${d.prayer.time} • baru saja masuk`;
  }else{
    box.classList.remove("elapsed");if(label)label.textContent="Menuju waktu berikutnya";main.textContent=countdownText(d.remaining);sub.textContent=`${d.prayer.name} • ${d.prayer.time}`;
  }
 }
-function currentNextPrayer(times){const d=prayerCountdownData(times);return d?.mode==="countdown"?d.prayer:null}
+function currentNextPrayer(times){return upcomingPrayer(times)}
 function renderPrayerTimes(times,location){
  const grid=document.getElementById("prayerGrid"),status=document.getElementById("prayerStatus"),loc=document.getElementById("prayerLocation"),metaEl=document.getElementById("prayerMeta");if(!grid||!status)return;
  window.__prayerTimes=times;
@@ -4961,6 +5031,32 @@ async function loadPrayerTimes(force=false){
 }
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),2300)}
 document.getElementById("mapsUrlInput")?.addEventListener("input",previewMapsLocation);
+
+/* v5.21: room navigation stays inside the app.
+   Each in-app room gets a browser-history entry so Android/Chrome Back
+   returns to the previous room/page instead of leaving the site. */
+(function initRoomHistory(){
+  const initial=document.querySelector(".page.active")?.id||"dashboard";
+  try{
+    history.replaceState({aihPage:initial},"",location.href);
+  }catch(e){}
+  window.addEventListener("popstate",e=>{
+    const current=document.querySelector(".page.active")?.id||"dashboard";
+    const target=e.state?.aihPage;
+    if(!target||!document.getElementById(target)){
+      try{history.pushState({aihPage:current},"",location.href)}catch(_){}
+      return;
+    }
+    const allow=window.__allowHistoryPop===true;
+    window.__allowHistoryPop=false;
+    window.__pageSwipeDirection="right";
+    go(target,true);
+    if(allow){
+      window.__pageSwipeDirection="";
+    }
+  });
+})();
+
 window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}})
 draftRecord={...record(selectedDate)};persistAccounts();renderNav();updateProfile();renderLocationUI();renderDashboard();renderAbsensi();renderCalendar();renderRecap();hydrateProfilePhoto();loadPrayerTimes();initGoogleAuth();
 
