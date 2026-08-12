@@ -1,4 +1,36 @@
-Agenda Hijriah — v5.4 Client Fixes
+Agenda Hijriah — v5.13 Client Fix
+
+## v5.13 — Profil Help & Quote / Theme / Media Fix
+
+- Mempercantik panel **Bantuan & Informasi** tanpa mengubah struktur fitur Profil.
+- Saat panel bantuan dibuka, ditambahkan backdrop yang mengunci interaksi/scroll halaman di belakang agar room tidak terlihat aktif atau dapat ditekan.
+- Memperbaiki kontras seluruh teks, input, textarea, tombol kembali, tombol tutup, kartu bantuan, validasi, dan profil pembuat pada **mode terang**.
+- Memperbaiki styling khusus mode gelap agar selector tema tidak lagi membuat input/textarea selalu memakai warna gelap ketika mode terang aktif.
+- Laporan bug sekarang menerima **foto maupun video**, menampilkan preview sesuai tipe media, dan hanya mengaktifkan tombol kirim setelah nama, alasan minimal 10 karakter, serta media terdeteksi lengkap.
+- Pada perangkat/browser yang mendukung Web Share API, laporan dibagikan bersama file foto/video sebagai lampiran. Pengguna dapat memilih WhatsApp dan mengirim ke **0895-0613-8191**. Jika browser tidak mendukung berbagi file, aplikasi tetap membuka WhatsApp dengan teks laporan sebagai fallback dan memberi instruksi untuk melampirkan media secara manual.
+- Stok **Quotes hari ini** diselaraskan dengan item yang tersedia di halaman **Kata-kata Mutiara** dan koleksi terkait. Kutipan sebelumnya diingat agar kunjungan berikutnya tidak langsung menampilkan kutipan yang sama.
+- Fitur, struktur room, navigasi, dan data aplikasi lain tidak diubah di luar permintaan client.
+
+## v5.11 — Dzikir Pagi & Petang client revision
+
+- Menghapus seluruh materi dzikir sesudah shalat dari halaman **Dzikir Pagi & Petang**.
+- Memisahkan tampilan menjadi tab **Dzikir Pagi** dan **Dzikir Petang** di dalam halaman yang sama.
+- Menambahkan teks Arab pada seluruh bacaan dzikir yang ditampilkan, beserta arti dan sumber/rujukan yang tersedia dari dokumen.
+- Memperbaiki kontras teks Arab dan isi kartu pada mode gelap.
+- Menghilangkan bottom navigation pada halaman Dzikir agar halaman fokus pada materi bacaan.
+- Mengganti branding topbar yang sebelumnya menonjolkan “Absensi Ibadah Hijriah” menjadi **Kisah Lillah** sesuai identitas aplikasi.
+- Struktur dan fitur aplikasi lain tidak diubah.
+
+
+
+## v5.9 — Urutan koleksi & halaman internal
+
+- Urutan Koleksi mengikuti penomoran client: **1 Al-Qur'an, 2 Hadits Nabi, 3 Kumpulan Do'a, 4 Dzikir Pagi & Petang, 5 Kata-kata Mutiara**.
+- Kelima tombol sekarang benar-benar dapat ditekan dan membuka **halaman internal masing-masing**.
+- Setiap halaman memiliki tombol kembali ke Koleksi.
+- Tidak ada tombol Koleksi yang mengarahkan pengguna ke situs luar.
+- Konten tiap halaman sengaja disiapkan sebagai ruang internal untuk diisi bertahap sesuai arahan client.
+- Struktur fitur aplikasi lain tidak diubah.
 
 # Agenda Hijriah — v4.9 Client Fix
 
@@ -204,3 +236,16 @@ Perubahan pada revisi client:
 - Kontras teks pada kartu **Quotes hari ini** diperbaiki agar lebih mudah dibaca pada mode terang dan gelap.
 - Splash **Kisah Lillah** memakai mode contain agar proporsinya tetap sesuai pada layar desktop dan perangkat dengan rasio layar berbeda.
 - Mode gelap diperketat pada komponen yang sebelumnya masih dapat tampil putih, tanpa mengubah struktur fitur lain.
+
+\n\n## v5.7 — Client follow-up
+- Splash client reference now fills the viewport responsively using aspect-ratio-aware cover behavior, removing side gutters on desktop and mobile.
+- Collection buttons remain in the existing Koleksi structure but open internal reading views instead of leaving the app.
+- Added internal Quran reader with 114 surahs, 30-juz navigation, Arabic text, Latin transliteration when supplied by the API, Indonesian translation, ayah audio playback, and audio download.
+- Added in-page search for Quran content and preserved the existing search/navigation behavior for the other collection readers.
+- Desktop collection content uses the available page width to reduce unused empty space without changing the app navigation or feature structure.
+
+
+### v5.10 client follow-up
+- Brand text changed from “Absensi Ibadah Hijriah” to “Kisah Lillah”.
+- Dzikir Pagi & Petang page populated from the supplied `zikir-selepas-solat-dan-pagi-petang.pdf` text content; cover/images omitted.
+- Mobile bottom navigation is hidden while the dedicated dzikir reader is open.

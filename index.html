@@ -19,7 +19,7 @@
 <link rel="apple-touch-icon" href="app-icon-client.png">
 <meta name="description" content="Jurnal dan absensi ibadah harian berbasis kalender Hijriah.">
 <title>Kisah Lillah — Catat ibadah, jaga istiqamah.</title>
-<!-- v5.4: client fixes — countdown state, quotes, 10-day prayer calendar swipe, editable agenda/statuses, collections, profile recap, settings/theme, responsive app icon -->
+<!-- v5.10: client follow-up — app name + local dzikir reader populated from supplied document -->
 <style>
 :root{
   --bg:#f3f8f6;--surface:#fff;--surface2:#eef6f3;--text:#173b36;--muted:#748682;
@@ -149,6 +149,86 @@ button:focus-visible,input:focus-visible{outline:3px solid rgba(11,107,99,.22);o
 .calendar-card .day .wd{order:3}
 .calendar-card .day .event{order:4}
 .calendar-selected{margin-top:12px}
+
+/* Client follow-up: profile help + creator */
+.profile-help-fab{
+  position:fixed;right:18px;bottom:92px;width:52px;height:52px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.45);background:var(--gold);color:var(--primary-dark);
+  box-shadow:0 12px 28px rgba(18,69,61,.22);font-size:22px;font-weight:950;z-index:40;
+  display:none;place-items:center;transition:transform .16s ease,box-shadow .16s ease;
+}
+.profile-help-fab:hover{transform:translateY(-2px);box-shadow:0 15px 32px rgba(18,69,61,.28)}
+body.profile-page-open .profile-help-fab{display:grid}
+.profile-help-backdrop{position:fixed;inset:0;background:rgba(6,31,28,.38);backdrop-filter:blur(2px);z-index:41;display:none;touch-action:none}
+body.profile-help-open .profile-help-backdrop{display:block}
+body.profile-help-open{overflow:hidden}
+.profile-help-panel{position:fixed;right:18px;bottom:154px;width:min(390px,calc(100vw - 36px));z-index:44;display:none;max-height:calc(100vh - 190px);overflow:auto;overscroll-behavior:contain}
+.profile-help-panel.show{display:block;animation:helpIn .18s ease-out}
+@keyframes helpIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.help-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(10,55,48,.22);overflow:hidden}
+.help-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.help-head h3{margin:0;font-size:16px}.help-head p{margin:3px 0 0;font-size:10px;color:var(--muted)}
+.help-close{border:0;background:var(--surface2);color:var(--text);width:34px;height:34px;border-radius:50%;font-size:20px}
+.help-bars{display:grid;gap:8px;padding:12px}
+.help-bar{width:100%;display:flex;align-items:center;gap:11px;text-align:left;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:15px;padding:12px;min-height:58px}
+.help-bar:hover{border-color:#7dbbb2}.help-bar .help-ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(11,107,99,.12);font-size:19px;flex:none}
+.help-bar b{display:block;font-size:12px}.help-bar small{display:block;color:var(--muted);font-size:10px;line-height:1.4;margin-top:2px}
+.help-form{display:none;padding:0 12px 12px}.help-form.show{display:block}
+.help-form .field{margin-top:9px}.help-form label{display:block;font-size:10px;font-weight:800;margin:0 0 4px}
+.help-form input,.help-form textarea{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:10px 11px;font-size:12px}
+.help-form textarea{min-height:92px;resize:vertical}
+.help-shot{border:1px dashed #82bdb5;border-radius:12px;padding:10px;background:var(--surface2);font-size:10px;color:var(--muted)}
+.help-shot input{border:0;padding:0;background:transparent;margin-top:6px}
+.help-preview{display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--line);max-height:180px;background:#071b18}
+.help-preview.show{display:block}
+.help-preview img,.help-preview video{display:none;width:100%;height:180px;object-fit:contain;background:#071b18}
+.help-preview.image img,.help-preview.video video{display:block}
+.help-validation{font-size:10px;line-height:1.45;margin-top:8px;padding:9px 10px;border-radius:10px;background:var(--surface2);color:var(--muted)}
+.help-validation.ok{color:var(--success);border:1px solid rgba(21,149,111,.25)}
+.help-submit{width:100%;margin-top:9px}.help-submit:disabled{opacity:.45;cursor:not-allowed}
+.creator-card{display:none;padding:0 12px 12px}.creator-card.show{display:block}
+.creator-copy{max-height:min(52vh,460px);overflow:auto;padding:12px;border:1px solid var(--line);background:var(--surface2);border-radius:14px;font-size:11px;line-height:1.65;color:var(--text)}
+.creator-copy h4{margin:0 0 8px;font-size:14px}.creator-copy p{margin:0 0 9px}.creator-quote{padding:10px 12px;border-left:3px solid var(--gold);background:rgba(214,178,93,.1);border-radius:0 10px 10px 0;font-style:italic}
+html[data-theme="dark"] .profile-help-fab{color:#173b36}
+html[data-theme="dark"] .help-card{box-shadow:0 18px 50px rgba(0,0,0,.48)}
+html[data-theme="dark"] .help-bar,
+html[data-theme="dark"] .help-form input,
+html[data-theme="dark"] .help-form textarea,
+html[data-theme="dark"] .help-shot{
+  background:#0d332e;color:#f1fffb;border-color:#285950;
+}
+html[data-theme="dark"] .help-head,
+html[data-theme="dark"] .help-close,
+html[data-theme="dark"] .help-form label{
+  color:#f1fffb;
+}
+html[data-theme="dark"] .help-validation{background:#0d332e;color:#b7cbc6;border-color:#285950}
+html[data-theme="dark"] .help-submit:disabled{opacity:.5}
+html[data-theme="dark"] .creator-copy{background:#0d332e;color:#f1fffb;border-color:#285950}
+html[data-theme="light"] .help-card{color:var(--text)}
+html[data-theme="light"] .help-close{color:var(--text);background:var(--surface2);border:1px solid var(--line)}
+html[data-theme="light"] .help-form input,
+html[data-theme="light"] .help-form textarea{
+  background:#fff;color:var(--text);border-color:#cbded8;
+}
+html[data-theme="light"] .help-form input::placeholder,
+html[data-theme="light"] .help-form textarea::placeholder{color:#8a9a96}
+html[data-theme="light"] .help-shot{background:#f2f8f6;color:#536965;border-color:#9fc8c0}
+html[data-theme="light"] .help-validation{background:#eef6f3;color:#536965}
+html[data-theme="light"] .help-bar{background:#eef6f3;color:var(--text);border-color:#d5e6e1}
+html[data-theme="light"] .help-bar small{color:#667a75}
+html[data-theme="light"] .creator-copy{background:#eef6f3;color:var(--text)}
+html[data-theme="light"] .creator-copy p,
+html[data-theme="light"] .creator-copy h4{color:var(--text)}
+
+@media(max-width:767px){
+ .profile-help-panel{left:12px;right:12px;bottom:82px;width:auto;max-height:calc(100vh - 112px)}
+ .profile-help-fab{right:16px;bottom:78px}
+ .help-head{position:sticky;top:0;background:var(--surface);z-index:2}
+}
+@media (min-width:900px){
+  .profile-help-fab{right:28px;bottom:28px}.profile-help-panel{right:28px;bottom:92px}
+}
 .profile-card{text-align:center;padding-top:22px}.profile-big{width:92px;height:92px;border-radius:50%;margin:0 auto 8px;background:#d8eee9;color:var(--primary);display:grid;place-items:center;font-weight:900;font-size:25px;overflow:hidden;border:4px solid #fff;box-shadow:0 7px 20px rgba(18,69,61,.12)}.profile-big{position:relative;cursor:pointer;transition:transform .16s ease}.profile-big:active{transform:scale(.97)}
 .crop-modal .modal{width:min(520px,100%);padding:16px}.crop-title{display:flex;align-items:center;gap:9px;margin-bottom:8px}.crop-title h3{margin:0}.crop-sub{font-size:11px;color:var(--muted);line-height:1.45}.crop-stage{display:grid;place-items:center;margin:12px 0 10px}.crop-canvas{width:min(78vw,320px);height:min(78vw,320px);max-width:320px;max-height:320px;border-radius:50%;background:#e9f2ef;box-shadow:0 10px 30px rgba(18,69,61,.14);touch-action:none;display:block;user-select:none;-webkit-user-select:none}
 .crop-mode{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:4px 0 10px}
@@ -359,8 +439,105 @@ html.modal-open,html.modal-open body{overscroll-behavior:none;} html.modal-open 
 
 
 
+/* v5.15 — final client fixes: dark-mode visibility, responsive account form, text-only bug report */
+html[data-theme="dark"] .pdm-time{
+  background:linear-gradient(135deg,#0d332e,#10443d) !important;
+  border-color:#286158 !important;
+  color:#f3fffc !important;
+}
+html[data-theme="dark"] .pdm-time span{color:#f3fffc !important}
+html[data-theme="dark"] .pdm-time b{color:#74e0c7 !important}
+html[data-theme="dark"] .pdm-time.next{
+  background:linear-gradient(135deg,#12675c,#0f554d) !important;
+  border-color:#55bca8 !important;
+  box-shadow:0 0 0 2px rgba(116,224,199,.16),0 8px 22px rgba(0,0,0,.14) !important;
+}
+html[data-theme="dark"] .pdm-time.next span,
+html[data-theme="dark"] .pdm-time.next b{color:#123c36 !important}
+html[data-theme="dark"] .pdm-time.next{
+  background:#eaf7f4 !important;
+  border-color:#69c9b8 !important;
+}
+html[data-theme="dark"] .prayer-day-modal{
+  background:linear-gradient(180deg,#0a2a26,#09231f) !important;
+  color:#f3fffc !important;
+  border:1px solid #25584f;
+}
+html[data-theme="dark"] .pdm-head h3,
+html[data-theme="dark"] .pdm-head p{color:#f3fffc}
+html[data-theme="dark"] .pdm-head p{opacity:.72}
+html[data-theme="dark"] .pdm-location{
+  background:#eef9f7 !important;
+  color:#0b6b63 !important;
+}
+html[data-theme="dark"] .prayer-day-modal .btn.outline{
+  background:#0d332e !important;color:#f3fffc !important;border-color:#286158 !important;
+}
+html[data-theme="dark"] .account-popover{
+  background:linear-gradient(180deg,#0b302b,#092620);
+  border-color:#286158;
+  color:#f3fffc;
+}
+html[data-theme="dark"] .account-popover .field label{color:#f3fffc}
+html[data-theme="dark"] .account-popover .field input{
+  background:#0d332e;color:#f3fffc;border-color:#2b6259;
+}
+html[data-theme="dark"] .account-popover .field input::placeholder{color:#91aaa5}
+.account-popover .field input{
+  width:100%;
+  min-width:0;
+  min-height:46px;
+  -webkit-appearance:none;
+  appearance:none;
+  touch-action:manipulation;
+  pointer-events:auto;
+  user-select:text;
+  -webkit-user-select:text;
+}
+.account-popover{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.account-popover .field{min-width:0}
+.account-popover .btn{touch-action:manipulation}
+@media(max-width:767px){
+  .account-popover{
+    width:calc(100vw - 20px);
+    max-width:520px;
+    max-height:calc(100dvh - 18px);
+    padding:14px;
+    border-radius:20px;
+  }
+  .account-popover-form{gap:10px}
+  .account-popover-form .field input{
+    min-height:48px;
+    font-size:16px; /* prevents mobile browser zoom and makes the field easier to edit */
+    padding:11px 12px;
+  }
+  .account-popover .modal-actions{flex-wrap:wrap}
+}
+
 /* v4.6 client fixes */
-.account-popover{position:fixed;top:50%;left:50%;right:auto;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 28px));max-height:calc(100dvh - 28px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 24px 70px rgba(18,69,61,.20),0 0 0 100vmax rgba(4,23,20,.52);z-index:80;isolation:isolate}
+.account-popover{
+  position:fixed;
+  top:50%;
+  left:50%;
+  right:auto;
+  bottom:auto;
+  transform:translate(-50%,-50%);
+  width:min(520px,calc(100vw - 28px));
+  max-height:calc(100dvh - 28px);
+  overflow:auto;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 24px 70px rgba(18,69,61,.20),0 0 0 100vmax rgba(4,23,20,.52);
+  z-index:1000;
+  isolation:isolate;
+  pointer-events:auto;
+  touch-action:pan-y;
+}
 .account-popover[hidden]{display:none}
 .account-popover-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .account-popover-head h3{margin:2px 0 0;font-size:18px}
@@ -530,14 +707,15 @@ html.modal-open,html.modal-open body{overscroll-behavior:none;} html.modal-open 
 #profil .profile-compact-card{margin-bottom:0}
 
 
-/* Kisah Lillah — app launch splash (client supplied reference) */
+/* Kisah Lillah — responsive launch splash (client supplied reference) */
 .kl-splash{
   position:fixed;
   inset:0;
   z-index:99999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:grid;
+  place-items:center;
+  width:100vw;
+  height:100dvh;
   min-height:100dvh;
   overflow:hidden;
   background:#063d2f;
@@ -547,8 +725,17 @@ html.modal-open,html.modal-open body{overscroll-behavior:none;} html.modal-open 
 .kl-splash::before{
   content:"";
   position:absolute;
+  inset:-3%;
+  background:#063d2f url("splash-client-reference.png") center/100% 100% no-repeat;
+  transform:scale(1.035);
+  filter:saturate(.96) brightness(.9);
+}
+.kl-splash::after{
+  content:"";
+  position:absolute;
   inset:0;
-  background:#063d2f url("splash-client-reference.png") center center/contain no-repeat;
+  background:linear-gradient(180deg,rgba(2,31,24,.05),rgba(2,31,24,.12));
+  pointer-events:none;
 }
 .kl-splash-brand,
 .kl-splash-credit{
@@ -566,15 +753,15 @@ html.modal-open,html.modal-open body{overscroll-behavior:none;} html.modal-open 
   visibility:hidden;
   pointer-events:none;
 }
+@media (max-aspect-ratio: 3/5){.kl-splash::before{background-size:cover;background-position:center}}
+@media (min-width:768px){.kl-splash::before{background-size:cover;background-position:center}}
 @media (prefers-reduced-motion:reduce){
   .kl-splash{transition:none;}
-}
-@media (min-width:768px){
-  .kl-splash::before{background-size:contain;background-position:center;background-repeat:no-repeat}
 }
 @media (max-width:767px){
   .account-popover{width:min(520px,calc(100vw - 20px));max-height:calc(100dvh - 20px)}
 }
+
 /* v5.1 client-requested polish */
 .section-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .topbar-actions{display:flex;align-items:center;gap:8px}
@@ -593,18 +780,23 @@ html.modal-open,html.modal-open body{overscroll-behavior:none;} html.modal-open 
 .quick-setting:last-child{border-bottom:0}.quick-setting>span:first-child{font-size:18px}.quick-setting b,.quick-setting small{display:block}.quick-setting small{font-size:10px;color:var(--muted);margin-top:2px}
 .settings-modal-backdrop{z-index:130}.settings-modal{max-width:560px}.settings-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.settings-list{display:grid;gap:8px;margin-top:14px}.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text)}.setting b,.setting span{display:block;text-align:left}.setting b{font-size:13px}.setting span{font-size:10px;color:var(--muted);margin-top:3px}.setting-button{width:100%;font:inherit}.setting-button>strong{font-size:18px;color:var(--muted)}
 .toggle{width:46px;height:26px;border-radius:99px;border:0;background:#cfdad7;position:relative;flex:none}.toggle:after{content:"";width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;left:3px;top:3px;transition:.2s}.toggle.on{background:var(--primary)}.toggle.on:after{left:23px}
-.collection-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.collection-card{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:20px;padding:18px;text-align:left;box-shadow:var(--shadow);min-height:150px}.collection-card:active{transform:scale(.985)}.collection-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px rgba(11,107,99,.10),var(--shadow)}.collection-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--surface2);font-size:22px;margin-bottom:14px}.collection-card b,.collection-card small{display:block}.collection-card small{font-size:10px;color:var(--muted);line-height:1.45;margin-top:5px}.collection-detail{display:flex;align-items:center;gap:12px;margin-top:12px} .collection-detail-icon{width:42px;height:42px;border-radius:14px;background:var(--gold-soft);display:grid;place-items:center;font-size:20px}
-.collection-resources{margin-top:12px}
-.collection-resource-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.collection-resource{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:14px;padding:10px;text-decoration:none;min-width:0;transition:.15s ease}
-.collection-resource:active{transform:scale(.985)}
-.collection-resource-icon{width:34px;height:34px;border-radius:11px;background:var(--surface);display:grid;place-items:center;font-size:18px}
-.collection-resource span:nth-child(2){min-width:0}
-.collection-resource b,.collection-resource small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.collection-resource b{font-size:11px}
-.collection-resource small{font-size:9px;color:var(--muted);margin-top:2px}
-.collection-resource strong{font-size:13px;color:var(--primary)}
-.collection-source-note{margin:10px 2px 0;font-size:9px;color:var(--muted);line-height:1.45}
+/* Collection stays as five local buttons and adapts to each viewport. */
+.collection-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.collection-grid{grid-template-columns:1fr}.collection-card{min-height:112px;padding:15px}}
+.collection-reader-page{max-width:100%}
+.collection-reader-head{display:grid;gap:12px;margin-bottom:12px}
+.collection-reader-title{display:flex;align-items:center;gap:12px;padding:2px 0}
+.collection-reader-title .collection-icon{flex:0 0 42px;margin:0}
+.collection-reader-title h2{margin:0}
+.collection-empty-state{min-height:180px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+.collection-empty-state b{font-size:16px}
+.collection-empty-state p{margin:0;color:var(--muted);line-height:1.6}
+@media (min-width:901px){
+  .collection-reader-head{max-width:900px}
+  .collection-empty-state{max-width:900px}
+}
+.collection-card{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:20px;padding:18px;text-align:left;box-shadow:var(--shadow);min-height:150px}.collection-card:active{transform:scale(.985)}.collection-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px rgba(11,107,99,.10),var(--shadow)}.collection-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--surface2);font-size:22px;margin-bottom:14px}.collection-card b,.collection-card small{display:block}.collection-card small{font-size:10px;color:var(--muted);line-height:1.45;margin-top:5px}.collection-detail{display:flex;align-items:center;gap:12px;margin-top:12px} .collection-detail-icon{width:42px;height:42px;border-radius:14px;background:var(--gold-soft);display:grid;place-items:center;font-size:20px}
 .agenda-editor-fields{min-width:0}.agenda-status-toggles{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.agenda-status-toggles label{font-size:9px;color:var(--text);border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:5px 7px;display:flex;align-items:center;gap:4px}.agenda-status-toggles input{accent-color:var(--primary)}
 .status-editor{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.status-editor-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.status-editor-head b{font-size:12px}.status-editor-list{display:grid;gap:6px;margin-top:8px}.status-editor-row{display:grid;grid-template-columns:44px 1fr auto;gap:6px;align-items:center}.status-editor-row input{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);padding:9px;font-size:11px}.status-emoji-input{text-align:center;font-size:16px!important}.status-fixed{font-size:9px;color:var(--muted);padding:0 5px}.status-delete{min-width:34px;height:34px}
 .ps-calendar-grid{transition:transform .25s cubic-bezier(.22,.8,.25,1),opacity .2s ease}.ps-calendar-card.is-dragging{box-shadow:0 12px 32px rgba(18,69,61,.12)}
@@ -1124,6 +1316,314 @@ html:not(.modal-open) body{
   pointer-events:auto;
 }
 
+
+
+
+/* v5.10 client follow-up: dedicated dzikir reader */
+.dzikir-reader-page{padding-bottom:28px}
+.dzikir-reader-head{margin-bottom:14px}
+.dzikir-intro{padding:20px;margin-bottom:16px}
+.dzikir-intro h3{margin:6px 0 8px;font-size:22px;line-height:1.25}
+.dzikir-source-note{margin-top:12px;padding:11px 13px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:12px;line-height:1.6}
+.dzikir-section{margin-top:18px}
+.dzikir-section-head{display:flex;align-items:flex-start;gap:10px;margin:0 0 10px}
+.dzikir-section-head>span{width:40px;height:40px;border-radius:13px;background:rgba(11,107,99,.12);display:grid;place-items:center;font-size:20px;flex:0 0 auto}
+.dzikir-section-head h3{margin:2px 0 3px;font-size:19px}
+.dzikir-section-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.dzikir-item{position:relative;padding:18px 18px 18px 58px;margin-bottom:10px;overflow:hidden}
+.dzikir-num{position:absolute;left:16px;top:18px;width:30px;height:30px;border-radius:10px;background:rgba(11,107,99,.13);display:grid;place-items:center;font-weight:900;color:var(--primary)}
+.dzikir-label{
+  margin:0 0 8px;
+  font-size:15px;
+  line-height:1.45;
+  font-weight:900;
+  color:var(--primary);
+}
+.dzikir-label + .dzikir-arabic{margin-top:4px}
+.dzikir-body p{margin:8px 0;color:var(--text);line-height:1.75;font-size:14px}
+.dzikir-body small{display:block;color:var(--muted);line-height:1.5;font-size:11px;margin-top:8px}
+.dzikir-arabic{font-family:"Noto Naskh Arabic","Amiri","Times New Roman",serif;font-size:23px;line-height:2.05;text-align:right;color:var(--primary-dark);padding:9px 11px;background:rgba(11,107,99,.055);border-radius:13px;margin:8px 0;direction:rtl}
+.dzikir-benefit{padding:10px 12px!important;background:var(--gold-soft);border-radius:12px}
+.dzikir-end{padding:16px;margin-top:16px}
+.dzikir-end p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.6}
+body.dzikir-open .mobile-nav{display:none!important}
+body.dzikir-open .main{padding-bottom:24px}
+@media (max-width:720px){
+  .dzikir-intro h3{font-size:20px}
+  .dzikir-item{padding:16px 14px 16px 54px}
+  .dzikir-num{left:14px;top:16px}
+  .dzikir-body p{font-size:14px;line-height:1.72}
+  .dzikir-arabic{font-size:21px;line-height:1.95}
+}
+@media (min-width:721px){
+  .dzikir-reader-page{max-width:900px;margin:0 auto}
+  .dzikir-item{padding-right:24px}
+}
+
+
+/* Client revision: dzikir pagi/petang */
+.dzikir-period-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0 0 14px;
+  position:sticky;
+  top:8px;
+  z-index:8;
+}
+.dzikir-period-btn{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:14px;
+  min-height:46px;
+  padding:10px 12px;
+  font-weight:850;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:.15s transform,.15s background,.15s border-color;
+}
+.dzikir-period-btn:active{transform:scale(.985)}
+.dzikir-period-btn.active{
+  background:linear-gradient(135deg,var(--primary),#0b5f58);
+  color:#fff;
+  border-color:var(--primary);
+}
+.dzikir-period-panel{display:block}
+.dzikir-period-panel[hidden]{display:none}
+.dzikir-section-head-period{margin-top:4px}
+.dzikir-item-rich{scroll-margin-top:78px}
+.dzikir-body .dzikir-translation{color:var(--text);font-size:14px;line-height:1.78;margin:10px 0}
+.dzikir-note-line{display:block;margin-top:6px;font-weight:800;color:var(--primary)}
+.dzikir-source{
+  display:block;
+  margin-top:10px;
+  padding:10px 11px;
+  border-left:3px solid var(--gold);
+  border-radius:10px;
+  background:rgba(216,180,95,.10);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+}
+.dzikir-source b{color:var(--text)}
+html[data-theme="dark"] .dzikir-period-btn{
+  background:#0b3530;
+  color:#f2f8f6;
+  border-color:#2b5a52;
+}
+html[data-theme="dark"] .dzikir-period-btn.active{
+  background:linear-gradient(135deg,#1a756b,#0d5049);
+  color:#fff;
+  border-color:#69c9b8;
+}
+html[data-theme="dark"] .dzikir-intro,
+html[data-theme="dark"] .dzikir-end{
+  background:linear-gradient(145deg,#0c3b35,#092f2b);
+}
+html[data-theme="dark"] .dzikir-body .dzikir-translation{color:#f2f8f6}
+html[data-theme="dark"] .dzikir-body small,
+html[data-theme="dark"] .dzikir-source{color:#b9d0ca}
+html[data-theme="dark"] .dzikir-source b{color:#f2f8f6}
+html[data-theme="dark"] .dzikir-arabic{
+  color:#f7fbfa;
+  background:linear-gradient(145deg,#104a43,#0b3732);
+  border:1px solid #2a5b53;
+  text-shadow:0 1px 0 rgba(0,0,0,.18);
+}
+body.dzikir-open .mobile-nav{display:none}
+body.dzikir-open .dzikir-reader-page{padding-bottom:28px}
+@media(max-width:767px){
+  .dzikir-period-switch{top:4px}
+  .dzikir-item-rich{padding:16px 14px 16px 50px}
+  .dzikir-body h4{font-size:15px}
+  .dzikir-arabic{font-size:24px;line-height:2.15}
+  .dzikir-body .dzikir-translation{font-size:13px;line-height:1.8}
+}
+@media(min-width:768px){
+  .dzikir-reader-page{max-width:980px}
+  .dzikir-period-switch{max-width:620px;margin-left:auto;margin-right:auto}
+}
+
+</style>
+
+<style id="client-polish-v5-14">
+/* v5.14 — client-requested visual polish only: no feature/structure changes */
+button,.btn,.collection-card,.icon-btn,.seg,.period-btn{ -webkit-tap-highlight-color:transparent; }
+.btn,.icon-btn,.seg,.period-btn,.collection-card,.help-bar,.help-close{
+  transition:transform .18s cubic-bezier(.22,.8,.25,1),background-color .18s ease,
+    border-color .18s ease,color .18s ease,box-shadow .18s ease,opacity .18s ease;
+}
+.btn:hover,.icon-btn:hover,.seg:hover,.period-btn:hover,.collection-card:hover,.help-bar:hover{
+  box-shadow:0 8px 22px rgba(18,69,61,.10);
+}
+.btn:active,.icon-btn:active,.seg:active,.period-btn:active,.collection-card:active,.help-bar:active{
+  transform:translateY(1px) scale(.985);
+}
+
+/* Dark mode: stronger contrast for text called out by client. */
+html[data-theme="dark"] .section-head h2,
+html[data-theme="dark"] .section-head p,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .label,
+html[data-theme="dark"] .recap-meta,
+html[data-theme="dark"] .recap-top b,
+html[data-theme="dark"] .period-label b,
+html[data-theme="dark"] .period-label span,
+html[data-theme="dark"] .insight,
+html[data-theme="dark"] .insight b,
+html[data-theme="dark"] .insight p,
+html[data-theme="dark"] .collection-card,
+html[data-theme="dark"] .collection-card b,
+html[data-theme="dark"] .collection-card small,
+html[data-theme="dark"] .collection-reader-title h2,
+html[data-theme="dark"] .collection-reader-title p,
+html[data-theme="dark"] .collection-empty-state,
+html[data-theme="dark"] .collection-empty-state b,
+html[data-theme="dark"] .collection-empty-state p{
+  color:var(--text);
+}
+html[data-theme="dark"] .collection-card small,
+html[data-theme="dark"] .collection-empty-state p,
+html[data-theme="dark"] .insight p,
+html[data-theme="dark"] .recap-meta,
+html[data-theme="dark"] .period-label span,
+html[data-theme="dark"] .section-head p{
+  color:#bdd1cc;
+}
+html[data-theme="dark"] .collection-card{
+  background:linear-gradient(145deg,#104a43,#0b3530);
+  border-color:#326b61;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 14px 30px rgba(0,0,0,.22);
+}
+html[data-theme="dark"] .collection-card:hover{
+  border-color:#69c9b8;
+  box-shadow:0 12px 28px rgba(0,0,0,.28);
+}
+html[data-theme="dark"] .collection-icon{background:#155047;color:#f5fffc}
+html[data-theme="dark"] .insight{
+  background:linear-gradient(145deg,#173f39,#26341f);
+  border-color:#536b58;
+  color:#f2f8f6;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 24px rgba(0,0,0,.18);
+}
+html[data-theme="dark"] .insight b{color:#f7fbf9}
+html[data-theme="dark"] .insight p{color:#d3e1dc}
+
+/* Dark buttons / controls: no invisible labels. */
+html[data-theme="dark"] .btn.outline,
+html[data-theme="dark"] .btn.ghost,
+html[data-theme="dark"] .icon-btn,
+html[data-theme="dark"] .seg,
+html[data-theme="dark"] .period-btn,
+html[data-theme="dark"] .ps-back{
+  color:#f2f8f6;background:#103f39;border-color:#356b62;
+}
+html[data-theme="dark"] .btn.ghost{color:#bce9df;background:#124a43}
+html[data-theme="dark"] .btn.outline:hover,
+html[data-theme="dark"] .btn.ghost:hover,
+html[data-theme="dark"] .icon-btn:hover,
+html[data-theme="dark"] .seg:hover,
+html[data-theme="dark"] .period-btn:hover,
+html[data-theme="dark"] .ps-back:hover{
+  color:#fff;border-color:#69c9b8;background:#155047;
+}
+html[data-theme="dark"] .btn.gold{
+  color:#173b36;background:linear-gradient(135deg,#e4c56f,#cda44d);
+  box-shadow:0 8px 22px rgba(216,180,95,.18);
+}
+html[data-theme="dark"] .btn.primary{background:#f5fbf9;color:#0b5c54}
+html[data-theme="dark"] .seg.active{
+  background:linear-gradient(135deg,#1b756b,#0d5049);color:#fff;border-color:#69c9b8;
+}
+html[data-theme="dark"] .btn:disabled{
+  color:#8da7a1;background:#12312d;border-color:#274e48;opacity:.72;
+}
+
+/* Prayer schedule dark mode. */
+html[data-theme="dark"] .prayer-schedule-hero{
+  background:linear-gradient(135deg,#0d7067,#08453f);color:#fff;
+}
+html[data-theme="dark"] .prayer-schedule-hero h1,
+html[data-theme="dark"] .prayer-schedule-hero p,
+html[data-theme="dark"] .prayer-schedule-hero .ps-kicker,
+html[data-theme="dark"] .prayer-schedule-hero .ps-location{color:#fff}
+html[data-theme="dark"] .ps-location .badge{
+  color:#f5fffc;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.18);
+}
+html[data-theme="dark"] .ps-calendar-card{
+  background:linear-gradient(145deg,#0c3b35,#092f2b);border-color:#2f665d;
+}
+html[data-theme="dark"] .ps-calendar-head>b,
+html[data-theme="dark"] .ps-calendar-head small{color:#f2f8f6}
+html[data-theme="dark"] .ps-calendar-head small{color:#bcd0ca}
+html[data-theme="dark"] .ps-calendar-week{color:#bcd0ca}
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card,
+html[data-theme="dark"] .ps-calendar-grid button{
+  background:linear-gradient(145deg,#104a43,#0b3530);color:#f2f8f6;border-color:#356b62;
+}
+html[data-theme="dark"] .ps-calendar-grid button .ps-day{color:#f7fbfa}
+html[data-theme="dark"] .ps-calendar-grid button .ps-hijri,
+html[data-theme="dark"] .ps-calendar-grid button .ps-wd{color:#bcd0ca}
+html[data-theme="dark"] .ps-calendar-grid button .ps-g{color:#7cdbc9}
+html[data-theme="dark"] .ps-calendar-grid button.today,
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card.today{
+  background:linear-gradient(145deg,#55431b,#352b16);color:#fff8dc;border-color:#e0bd5e;
+}
+html[data-theme="dark"] .ps-calendar-grid button.selected,
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card.selected{
+  background:linear-gradient(145deg,#176357,#0f443e);color:#fff;border-color:#76d8c8;
+}
+html[data-theme="dark"] .ps-mobile-row{
+  background:linear-gradient(145deg,#104a43,#0b3530);color:#f2f8f6;border-color:#356b62;
+}
+html[data-theme="dark"] .ps-mobile-date b,
+html[data-theme="dark"] .ps-mobile-hijri{color:#f2f8f6}
+html[data-theme="dark"] .ps-mobile-date span,
+html[data-theme="dark"] .ps-time span{color:#bcd0ca}
+html[data-theme="dark"] .ps-time{
+  background:#0d3b35;border-color:#356b62;color:#f2f8f6;
+}
+html[data-theme="dark"] .ps-time b{color:#7cdbc9}
+
+/* Help is a real modal room: background/nav are inert while open. */
+.profile-help-backdrop{
+  z-index:130;background:rgba(4,20,18,.48);backdrop-filter:blur(5px);
+}
+.profile-help-panel{z-index:132;isolation:isolate;overscroll-behavior:contain}
+.profile-help-panel.show{animation:helpInSmooth .24s cubic-bezier(.22,.8,.25,1)}
+@keyframes helpInSmooth{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.help-card{box-shadow:0 22px 60px rgba(4,30,26,.28),0 0 0 1px rgba(255,255,255,.08)}
+.help-head{position:sticky;top:0;z-index:2;background:inherit}
+.help-close{width:42px;height:42px;border-radius:14px;display:grid;place-items:center}
+html[data-theme="light"] .help-close{background:#edf7f4;color:#0b6b63;border:1px solid #d8eae5}
+html[data-theme="dark"] .help-close{background:#155047;color:#d9f5ee;border:1px solid #356b62}
+html[data-theme="dark"] .help-card{background:linear-gradient(145deg,#0d3934,#092d29);color:#f2f8f6;border-color:#356b62}
+html[data-theme="dark"] .help-bar{background:linear-gradient(145deg,#104a43,#0b3530);color:#f2f8f6;border-color:#356b62}
+html[data-theme="dark"] .help-bar b,
+html[data-theme="dark"] .help-head h3,
+html[data-theme="dark"] .help-form label{color:#f5fbf9}
+html[data-theme="dark"] .help-bar small,
+html[data-theme="dark"] .help-head p{color:#bcd0ca}
+html[data-theme="dark"] .help-form input,
+html[data-theme="dark"] .help-form textarea,
+html[data-theme="dark"] .help-shot{
+  background:#0a302c;color:#f2f8f6;border-color:#356b62;
+}
+html[data-theme="dark"] .help-form input::placeholder,
+html[data-theme="dark"] .help-form textarea::placeholder{color:#90aaa3}
+html[data-theme="dark"] .help-validation{background:#103c36;color:#cfe1dc;border-color:#356b62}
+html[data-theme="dark"] .help-validation.ok{color:#dff8ef;background:#124b42}
+html[data-theme="dark"] .creator-copy{background:#0a302c;color:#f2f8f6;border-color:#356b62}
+html[data-theme="dark"] .creator-copy p{color:#cfe1dc}
+
+/* Native-feeling motion. */
+.main{touch-action:pan-y;overscroll-behavior-x:none}
+.page.page-swipe-peek{backface-visibility:hidden;transform:translate3d(0,0,0);will-change:transform,opacity}
+.page.page-swipe-dragging{transition:none!important}
+@media(prefers-reduced-motion:reduce){
+  .btn,.icon-btn,.seg,.period-btn,.collection-card,.help-bar,.help-close{transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -1142,14 +1642,14 @@ html:not(.modal-open) body{
 
 <div class="app">
 <aside class="sidebar">
-  <div class="brand"><div class="brand-icon image-mark"><img src="app-icon-client.png" alt="Kisah Lillah"></div><div><b>Absensi Ibadah</b><small>Hijriah</small></div></div>
+  <div class="brand"><div class="brand-icon image-mark"><img src="app-icon-client.png" alt="Kisah Lillah"></div><div><b>Kisah Lillah</b><small>Catat ibadah, jaga istiqamah.</small></div></div>
   <nav class="nav" id="sideNav"></nav>
   <div class="sidebar-note">Kalender utama memakai Umm al-Qura bila tersedia. Untuk tahun di luar jangkauan browser, kalender otomatis memakai perhitungan Hijriah sipil sebagai fallback agar navigasi tetap tersedia.</div>
 </aside>
 
 <main class="main">
 <header class="topbar">
-  <div class="mobile-brand"><span class="brand-mark image-mark"><img src="app-icon-client.png" alt="" aria-hidden="true"></span> Absensi Ibadah Hijriah</div>
+  <div class="mobile-brand"><span class="brand-mark image-mark"><img src="app-icon-client.png" alt="" aria-hidden="true"></span> Kisah Lillah</div>
   <div class="topbar-actions" aria-hidden="true"></div>
   <div class="profile-chip" aria-label="Profil pengguna"><span class="avatar" id="avatar">U</span><span id="topName">Pengguna</span></div>
 </header>
@@ -1375,39 +1875,562 @@ html:not(.modal-open) body{
 </div>
 <section class="page" id="koleksi">
   <div class="section-head">
-    <div><h2>Koleksi</h2><p class="muted" style="margin:4px 0 0;font-size:11px">Ruang untuk doa, hadits, dan kata-kata mutiara.</p></div>
+    <div><h2>Koleksi</h2><p class="muted" style="margin:4px 0 0;font-size:11px">Ruang untuk Al-Qur'an, hadits, do'a, dzikir, dan kata-kata mutiara.</p></div>
   </div>
-  <div class="collection-grid">
-    <button class="collection-card" type="button" onclick="openCollection('doa')"><span class="collection-icon">🤲</span><b>Kumpulan Do'a</b><small>Do'a pilihan untuk menemani aktivitas harian.</small></button>
-    <button class="collection-card" type="button" onclick="openCollection('hadits')"><span class="collection-icon">📜</span><b>Hadits Nabi Muhammad ﷺ</b><small>Kumpulan hadits yang akan diisi bertahap.</small></button>
-    <button class="collection-card" type="button" onclick="openCollection('mahfudzot')"><span class="collection-icon">💬</span><b>Kata-kata Mutiara</b><small>Mahfudzot dan nasihat singkat yang bermakna.</small></button>
+  <div class="collection-grid" aria-label="Koleksi Islami">
+    <!-- Urutan mengikuti penomoran client: 1 Qur'an, 2 Hadits, 3 Do'a, 4 Dzikir, 5 Mutiara. -->
+    <button class="collection-card" type="button" onclick="go('koleksiQuran')" aria-label="Buka Al-Qur'an">
+      <span class="collection-icon">📖</span>
+      <b>Al-Qur'an</b>
+      <small>Ruang bacaan Al-Qur'an yang akan diisi bertahap.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiHadits')" aria-label="Buka Hadits Nabi Muhammad">
+      <span class="collection-icon">📜</span>
+      <b>Hadits Nabi Muhammad ﷺ</b>
+      <small>Kumpulan hadits pilihan dengan arti dan sumber.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiDoa')" aria-label="Buka Kumpulan Do'a">
+      <span class="collection-icon">🤲</span>
+      <b>Kumpulan Do'a</b>
+      <small>Do'a pilihan untuk menemani aktivitas harian.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiDzikir')" aria-label="Buka Dzikir Pagi dan Petang">
+      <span class="collection-icon">🌅</span>
+      <b>Dzikir Pagi &amp; Petang</b>
+      <small>Kumpulan dzikir untuk menemani pagi dan petang.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiMutiara')" aria-label="Buka Kata-kata Mutiara">
+      <span class="collection-icon">💬</span>
+      <b>Kata-kata Mutiara</b>
+      <small>Mahfudzot dan nasihat singkat yang bermakna.</small>
+    </button>
   </div>
-  <div class="card collection-resources" id="collectionDetail">
-    <div class="section-head" style="margin:0 0 10px">
-      <div><h3 style="margin:0;font-size:15px">📖 Sumber Islami</h3><p class="muted" style="margin:4px 0 0;font-size:10px">Akses bacaan dan referensi yang berguna untuk menemani ibadah harian.</p></div>
+</section>
+
+<!-- Halaman koleksi internal. Seluruh tombol membuka halaman di dalam aplikasi. -->
+<section class="page collection-reader-page" id="koleksiQuran">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon">📖</span><div><h2>Al-Qur'an</h2><p class="muted">Ruang bacaan Al-Qur'an.</p></div></div>
+  </div>
+  <div class="card collection-empty-state"><b>Al-Qur'an</b><p>Halaman Al-Qur'an sudah disiapkan sebagai halaman tersendiri. Isi bacaan akan ditambahkan bertahap tanpa mengarahkan pengguna ke situs lain.</p></div>
+</section>
+
+<section class="page collection-reader-page" id="koleksiHadits">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon">📜</span><div><h2>Hadits Nabi Muhammad ﷺ</h2><p class="muted">Ruang kumpulan hadits.</p></div></div>
+  </div>
+  <div class="card collection-empty-state"><b>Hadits Nabi Muhammad ﷺ</b><p>Halaman hadits sudah disiapkan sebagai halaman tersendiri. Kumpulan hadits akan ditambahkan bertahap di dalam aplikasi.</p></div>
+</section>
+
+<section class="page collection-reader-page" id="koleksiDoa">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon">🤲</span><div><h2>Kumpulan Do'a</h2><p class="muted">Ruang kumpulan do'a harian.</p></div></div>
+  </div>
+  <div class="card collection-empty-state"><b>Kumpulan Do'a</b><p>Halaman do'a sudah disiapkan sebagai halaman tersendiri. Do'a pilihan akan ditambahkan bertahap di dalam aplikasi.</p></div>
+</section>
+
+<section class="page collection-reader-page dzikir-reader-page" id="koleksiDzikir">
+  <div class="collection-reader-head dzikir-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title">
+      <span class="collection-icon">🌅</span>
+      <div><h2>Dzikir Pagi &amp; Petang</h2><p class="muted">Ruang dzikir pagi dan petang berdasarkan dokumen yang dilampirkan.</p></div>
     </div>
-    <div class="collection-resource-grid">
-      <a class="collection-resource" href="https://github.com/wanrabbae/al-quran-indonesia-api" target="_blank" rel="noopener noreferrer">
-        <span class="collection-resource-icon">📖</span><span><b>Al-Qur'an Indonesia</b><small>Terjemahan Indonesia + audio.</small></span><strong>↗</strong>
-      </a>
-      <a class="collection-resource" href="https://doa-doa-api-ahmadramadhan.fly.dev/" target="_blank" rel="noopener noreferrer">
-        <span class="collection-resource-icon">🤲</span><span><b>Do'a Harian</b><small>Kumpulan do'a sehari-hari.</small></span><strong>↗</strong>
-      </a>
-      <a class="collection-resource" href="https://github.com/kyyril/hadith-api" target="_blank" rel="noopener noreferrer">
-        <span class="collection-resource-icon">📜</span><span><b>Hadits</b><small>Hadits terjemahan dan pencarian.</small></span><strong>↗</strong>
-      </a>
-      <a class="collection-resource" href="https://api.puasa-sunnah.granitebps.com/swagger/index.html" target="_blank" rel="noopener noreferrer">
-        <span class="collection-resource-icon">🌙</span><span><b>Puasa Sunnah</b><small>Referensi jadwal puasa sunnah.</small></span><strong>↗</strong>
-      </a>
-      <a class="collection-resource" href="https://quran-api-id.vercel.app/" target="_blank" rel="noopener noreferrer">
-        <span class="collection-resource-icon">🎧</span><span><b>Qur'an + Tafsir</b><small>Terjemahan, tafsir, dan murottal.</small></span><strong>↗</strong>
-      </a>
-      <a class="collection-resource" href="https://github.com/farizdotid/DAFTAR-API-LOKAL-INDONESIA#agama-islam" target="_blank" rel="noopener noreferrer">
-        <span class="collection-resource-icon">🕌</span><span><b>Daftar API Islam</b><small>Lihat sumber lain yang direkomendasikan.</small></span><strong>↗</strong>
-      </a>
-    </div>
-    <p class="collection-source-note">Sumber API dirujuk dari daftar “Agama Islam” pada Daftar API Lokal Indonesia.</p>
   </div>
+
+  <div class="dzikir-period-switch" role="tablist" aria-label="Pilih waktu dzikir">
+    <button type="button" class="dzikir-period-btn active" id="dzikirPagiBtn" role="tab" aria-selected="true" onclick="switchDzikirPeriod('pagi')">🌅 Dzikir Pagi</button>
+    <button type="button" class="dzikir-period-btn" id="dzikirPetangBtn" role="tab" aria-selected="false" onclick="switchDzikirPeriod('petang')">🌇 Dzikir Petang</button>
+  </div>
+
+  <div class="dzikir-intro card">
+    <span class="ps-kicker">PANDUAN DZIKIR</span>
+    <h3>Dzikir Pagi &amp; Petang</h3>
+    <p class="muted">Halaman ini khusus untuk bacaan dzikir pagi dan petang.</p>
+    <div class="dzikir-source-note">Sumber materi: dokumen yang dilampirkan pada proyek. Sampul/gambar tidak dimasukkan. Rujukan hadits dan keterangan sumber dipertahankan pada tiap bacaan.</div>
+  </div>
+
+  <div class="dzikir-period-panel active" id="dzikirPagiPanel" role="tabpanel" aria-labelledby="dzikirPagiBtn">
+    <div class="dzikir-section-head dzikir-section-head-period"><span>🌅</span><div><h3>Dzikir Pagi</h3><p>Hanya bacaan pagi dari materi dokumen, lengkap dengan Arab, arti, dan sumber.</p></div></div>
+    
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="1">
+      <div class="dzikir-num">1</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Ayat Kursi</div>
+        <div class="dzikir-arabic" dir="rtl">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ. اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ</div>
+        <p class="dzikir-translation">“Aku berlindung kepada Allah dari godaan syaitan yang terkutuk. Allah tidak ada Ilah yang berhak disembah melainkan Dia Yang Hidup kekal lagi terus menerus mengurus makhluk-Nya; tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa yang di langit dan di bumi. Kursi Allah meliputi langit dan bumi. Dan Allah Maha Tinggi lagi Maha Besar.” (QS. Al-Baqarah: 255).</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Hakim 1/562; Sahih at-Targhib wa at-Tarhib 1/273; at-Tabarani.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="2">
+      <div class="dzikir-num">2</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Al-Ikhlas, Al-Falaq &amp; An-Naas</div>
+        <div class="dzikir-arabic" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ<br><br><br><br>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ<br><br><br><br>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ</div>
+        <p class="dzikir-translation">Terjemahan:<br><b>Al-Ikhlas:</b> “Katakanlah: Dia-lah Allah, Yang Maha Esa. Allah Rabb yang bergantung kepada-Nya segala urusan. Allah tidak beranak dan tidak pula diperanakkan. Dan tidak ada sesuatu pun yang setara dengan Dia.”<br><b>Al-Falaq:</b> “Katakanlah: Aku berlindung kepada Rabb Yang Menguasai subuh, dari kejahatan makhluk-Nya, dan dari kejahatan malam apabila telah gelap gulita, dari kejahatan wanita-wanita tukang sihir yang meniup pada buhul-buhul, dan dari kejahatan orang dengki bila ia dengki.”<br><b>An-Naas:</b> “Katakanlah: Aku berlindung kepada Rabb manusia, Raja manusia, Sembahan manusia, dari kejahatan (bisikan) syaitan yang bersembunyi, yang membisikkan kejahatan ke dalam dada manusia, dari golongan jin dan manusia.”<br><span class="dzikir-note-line">Dibaca 3x.</span></p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Ikhlas: 1–4; Al-Falaq: 1–5; An-Naas: 1–6; Abu Dawud 4/322; At-Tirmizi 5/567; Sahih At-Tirmizi 3/182.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="3">
+      <div class="dzikir-num">3</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: doa memasuki waktu pagi</div>
+        <div class="dzikir-arabic" dir="rtl">[أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ، وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ]</div>
+        <p class="dzikir-translation">“Kami telah memasuki waktu pagi dan kerajaan hanya milik Allah, segala puji bagi Allah. Tidak ada Tuhan yang berhak disembah kecuali Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dia-lah Yang Mahakuasa atas segala sesuatu. Ya Rabb-ku, aku mohon kepada-Mu kebaikan di hari ini dan kebaikan sesudahnya. Aku berlindung kepada-Mu dari kejahatan hari ini dan kejahatan sesudahnya. Ya Rabb-ku, aku berlindung kepada-Mu dari kemalasan dan kejelekan di hari tua. Ya Rabb-ku, aku berlindung kepada-Mu dari siksaan di Neraka dan siksaan di kubur.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Muslim 4/2088.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="4">
+      <div class="dzikir-num">4</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: doa waktu pagi</div>
+        <div class="dzikir-arabic" dir="rtl">[اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ]</div>
+        <p class="dzikir-translation">“Ya Allah, dengan rahmat dan pertolongan-Mu kami memasuki waktu pagi. Dengan rahmat dan pertolongan-Mu kami hidup dan dengan kehendak-Mu kami mati. Dan kepada-Mu kebangkitan.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> At-Tirmidzi 5/466; lihat Shahih At-Tirmidzi 3/142.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="5">
+      <div class="dzikir-num">5</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Sayyidul Istighfar</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ</div>
+        <p class="dzikir-translation">“Ya Allah! Engkau adalah Rabb-ku, tidak ada Tuhan yang berhak disembah kecuali Engkau. Engkaulah yang menciptakan aku. Aku adalah hamba-Mu. Aku akan setia pada perjanjianku dengan-Mu semampuku. Aku berlindung kepada-Mu dari kejelekan yang aku perbuat. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku, oleh karena itu ampunilah aku. Sesungguhnya tiada yang mengampuni dosa kecuali Engkau.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Bukhari 7/150.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="6">
+      <div class="dzikir-num">6</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Persaksian kepada Allah — 4 kali</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ</div>
+        <p class="dzikir-translation">“Ya Allah! Sesungguhnya aku di waktu pagi bersaksi kepada-Mu, malaikat yang memikul arasy-Mu, malaikat-malaikat dan seluruh makhluk-Mu, bahwa sesungguhnya Engkau adalah Allah, tiada Tuhan yang berhak disembah kecuali Engkau Yang Maha Esa, tiada sekutu bagi-Mu dan sesungguhnya Muhammad adalah hamba dan utusan-Mu.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/317; An-Nasa'i; Ibn As-Sunni.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="7">
+      <div class="dzikir-num">7</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Syukur atas nikmat</div>
+        <div class="dzikir-arabic" dir="rtl">[اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ]</div>
+        <p class="dzikir-translation">“Ya Allah! Nikmat yang kuterima atau diterima oleh seseorang di antara makhluk-Mu pada pagi ini adalah dari-Mu. Maha Esa Engkau, tiada sekutu bagi-Mu. Bagi-Mu segala puji dan kepada-Mu panjatan syukur.” </p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/318; Ibn As-Sunni (Hadits no. 41); Ibn Hibban (Hadits no. 2361).</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="8">
+      <div class="dzikir-num">8</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Memohon keselamatan tubuh, pendengaran &amp; penglihatan — 3 kali</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَهَ إِلَّا أَنْتَ</div>
+        <p class="dzikir-translation">“Ya Allah! Selamatkan tubuhku (dari penyakit dan yang tidak aku inginkan). Ya Allah, selamatkan pendengaranku (dari penyakit dan maksiat atau sesuatu yang tidak aku inginkan). Ya Allah, selamatkan penglihatanku. Tiada Tuhan yang berhak disembah kecuali Engkau. Ya Allah! Sesungguhnya aku berlindung kepada-Mu dari kekufuran dan kefakiran. Aku berlindung kepada-Mu dari siksa kubur, tiada Tuhan yang berhak disembah kecuali Engkau.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Dokumen mencantumkan dibaca tiga kali pada waktu pagi dan petang.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="9">
+      <div class="dzikir-num">9</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Hasbunallahu — 7 kali</div>
+        <div class="dzikir-arabic" dir="rtl">حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ</div>
+        <p class="dzikir-translation">“Allah-lah yang mencukupi segala kebutuhanku, tiada Tuhan yang berhak disembah kecuali Dia, kepada-Nya aku bertawakal. Dia-lah Tuhan yang menguasai ‘Arsy yang agung.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Ibn As-Sunni no. 71; Abu Dawud 4/321; Ibn As-Sunni.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="10">
+      <div class="dzikir-num">10</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Memohon ampunan &amp; keselamatan</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي، وَدُنْيَايَ، وَأَهْلِي، وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِيَ</div>
+        <p class="dzikir-translation">“Ya Allah! Sesungguhnya aku mohon kepada-Mu ampunan dan keselamatan di dunia dan akhirat. Ya Allah, sesungguhnya aku mohon kepada-Mu ampunan dan keselamatan dalam agamaku, kehidupanku, keluargaku dan hartaku. Ya Allah, tutupilah aibku dan berilah ketenteraman di hatiku. Ya Allah! Peliharalah aku dari arah depan, belakang, kanan, kiri dan atasku. Aku berlindung kepada-Mu dari siksa yang datang dari bawahku.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud dan Ibnu Majah, sebagaimana tercantum dalam dokumen.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="11">
+      <div class="dzikir-num">11</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Doa perlindungan dari kejahatan diri &amp; syaitan</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ</div>
+        <p class="dzikir-translation">“Ya Allah, Yang Maha Mengetahui yang ghaib dan yang nyata, wahai Rabb pencipta langit dan bumi, Rabb segala sesuatu dan yang merajainya. Aku bersaksi bahwa tidak ada Ilah yang berhak diibadahi dengan benar selain Engkau. Aku berlindung kepada-Mu dari kejahatan diriku, syaitan dan balatentaranya, dan dari berbuat kejelekan terhadap diriku atau menyeretnya kepada seorang muslim.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Sahih At-Tirmidzi 3/142; Abu Dawud.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="12">
+      <div class="dzikir-num">12</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Bismillahilladzi la yadurru — 3 kali</div>
+        <div class="dzikir-arabic" dir="rtl">بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ</div>
+        <p class="dzikir-translation">“Dengan nama Allah yang bila disebut, segala sesuatu di bumi dan langit tidak akan berbahaya. Dia-lah Yang Maha Mendengar lagi Maha Mengetahui.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/323; At-Tirmidzi 5/465; Ibn Majah 2/332; Ahmad.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="13">
+      <div class="dzikir-num">13</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Ridha Allah, Islam &amp; Muhammad ﷺ — 3 kali</div>
+        <div class="dzikir-arabic" dir="rtl">رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا</div>
+        <p class="dzikir-translation">“Aku rela Allah sebagai Rabb, Islam sebagai agama dan Muhammad sebagai nabi (yang diutus oleh Allah).”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Dokumen mencantumkan diucapkan tiga kali dan keutamaannya pada hari kiamat.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="14">
+      <div class="dzikir-num">14</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Ya Hayyu Ya Qayyum</div>
+        <div class="dzikir-arabic" dir="rtl">يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ</div>
+        <p class="dzikir-translation">“Wahai Tuhan Yang Mahahidup, wahai Tuhan Yang Berdiri Sendiri, dengan rahmat-Mu aku minta pertolongan. Perbaikilah segala urusanku dan jangan Engkau limpahkan semua urusan terhadap diriku walau sekejap mata.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Rujukan hadits tercantum dalam dokumen.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="15">
+      <div class="dzikir-num">15</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Memohon kebaikan hari / malam</div>
+        <div class="dzikir-arabic" dir="rtl">[أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ، فَتْحَهُ وَنَصْرَهُ وَنُورَهُ وَبَرَكَتَهُ وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ]</div>
+        <p class="dzikir-translation">“Kami masuk pagi, sedang kerajaan hanya milik Allah, Tuhan penguasa alam. Ya Allah, sesungguhnya aku memohon kepada-Mu agar memperoleh kebaikan, pembuka rahmat, pertolongan, cahaya, berkah dan petunjuk di hari ini. Aku berlindung kepada-Mu dari kejelekan apa yang ada di dalamnya dan kejahatan sesudahnya.” </p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/322.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="16">
+      <div class="dzikir-num">16</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Berpegang pada fitrah Islam</div>
+        <div class="dzikir-arabic" dir="rtl">[أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ]</div>
+        <p class="dzikir-translation">“Di waktu pagi kami memegang agama Islam, kalimat ikhlas, agama Nabi kita Muhammad ﷺ, dan agama ayah kami Ibrahim, yang berdiri di atas jalan yang lurus, muslim dan tidak tergolong orang-orang musyrik.” </p>
+        <div class="dzikir-source"><b>Sumber:</b> Ahmad 3/406-7, 5/123; An-Nasa'i; At-Tirmidzi 4/209.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="17">
+      <div class="dzikir-num">17</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Subhanallahi wa bihamdihi — 100 kali</div>
+        <div class="dzikir-arabic" dir="rtl">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div>
+        <p class="dzikir-translation">“Maha Suci Allah dan segala puji bagi-Nya.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Muslim 4/2071.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="18">
+      <div class="dzikir-num">18</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Tahlil — 10 kali atau 1 kali saat malas</div>
+        <div class="dzikir-arabic" dir="rtl">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+        <p class="dzikir-translation">“Tidak ada Ilah yang berhak disembah selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan segala pujian. Dia-lah yang berkuasa atas segala sesuatu.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Dokumen mencantumkan dibaca sepuluh kali, atau sekali saat malas.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="19">
+      <div class="dzikir-num">19</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Tahlil — 100 kali setiap pagi</div>
+        <div class="dzikir-arabic" dir="rtl">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+        <p class="dzikir-translation">“Tidak ada Ilah yang berhak disembah selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan segala pujian. Dia-lah yang berkuasa atas segala sesuatu.” Keutamaan yang dicantumkan dokumen: dibaca seratus kali dalam sehari; dicatat seratus kebaikan, dihapus seratus keburukan dan dijaga dari setan hingga sore.</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Bukhari 4/95; Muslim 4/2071.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="20">
+      <div class="dzikir-num">20</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Subhanallahi wa bihamdihi dengan pujian yang luas — 3 kali pagi</div>
+        <div class="dzikir-arabic" dir="rtl">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ</div>
+        <p class="dzikir-translation">“Maha Suci Allah, aku memuji-Nya sebanyak makhluk-Nya, sejauh kerelaan-Nya, seberat timbangan arasy-Nya dan sebanyak tinta tulisan kalimat-Nya.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Muslim 4/2090.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="21">
+      <div class="dzikir-num">21</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Ilmu yang bermanfaat, rizki baik &amp; amal diterima</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا</div>
+        <p class="dzikir-translation">“Ya Allah, sungguh aku memohon kepada-Mu ilmu yang bermanfaat, rizki yang baik dan amal yang diterima.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Ibn As-Sunni hadits no. 54; Ibn Majah 2/925.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="22">
+      <div class="dzikir-num">22</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Istighfar — 100 kali sehari</div>
+        <div class="dzikir-arabic" dir="rtl">أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ</div>
+        <p class="dzikir-translation">“Aku memohon ampun kepada Allah dan bertobat kepada-Nya.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Bukhari; Muslim 4/2075.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="24">
+      <div class="dzikir-num">24</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Shalawat kepada Nabi Muhammad ﷺ — 10 kali</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</div>
+        <p class="dzikir-translation">“Ya Allah, limpahkanlah shalawat dan salam kepada Nabi kami Muhammad ﷺ.” Dibaca sepuluh kali. Dokumen mencantumkan keutamaan mendapatkan syafaat Nabi pada hari Kiamat bagi yang bershalawat pagi sepuluh kali dan sore sepuluh kali.</p>
+        <div class="dzikir-source"><b>Sumber:</b> At-Tabrani; Sahih at-Targhib wa at-Tarhib 1/273.</div>
+      </div>
+    </article>
+  </div>
+
+  <div class="dzikir-period-panel" id="dzikirPetangPanel" role="tabpanel" aria-labelledby="dzikirPetangBtn" hidden>
+    <div class="dzikir-section-head dzikir-section-head-period"><span>🌇</span><div><h3>Dzikir Petang</h3><p>Hanya bacaan petang dari materi dokumen, lengkap dengan Arab, arti, dan sumber.</p></div></div>
+    
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="1">
+      <div class="dzikir-num">1</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Ayat Kursi</div>
+        <div class="dzikir-arabic" dir="rtl">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ. اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ</div>
+        <p class="dzikir-translation">“Aku berlindung kepada Allah dari godaan syaitan yang terkutuk. Allah tidak ada Ilah yang berhak disembah melainkan Dia Yang Hidup kekal lagi terus menerus mengurus makhluk-Nya; tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa yang di langit dan di bumi. Kursi Allah meliputi langit dan bumi. Dan Allah Maha Tinggi lagi Maha Besar.” (QS. Al-Baqarah: 255).</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Hakim 1/562; Sahih at-Targhib wa at-Tarhib 1/273; at-Tabarani.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="2">
+      <div class="dzikir-num">2</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Al-Ikhlas, Al-Falaq &amp; An-Naas</div>
+        <div class="dzikir-arabic" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ<br><br><br><br>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ<br><br><br><br>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ</div>
+        <p class="dzikir-translation">Terjemahan:<br><b>Al-Ikhlas:</b> “Katakanlah: Dia-lah Allah, Yang Maha Esa. Allah Rabb yang bergantung kepada-Nya segala urusan. Allah tidak beranak dan tidak pula diperanakkan. Dan tidak ada sesuatu pun yang setara dengan Dia.”<br><b>Al-Falaq:</b> “Katakanlah: Aku berlindung kepada Rabb Yang Menguasai subuh, dari kejahatan makhluk-Nya, dan dari kejahatan malam apabila telah gelap gulita, dari kejahatan wanita-wanita tukang sihir yang meniup pada buhul-buhul, dan dari kejahatan orang dengki bila ia dengki.”<br><b>An-Naas:</b> “Katakanlah: Aku berlindung kepada Rabb manusia, Raja manusia, Sembahan manusia, dari kejahatan (bisikan) syaitan yang bersembunyi, yang membisikkan kejahatan ke dalam dada manusia, dari golongan jin dan manusia.”<br><span class="dzikir-note-line">Dibaca 3x.</span></p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Ikhlas: 1–4; Al-Falaq: 1–5; An-Naas: 1–6; Abu Dawud 4/322; At-Tirmizi 5/567; Sahih At-Tirmizi 3/182.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="3">
+      <div class="dzikir-num">3</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: doa memasuki waktu sore</div>
+        <div class="dzikir-arabic" dir="rtl">[أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ]</div>
+        <p class="dzikir-translation">“Kami telah memasuki waktu sore dan kerajaan hanya milik Allah, segala puji bagi Allah. Tidak ada Tuhan yang berhak diibadahi dengan benar selain Allah semata, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya pujian. Dia-lah Yang Mahakuasa atas segala sesuatu. Ya Rabb-ku, aku mohon kepada-Mu kebaikan di malam ini dan kebaikan sesudahnya. Aku berlindung kepada-Mu dari kejahatan malam ini dan kejahatan sesudahnya. Ya Rabb-ku, aku berlindung kepada-Mu dari kemalasan dan kejelekan di hari tua. Ya Rabb-ku, aku berlindung kepada-Mu dari siksaan di Neraka dan siksaan di kubur.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Muslim 4/2088.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="4">
+      <div class="dzikir-num">4</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Allahumma bika ashbahna / amsayna</div>
+        <div class="dzikir-arabic" dir="rtl">[اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ]</div>
+        <p class="dzikir-translation">“Ya Allah, dengan pertolongan dan rahmat-Mu kami masuk waktu sore, dan dengan pertolongan dan rahmat-Mu kami hidup dan dengan kehendak-Mu kami mati. Dan kepada-Mu tempat kembali (bagi semua makhluk).”</p>
+        <div class="dzikir-source"><b>Sumber:</b> At-Tirmidzi 5/466; lihat Shahih At-Tirmidzi 3/142.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="5">
+      <div class="dzikir-num">5</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Sayyidul Istighfar</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ</div>
+        <p class="dzikir-translation">“Ya Allah! Engkau adalah Rabb-ku, tidak ada Tuhan yang berhak disembah kecuali Engkau. Engkaulah yang menciptakan aku. Aku adalah hamba-Mu. Aku akan setia pada perjanjianku dengan-Mu semampuku. Aku berlindung kepada-Mu dari kejelekan yang aku perbuat. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku, oleh karena itu ampunilah aku. Sesungguhnya tiada yang mengampuni dosa kecuali Engkau.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Bukhari 7/150.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="6">
+      <div class="dzikir-num">6</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Persaksian kepada Allah — 4 kali</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ</div>
+        <p class="dzikir-translation">“Ya Allah! Sesungguhnya aku di waktu sore bersaksi kepada-Mu, malaikat yang memikul arasy-Mu, malaikat-malaikat dan seluruh makhluk-Mu, bahwa sesungguhnya Engkau adalah Allah, tiada Tuhan yang berhak disembah kecuali Engkau Yang Maha Esa, tiada sekutu bagi-Mu dan sesungguhnya Muhammad adalah hamba dan utusan-Mu.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/317; An-Nasa'i; Ibn As-Sunni.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="7">
+      <div class="dzikir-num">7</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Syukur atas nikmat</div>
+        <div class="dzikir-arabic" dir="rtl">[اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ]</div>
+        <p class="dzikir-translation">“Ya Allah! Nikmat yang kuterima atau diterima oleh seseorang di antara makhluk-Mu pada sore ini adalah dari-Mu. Maha Esa Engkau, tiada sekutu bagi-Mu. Bagi-Mu segala puji dan kepada-Mu panjatan syukur.” </p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/318; Ibn As-Sunni (Hadits no. 41); Ibn Hibban (Hadits no. 2361).</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="8">
+      <div class="dzikir-num">8</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Memohon keselamatan tubuh, pendengaran &amp; penglihatan — 3 kali</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَهَ إِلَّا أَنْتَ</div>
+        <p class="dzikir-translation">“Ya Allah! Selamatkan tubuhku (dari penyakit dan yang tidak aku inginkan). Ya Allah, selamatkan pendengaranku (dari penyakit dan maksiat atau sesuatu yang tidak aku inginkan). Ya Allah, selamatkan penglihatanku. Tiada Tuhan yang berhak disembah kecuali Engkau. Ya Allah! Sesungguhnya aku berlindung kepada-Mu dari kekufuran dan kefakiran. Aku berlindung kepada-Mu dari siksa kubur, tiada Tuhan yang berhak disembah kecuali Engkau.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Dokumen mencantumkan dibaca tiga kali pada waktu pagi dan petang.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="9">
+      <div class="dzikir-num">9</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Hasbunallahu — 7 kali</div>
+        <div class="dzikir-arabic" dir="rtl">حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ</div>
+        <p class="dzikir-translation">“Allah-lah yang mencukupi segala kebutuhanku, tiada Tuhan yang berhak disembah kecuali Dia, kepada-Nya aku bertawakal. Dia-lah Tuhan yang menguasai ‘Arsy yang agung.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Ibn As-Sunni no. 71; Abu Dawud 4/321; Ibn As-Sunni.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="10">
+      <div class="dzikir-num">10</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Memohon ampunan &amp; keselamatan</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي، وَدُنْيَايَ، وَأَهْلِي، وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِيَ</div>
+        <p class="dzikir-translation">“Ya Allah! Sesungguhnya aku mohon kepada-Mu ampunan dan keselamatan di dunia dan akhirat. Ya Allah, sesungguhnya aku mohon kepada-Mu ampunan dan keselamatan dalam agamaku, kehidupanku, keluargaku dan hartaku. Ya Allah, tutupilah aibku dan berilah ketenteraman di hatiku. Ya Allah! Peliharalah aku dari arah depan, belakang, kanan, kiri dan atasku. Aku berlindung kepada-Mu dari siksa yang datang dari bawahku.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud dan Ibnu Majah, sebagaimana tercantum dalam dokumen.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="11">
+      <div class="dzikir-num">11</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Doa perlindungan dari kejahatan diri &amp; syaitan</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ</div>
+        <p class="dzikir-translation">“Ya Allah, Yang Maha Mengetahui yang ghaib dan yang nyata, wahai Rabb pencipta langit dan bumi, Rabb segala sesuatu dan yang merajainya. Aku bersaksi bahwa tidak ada Ilah yang berhak diibadahi dengan benar selain Engkau. Aku berlindung kepada-Mu dari kejahatan diriku, syaitan dan balatentaranya, dan dari berbuat kejelekan terhadap diriku atau menyeretnya kepada seorang muslim.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Sahih At-Tirmidzi 3/142; Abu Dawud.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="12">
+      <div class="dzikir-num">12</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Bismillahilladzi la yadurru — 3 kali</div>
+        <div class="dzikir-arabic" dir="rtl">بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ</div>
+        <p class="dzikir-translation">“Dengan nama Allah yang bila disebut, segala sesuatu di bumi dan langit tidak akan berbahaya. Dia-lah Yang Maha Mendengar lagi Maha Mengetahui.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/323; At-Tirmidzi 5/465; Ibn Majah 2/332; Ahmad.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="13">
+      <div class="dzikir-num">13</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Ridha Allah, Islam &amp; Muhammad ﷺ — 3 kali</div>
+        <div class="dzikir-arabic" dir="rtl">رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا</div>
+        <p class="dzikir-translation">“Aku rela Allah sebagai Rabb, Islam sebagai agama dan Muhammad sebagai nabi (yang diutus oleh Allah).”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Dokumen mencantumkan diucapkan tiga kali dan keutamaannya pada hari kiamat.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="14">
+      <div class="dzikir-num">14</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Ya Hayyu Ya Qayyum</div>
+        <div class="dzikir-arabic" dir="rtl">يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ</div>
+        <p class="dzikir-translation">“Wahai Tuhan Yang Mahahidup, wahai Tuhan Yang Berdiri Sendiri, dengan rahmat-Mu aku minta pertolongan. Perbaikilah segala urusanku dan jangan Engkau limpahkan semua urusan terhadap diriku walau sekejap mata.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Rujukan hadits tercantum dalam dokumen.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="15">
+      <div class="dzikir-num">15</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Memohon kebaikan hari / malam</div>
+        <div class="dzikir-arabic" dir="rtl">[أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذِهِ اللَّيْلَةِ، فَتْحَهَا وَنَصْرَهَا وَنُورَهَا وَبَرَكَتَهَا وَهُدَاهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهَا وَشَرِّ مَا بَعْدَهَا]</div>
+        <p class="dzikir-translation">“Kami memasuki waktu sore, sedang kerajaan hanya milik Allah, Rabb seluruh alam. Ya Allah, sesungguhnya aku memohon kepada-Mu agar memperoleh kebaikan, pembuka rahmat, pertolongan, cahaya, berkah dan petunjuk di malam ini. Aku berlindung kepada-Mu dari kejelekan apa yang ada di dalamnya dan kejahatan sesudahnya.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Abu Dawud 4/322.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="16">
+      <div class="dzikir-num">16</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Berpegang pada fitrah Islam</div>
+        <div class="dzikir-arabic" dir="rtl">[أَمْسَيْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ]</div>
+        <p class="dzikir-translation">“Di waktu sore kami memegang agama Islam, kalimat ikhlas, agama Nabi kita Muhammad ﷺ, dan agama ayah kami Ibrahim, yang berdiri di atas jalan yang lurus, muslim dan tidak tergolong orang-orang musyrik.” </p>
+        <div class="dzikir-source"><b>Sumber:</b> Ahmad 3/406-7, 5/123; An-Nasa'i; At-Tirmidzi 4/209.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="17">
+      <div class="dzikir-num">17</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Subhanallahi wa bihamdihi — 100 kali</div>
+        <div class="dzikir-arabic" dir="rtl">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div>
+        <p class="dzikir-translation">“Maha Suci Allah dan segala puji bagi-Nya.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Muslim 4/2071.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="18">
+      <div class="dzikir-num">18</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Tahlil — 10 kali atau 1 kali saat malas</div>
+        <div class="dzikir-arabic" dir="rtl">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+        <p class="dzikir-translation">“Tidak ada Ilah yang berhak disembah selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan segala pujian. Dia-lah yang berkuasa atas segala sesuatu.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Dokumen mencantumkan dibaca sepuluh kali, atau sekali saat malas.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="19">
+      <div class="dzikir-num">19</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Tahlil — 100 kali</div>
+        <div class="dzikir-arabic" dir="rtl">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+        <p class="dzikir-translation">“Tidak ada Ilah yang berhak disembah selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya. Bagi-Nya kerajaan dan segala pujian. Dia-lah yang berkuasa atas segala sesuatu.” Keutamaan yang dicantumkan dokumen: dibaca seratus kali dalam sehari; dicatat seratus kebaikan, dihapus seratus keburukan dan dijaga dari setan hingga malam.</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Bukhari 4/95; Muslim 4/2071.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="22">
+      <div class="dzikir-num">22</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Istighfar — 100 kali sehari</div>
+        <div class="dzikir-arabic" dir="rtl">أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ</div>
+        <p class="dzikir-translation">“Aku memohon ampun kepada Allah dan bertobat kepada-Nya.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Al-Bukhari; Muslim 4/2075.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="23">
+      <div class="dzikir-num">23</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Perlindungan dengan kalimat Allah — 3 kali petang</div>
+        <div class="dzikir-arabic" dir="rtl">أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ</div>
+        <p class="dzikir-translation">“Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari kejahatan makhluk yang diciptakan-Nya.”</p>
+        <div class="dzikir-source"><b>Sumber:</b> Ahmad 2/290; An-Nasa'i; At-Tirmidzi 3/187; Ibn As-Sunni no. 68; Ibn Majah 2/266.</div>
+      </div>
+    </article>
+
+    <article class="card dzikir-item dzikir-item-rich" data-dzikir-number="24">
+      <div class="dzikir-num">24</div>
+      <div class="dzikir-body">
+        <div class="dzikir-label">Keterangan: Shalawat kepada Nabi Muhammad ﷺ — 10 kali</div>
+        <div class="dzikir-arabic" dir="rtl">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</div>
+        <p class="dzikir-translation">“Ya Allah, limpahkanlah shalawat dan salam kepada Nabi kami Muhammad ﷺ.” Dibaca sepuluh kali. Dokumen mencantumkan keutamaan mendapatkan syafaat Nabi pada hari Kiamat bagi yang bershalawat pagi sepuluh kali dan sore sepuluh kali.</p>
+        <div class="dzikir-source"><b>Sumber:</b> At-Tabrani; Sahih at-Targhib wa at-Tarhib 1/273.</div>
+      </div>
+    </article>
+  </div>
+
+  <div class="dzikir-end card">
+    <b>Catatan sumber</b>
+    <p>Materi halaman ini diambil dari dokumen yang dilampirkan untuk proyek. Bacaan Arab, arti, jumlah pengulangan, dan rujukan hadits ditampilkan sebagai bagian dari isi halaman. Tidak ada tautan eksternal yang diperlukan untuk membaca materi ini.</p>
+  </div>
+</section>
+
+<section class="page collection-reader-page" id="koleksiMutiara">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon">💬</span><div><h2>Kata-kata Mutiara</h2><p class="muted">Ruang nasihat dan mahfudzot.</p></div></div>
+  </div>
+  <div class="collection-quote-list">
+  <div class="collection-source-note" style="margin-bottom:10px">Stok inspirasi yang digunakan untuk “Quotes hari ini”. Setiap kali Beranda dibuka, aplikasi memilih salah satu secara bergilir dan menghindari kutipan yang sama dengan kunjungan sebelumnya.</div>
+  <div class="card collection-empty-state"><b>Al-Qur'an</b><p class="arabic" dir="rtl" style="font-size:20px;line-height:1.8;margin:8px 0">فَإِنَّ مَعَ الْعُسْرِ يُسْرًا</p><p>Karena sesungguhnya bersama kesulitan ada kemudahan.</p><small class="muted">QS. Al-Insyirah 94:5</small></div>
+  <div class="card collection-empty-state"><b>Hadits</b><p class="arabic" dir="rtl" style="font-size:20px;line-height:1.8;margin:8px 0">إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ</p><p>Sesungguhnya amal-amal itu bergantung pada niat.</p><small class="muted">HR. Bukhari dan Muslim</small></div>
+  <div class="card collection-empty-state"><b>Kata-kata Mutiara</b><p>Jaga niat, rapikan langkah, lalu lanjutkan kebaikanmu hari ini.</p><small class="muted">Kata-kata Mutiara</small></div>
+  <div class="card collection-empty-state"><b>Al-Qur'an</b><p class="arabic" dir="rtl" style="font-size:20px;line-height:1.8;margin:8px 0">فَاذْكُرُونِي أَذْكُرْكُمْ</p><p>Maka ingatlah Aku, niscaya Aku ingat kepadamu.</p><small class="muted">QS. Al-Baqarah 2:152</small></div>
+  <div class="card collection-empty-state"><b>Hadits</b><p class="arabic" dir="rtl" style="font-size:20px;line-height:1.8;margin:8px 0">خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ</p><p>Sebaik-baik kalian adalah yang belajar Al-Qur'an dan mengajarkannya.</p><small class="muted">HR. Bukhari</small></div>
+  <div class="card collection-empty-state"><b>Kata-kata Mutiara</b><p>Tidak harus sempurna; yang penting terus bertumbuh dan kembali kepada kebaikan.</p><small class="muted">Kata-kata Mutiara</small></div>
+</div>
 </section>
 
 <section class="page" id="rekap">
@@ -1488,6 +2511,46 @@ html:not(.modal-open) body{
 </div>
 
 <nav class="mobile-nav" id="mobileNav"></nav>
+
+<button class="profile-help-fab" id="profileHelpFab" type="button" onclick="toggleProfileHelp()" aria-label="Bantuan profil" title="Bantuan">?</button>
+<div class="profile-help-backdrop" id="profileHelpBackdrop" onclick="closeProfileHelp()" aria-hidden="true"></div>
+<div class="profile-help-panel" id="profileHelpPanel" aria-live="polite">
+  <div class="help-card">
+    <div class="help-head">
+      <div><h3>Bantuan & Informasi</h3><p>Pilih bantuan yang kamu perlukan.</p></div>
+      <button class="help-close" type="button" onclick="closeProfileHelp()" aria-label="Tutup">×</button>
+    </div>
+    <div class="help-bars" id="profileHelpBars">
+      <button class="help-bar" type="button" onclick="openBugReport()">
+        <span class="help-ico">🛠️</span><span><b>Laporkan bug</b><small>Hubungi pengembang jika ada bagian aplikasi yang bermasalah.</small></span>
+      </button>
+      <button class="help-bar" type="button" onclick="openCreatorProfile()">
+        <span class="help-ico">👨‍💻</span><span><b>Profil Pembuat Aplikasi</b><small>Kenali perjalanan pembuat Kisah Lillah.</small></span>
+      </button>
+    </div>
+    <div class="help-form" id="bugReportForm">
+      <button class="btn ghost small" type="button" onclick="backToHelpBars()">‹ Kembali</button>
+      <div class="field"><label for="bugName">Nama</label><input id="bugName" type="text" maxlength="80" placeholder="Nama kamu" autocomplete="name"></div>
+      <div class="field"><label for="bugReason">Alasan / masalah yang terjadi</label><textarea id="bugReason" maxlength="1000" placeholder="Jelaskan bagian yang bermasalah dan langkah yang kamu lakukan…"></textarea></div>
+      <div class="help-validation" id="bugValidation">Lengkapi nama dan alasan (minimal 10 karakter) agar laporan dapat dikirim langsung ke WhatsApp pengembang.</div>
+      <button class="btn gold help-submit" id="bugSubmitBtn" type="button" disabled onclick="sendBugReportToWhatsApp()">📲 Kirim laporan ke WhatsApp</button>
+    </div>
+    <div class="creator-card" id="creatorProfileCard">
+      <button class="btn ghost small" type="button" onclick="backToHelpBars()">‹ Kembali</button>
+      <div class="creator-copy">
+        <h4>Profil Pembuat Aplikasi</h4>
+        <p>Aplikasi ini dibuat oleh <b>Muhammad Hilmi Azkia Rahman</b>, seorang santri yang berasal dari Pondok Pesantren Modern El-Alamia, Sukabumi, Jawa Barat.</p>
+        <p>Berawal dari ketertarikan terhadap teknologi dan dunia pemrograman, ia mulai mempelajari bagaimana sebuah aplikasi dapat dirancang, dibangun, dan dikembangkan dari sebuah ide sederhana menjadi sesuatu yang dapat digunakan dan memberikan manfaat bagi orang lain.</p>
+        <p>Sebagai seorang santri, ia berusaha memadukan pendidikan pesantren dengan perkembangan teknologi. Baginya, menjadi santri bukanlah penghalang untuk mempelajari teknologi, justru menjadi bekal untuk membangun sesuatu yang bermanfaat dengan ilmu, kreativitas, dan tanggung jawab.</p>
+        <p>Aplikasi ini merupakan salah satu bagian dari proses belajarnya dalam memahami dunia pemrograman, mulai dari logika dasar, struktur program, desain antarmuka, hingga proses pengembangan aplikasi secara bertahap.</p>
+        <p>Muhammad Hilmi Azkia Rahman percaya bahwa seorang programmer tidak harus langsung menjadi hebat. Semuanya dimulai dari satu baris kode, satu ide, satu kesalahan, lalu diperbaiki dan dipelajari kembali.</p>
+        <p class="creator-quote">“Saya mungkin masih dalam proses belajar, tetapi saya percaya bahwa dengan ilmu, usaha, doa, dan ketekunan, saya bisa terus berkembang dan menciptakan teknologi yang bermanfaat bagi banyak orang.”</p>
+        <p>Aplikasi ini bukan hanya sebuah hasil karya, tetapi juga menjadi bukti perjalanan belajar seorang santri yang berusaha melangkah dari <b>belajar → mencoba → gagal → memperbaiki → memahami → menciptakan.</b></p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <div class="modal-backdrop settings-modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
@@ -1591,7 +2654,7 @@ html:not(.modal-open) body{
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* v4.8 — Client polish: compact dashboard, fixed absensi clipping, column preview, confirmed detail, interactive swipe peek */
+/* v5.15 — Client polish: compact dashboard, fixed absensi clipping, column preview, confirmed detail, interactive swipe peek */
 const PRAYER_SCHEDULE_KEY="aih_prayer_schedule_v1";
 const PRAYER_SCHEDULE_COLUMNS_KEY="aih_prayer_schedule_columns_v1";
 const PRAYER_SCHEDULE_DEFAULT_COLUMNS=["hijri","Imsak","Subuh","Terbit","Dzuhur","Ashar","Maghrib","Isya"];
@@ -2117,13 +3180,19 @@ function go(page){
  document.querySelectorAll(".page").forEach(x=>{x.classList.remove("swipe-in-left","swipe-in-right");x.classList.toggle("active",x.id===page)});
  document.querySelectorAll("[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
  document.body.classList.toggle("prayer-schedule-open",page==="shalat");
+document.body.classList.toggle("dzikir-open",page==="koleksiDzikir");
+document.body.classList.toggle("profile-page-open",page==="profil");
+if(page!=="profil") closeProfileHelp();
  const active=document.getElementById(page);
  if(active&&direction){active.classList.add(direction==="left"?"swipe-in-left":"swipe-in-right");setTimeout(()=>active.classList.remove("swipe-in-left","swipe-in-right"),260)}
  window.__pageSwipeDirection="";
- if(page==="absensi")renderAbsensi();if(page==="agendaEditor")renderAgendaEditor();if(page==="kalender")renderCalendar();if(page==="shalat")renderPrayerSchedule();if(page==="rekap")renderRecap();if(page==="profil")updateProfile();if(page==="koleksi")openCollection("doa");
+ if(page==="absensi")renderAbsensi();if(page==="agendaEditor")renderAgendaEditor();if(page==="kalender")renderCalendar();if(page==="shalat")renderPrayerSchedule();if(page==="rekap")renderRecap();if(page==="profil")updateProfile();
  window.scrollTo({top:0,behavior:"auto"});
 }
 function updateProfile(){
+ // Bantuan FAB hanya boleh hidup saat room Profil benar-benar aktif.
+ const profilePage=document.getElementById("profil");
+ document.body.classList.toggle("profile-page-open",!!profilePage?.classList.contains("active"));
  const n=profile.name||"Pengguna";document.getElementById("topName").textContent=n;
  const top=document.getElementById("avatar");top.innerHTML=profile.photo?`<img src="${profile.photo}" alt="">`:initials(n);
  document.getElementById("greeting").textContent=`Assalamu'alaikum, ${n.split(" ")[0]} 👋`;
@@ -2139,15 +3208,32 @@ function updateProfile(){
  applyTheme(getTheme(),false);
 }
 const DAILY_QUOTES=[
-  "Konsistensi kecil yang dijaga setiap hari lebih berarti daripada semangat yang hanya sesekali.",
-  "Jaga niat, rapikan langkah, lalu lanjutkan kebaikanmu hari ini.",
-  "Tidak harus sempurna; yang penting terus bertumbuh dan kembali kepada kebaikan.",
-  "Satu agenda yang terlaksana hari ini adalah satu langkah yang patut disyukuri.",
-  "Istiqamah dimulai dari hal kecil yang terus diulang dengan niat yang baik."
+  {text:"فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",detail:"Karena sesungguhnya bersama kesulitan ada kemudahan.",source:"Al-Qur'an • QS. Al-Insyirah 94:5"},
+  {text:"إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ",detail:"Sesungguhnya amal-amal itu bergantung pada niat.",source:"Hadits • HR. Bukhari dan Muslim"},
+  {text:"Jaga niat, rapikan langkah, lalu lanjutkan kebaikanmu hari ini.",detail:"Jaga niat, rapikan langkah, lalu lanjutkan kebaikanmu hari ini.",source:"Kata-kata Mutiara"},
+  {text:"فَاذْكُرُونِي أَذْكُرْكُمْ",detail:"Maka ingatlah Aku, niscaya Aku ingat kepadamu.",source:"Al-Qur'an • QS. Al-Baqarah 2:152"},
+  {text:"خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",detail:"Sebaik-baik kalian adalah yang belajar Al-Qur'an dan mengajarkannya.",source:"Hadits • HR. Bukhari"},
+  {text:"Tidak harus sempurna; yang penting terus bertumbuh dan kembali kepada kebaikan.",detail:"Tidak harus sempurna; yang penting terus bertumbuh dan kembali kepada kebaikan.",source:"Kata-kata Mutiara"}
 ];
+let dailyQuoteIndex=-1;
 function renderDailyQuote(){
-  const d=today(),idx=(d.getFullYear()*372+(d.getMonth()+1)*31+d.getDate())%DAILY_QUOTES.length;
-  const q=document.getElementById("dailyQuoteText");if(q)q.textContent=DAILY_QUOTES[idx];
+  if(!DAILY_QUOTES.length)return;
+  let last=-1;
+  try{last=parseInt(localStorage.getItem("aih_daily_quote_index_v1")||"-1",10)}catch(e){}
+  let idx=Math.floor(Math.random()*DAILY_QUOTES.length);
+  if(DAILY_QUOTES.length>1 && (idx===last || idx===dailyQuoteIndex)) idx=(idx+1+Math.floor(Math.random()*(DAILY_QUOTES.length-1)))%DAILY_QUOTES.length;
+  dailyQuoteIndex=idx;
+  try{localStorage.setItem("aih_daily_quote_index_v1",String(idx))}catch(e){}
+  const q=DAILY_QUOTES[idx];
+  const el=document.getElementById("dailyQuoteText"),title=document.getElementById("dailyQuoteTitle");
+  if(el)el.textContent=q.detail;
+  if(title)title.textContent=`“${q.text}”`;
+  const card=document.querySelector(".quote");
+  if(card){
+    let source=card.querySelector(".daily-quote-source");
+    if(!source){source=document.createElement("small");source.className="daily-quote-source";source.style.cssText="display:block;margin-top:7px;font-size:9px;color:var(--muted)";card.appendChild(source)}
+    source.textContent=q.source;
+  }
 }
 function renderDashboard(){
  const r=record(today()),vals=Object.values(r),done=vals.filter(v=>v==="done").length,no=vals.filter(v=>v==="no").length,k=vals.filter(v=>v==="khatam").length,p=Math.round(done/WORSHIP.length*100);
@@ -2285,11 +3371,100 @@ function closeAgendaEditor(){
   WORSHIP=loadAgendaForAccount(activeAccountId);
   go("absensi");
 }
-function openCollection(kind){
-  document.querySelectorAll(".collection-card").forEach(card=>{
-    card.classList.toggle("selected",card.getAttribute("onclick")?.includes(`'${kind}'`));
-  });
+function collectionPlaceholder(name){
+  const map={
+    "Al-Qur'an":"koleksiQuran",
+    "Hadits Nabi Muhammad ﷺ":"koleksiHadits",
+    "Kumpulan Do'a":"koleksiDoa",
+    "Dzikir Pagi & Petang":"koleksiDzikir",
+    "Kata-kata Mutiara":"koleksiMutiara"
+  };
+  if(map[name]) go(map[name]);
 }
+
+function switchDzikirPeriod(period){
+  const pagi=period==="pagi";
+  const pagiPanel=document.getElementById("dzikirPagiPanel");
+  const petangPanel=document.getElementById("dzikirPetangPanel");
+  const pagiBtn=document.getElementById("dzikirPagiBtn");
+  const petangBtn=document.getElementById("dzikirPetangBtn");
+  if(!pagiPanel||!petangPanel||!pagiBtn||!petangBtn)return;
+  pagiPanel.hidden=!pagi; petangPanel.hidden=pagi;
+  pagiPanel.classList.toggle("active",pagi); petangPanel.classList.toggle("active",!pagi);
+  pagiBtn.classList.toggle("active",pagi); petangBtn.classList.toggle("active",!pagi);
+  pagiBtn.setAttribute("aria-selected",pagi?"true":"false");
+  petangBtn.setAttribute("aria-selected",pagi?"false":"true");
+  if(pagiPanel.hidden===false) pagiPanel.scrollIntoView({block:"start",behavior:"smooth"});
+  else petangPanel.scrollIntoView({block:"start",behavior:"smooth"});
+}
+
+function setProfileHelpInteraction(open){
+  const main=document.querySelector(".main");
+  const nav=document.getElementById("mobileNav");
+  if(main)main.inert=!!open;
+  if(nav)nav.inert=!!open;
+  document.body.classList.toggle("profile-help-open",!!open);
+}
+function toggleProfileHelp(){
+  const panel=document.getElementById("profileHelpPanel");if(!panel)return;
+  if(!document.getElementById("profil")?.classList.contains("active")){
+    closeProfileHelp();
+    return;
+  }
+  const open=!panel.classList.contains("show");
+  panel.classList.toggle("show",open);
+  setProfileHelpInteraction(open);
+  if(open)requestAnimationFrame(()=>panel.querySelector("button:not([hidden])")?.focus({preventScroll:true}));
+  else backToHelpBars();
+}
+function closeProfileHelp(){
+  const panel=document.getElementById("profileHelpPanel");if(panel)panel.classList.remove("show");
+  setProfileHelpInteraction(false);
+  backToHelpBars();
+}
+function backToHelpBars(){
+  document.getElementById("profileHelpBars")?.style.removeProperty("display");
+  const form=document.getElementById("bugReportForm"),creator=document.getElementById("creatorProfileCard");
+  if(form)form.classList.remove("show");if(creator)creator.classList.remove("show");
+}
+function openBugReport(){
+  const bars=document.getElementById("profileHelpBars"),form=document.getElementById("bugReportForm"),creator=document.getElementById("creatorProfileCard");
+  if(bars)bars.style.display="none";if(creator)creator.classList.remove("show");if(form)form.classList.add("show");validateBugReport();
+}
+function openCreatorProfile(){
+  const bars=document.getElementById("profileHelpBars"),form=document.getElementById("bugReportForm"),creator=document.getElementById("creatorProfileCard");
+  if(bars)bars.style.display="none";if(form)form.classList.remove("show");if(creator)creator.classList.add("show");
+}
+function validateBugReport(){
+  const name=(document.getElementById("bugName")?.value||"").trim();
+  const reason=(document.getElementById("bugReason")?.value||"").trim();
+  const ok=!!name&&reason.length>=10;
+  const btn=document.getElementById("bugSubmitBtn"),v=document.getElementById("bugValidation");
+  if(btn)btn.disabled=!ok;
+  if(v){
+    v.classList.toggle("ok",ok);
+    v.textContent=ok
+      ?"Laporan siap dikirim langsung ke WhatsApp pengembang."
+      :"Lengkapi nama dan alasan (minimal 10 karakter) agar laporan dapat dikirim langsung ke WhatsApp pengembang.";
+  }
+  return ok;
+}
+["bugName","bugReason"].forEach(id=>document.getElementById(id)?.addEventListener("input",validateBugReport));
+async function sendBugReportToWhatsApp(){
+  if(!validateBugReport())return;
+  const name=document.getElementById("bugName").value.trim();
+  const reason=document.getElementById("bugReason").value.trim();
+  const number="6289506138191";
+  const message=`LAPORAN BUG KISAH LILLAH\n\nNama: ${name}\nAlasan/Masalah:\n${reason}\n\nMohon dicek.`;
+  const url=`https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+  try{
+    window.location.assign(url);
+  }catch(_){
+    window.open(url,"_blank","noopener,noreferrer");
+  }
+  toast("WhatsApp dibuka dengan laporan ✓");
+}
+
 function getTheme(){
   return localStorage.getItem("aih_theme_v1")||"light";
 }
@@ -3475,11 +4650,17 @@ function handleProfileChipClick(){
 }
 function openAccountPopover(){
   if(document.querySelector(".page.active")?.id!=="profil"){go("profil");return}
+  // The help room uses inert on .main while open. Release that lock before
+  // opening the account editor so mobile inputs remain fully interactive.
+  if(document.body.classList.contains("profile-help-open")) closeProfileHelp();
+  const main=document.querySelector(".main");
+  if(main)main.inert=false;
   const pop=document.getElementById("accountPopover");if(!pop)return;
   syncAccountPopover();
   pop.hidden=false;
+  pop.style.pointerEvents="auto";
   document.querySelector(".profile-chip")?.setAttribute("aria-expanded","true");
-  setTimeout(()=>document.getElementById("popoverNameInput")?.focus({preventScroll:true}),90);
+  requestAnimationFrame(()=>setTimeout(()=>document.getElementById("popoverNameInput")?.focus({preventScroll:true}),40));
 }
 function closeAccountPopover(){
   const pop=document.getElementById("accountPopover");if(pop)pop.hidden=true;
@@ -3841,7 +5022,7 @@ function bindPageSwipe(){
     if(e.pointerType==="mouse" && e.button!==0)return;
     if(document.documentElement.classList.contains("modal-open"))return;
     const t=e.target;
-    const ignore=!!t.closest("button,a,input,select,textarea,[role='dialog'],.prayer-table-wrap,.ps-mobile-list,.ps-calendar-card,.calendar-card");
+    const ignore=!!t.closest("a,input,select,textarea,[role='dialog'],.prayer-table-wrap,.ps-mobile-list,.ps-calendar-card,.calendar-card");
     if(ignore)return;
 
     sx=e.clientX;sy=e.clientY;pointerId=e.pointerId;
@@ -3856,7 +5037,7 @@ function bindPageSwipe(){
 
     if(!horizontal){
       if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
-      if(Math.abs(dx)>Math.abs(dy)*1.12){
+      if(Math.abs(dx)>Math.abs(dy)*1.08){
         horizontal=true;
         prepareAdjacent(dx);
         e.preventDefault();
@@ -3898,14 +5079,14 @@ function bindPageSwipe(){
     const pages=navPages(),idx=pages.indexOf(current?.id);
     const nextIndex=dx<0?idx+1:idx-1;
     const validDirection=Math.abs(dx)>Math.abs(dy)*1.05;
-    const valid=!!adjacent && Math.abs(dx)>=58 && validDirection &&
+    const valid=!!adjacent && Math.abs(dx)>=48 && validDirection &&
       nextIndex>=0 && nextIndex<pages.length;
 
     if(!valid){cleanup();return;}
 
     const target=pages[nextIndex],width=Math.max(main.clientWidth,1),sign=dx<0?1:-1;
-    current.style.transition="transform .30s cubic-bezier(.22,.8,.25,1)";
-    adjacent.style.transition="transform .30s cubic-bezier(.22,.8,.25,1)";
+    current.style.transition="transform .34s cubic-bezier(.22,.8,.25,1)";
+    adjacent.style.transition="transform .34s cubic-bezier(.22,.8,.25,1)";
     current.style.transform=`translate3d(${sign*-width}px,0,0)`;
     adjacent.style.transform="translate3d(0,0,0)";
 
@@ -3913,7 +5094,7 @@ function bindPageSwipe(){
       cleanup();
       window.__pageSwipeDirection=dx<0?"left":"right";
       go(target);
-    },300);
+    },340);
   };
 
   main.addEventListener("pointerup",end);
