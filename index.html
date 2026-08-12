@@ -180,7 +180,28 @@ body.profile-help-open{overflow:hidden}
 .help-close{border:0;background:var(--surface2);color:var(--text);width:34px;height:34px;border-radius:50%;font-size:20px}
 .help-bars{display:grid;gap:8px;padding:12px}
 .help-bar{width:100%;display:flex;align-items:center;gap:11px;text-align:left;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:15px;padding:12px;min-height:58px}
-.help-bar:hover{border-color:#7dbbb2}.help-bar .help-ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(11,107,99,.12);font-size:19px;flex:none}
+.help-bar:hover{border-color:#7dbbb2}
+.creator-profile-help-bar{
+  border-color:transparent;
+  background:linear-gradient(135deg,#0b6b63 0%,#1b8d7f 52%,#d6b25d 100%);
+  color:#fff;
+  box-shadow:0 8px 20px rgba(11,107,99,.18);
+}
+.creator-profile-help-bar:hover{
+  border-color:transparent;
+  filter:brightness(1.03);
+}
+.creator-profile-help-bar .help-ico{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+.creator-profile-help-bar small{color:rgba(255,255,255,.86)}
+.creator-closing{font-weight:800;line-height:1.7;margin-top:12px}
+html[data-theme="dark"] .creator-profile-help-bar{
+  background:linear-gradient(135deg,#0d5f58 0%,#14786e 52%,#b9923f 100%);
+  box-shadow:0 10px 24px rgba(0,0,0,.25);
+}
+.help-bar .help-ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(11,107,99,.12);font-size:19px;flex:none}
 .help-bar b{display:block;font-size:12px}.help-bar small{display:block;color:var(--muted);font-size:10px;line-height:1.4;margin-top:2px}
 .help-form{display:none;padding:0 12px 12px}.help-form.show{display:block}
 .help-form .field{margin-top:9px}.help-form label{display:block;font-size:10px;font-weight:800;margin:0 0 4px}
@@ -2678,7 +2699,7 @@ html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
       <button class="help-bar" type="button" onclick="openBugReport()">
         <span class="help-ico">🛠️</span><span><b>Laporkan bug</b><small>Hubungi pengembang jika ada bagian aplikasi yang bermasalah.</small></span>
       </button>
-      <button class="help-bar" type="button" onclick="openCreatorProfile()">
+      <button class="help-bar creator-profile-help-bar" type="button" onclick="openCreatorProfile()">
         <span class="help-ico">👨‍💻</span><span><b>Profil Pembuat Aplikasi</b><small>Kenali perjalanan pembuat Kisah Lillah.</small></span>
       </button>
     </div>
@@ -2693,13 +2714,13 @@ html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
       <button class="btn ghost small" type="button" onclick="backToHelpBars()">‹ Kembali</button>
       <div class="creator-copy">
         <h4>Profil Pembuat Aplikasi</h4>
-        <p>Aplikasi ini dibuat oleh <b>Muhammad Hilmi Azkia Rahman</b>, seorang santri yang berasal dari Pondok Pesantren Modern El-Alamia, Sukabumi, Jawa Barat.</p>
-        <p>Berawal dari ketertarikan terhadap teknologi dan dunia pemrograman, ia mulai mempelajari bagaimana sebuah aplikasi dapat dirancang, dibangun, dan dikembangkan dari sebuah ide sederhana menjadi sesuatu yang dapat digunakan dan memberikan manfaat bagi orang lain.</p>
-        <p>Sebagai seorang santri, ia berusaha memadukan pendidikan pesantren dengan perkembangan teknologi. Baginya, menjadi santri bukanlah penghalang untuk mempelajari teknologi, justru menjadi bekal untuk membangun sesuatu yang bermanfaat dengan ilmu, kreativitas, dan tanggung jawab.</p>
-        <p>Aplikasi ini merupakan salah satu bagian dari proses belajarnya dalam memahami dunia pemrograman, mulai dari logika dasar, struktur program, desain antarmuka, hingga proses pengembangan aplikasi secara bertahap.</p>
-        <p>Muhammad Hilmi Azkia Rahman percaya bahwa seorang programmer tidak harus langsung menjadi hebat. Semuanya dimulai dari satu baris kode, satu ide, satu kesalahan, lalu diperbaiki dan dipelajari kembali.</p>
-        <p class="creator-quote">“Saya mungkin masih dalam proses belajar, tetapi saya percaya bahwa dengan ilmu, usaha, doa, dan ketekunan, saya bisa terus berkembang dan menciptakan teknologi yang bermanfaat bagi banyak orang.”</p>
-        <p>Aplikasi ini bukan hanya sebuah hasil karya, tetapi juga menjadi bukti perjalanan belajar seorang santri yang berusaha melangkah dari <b>belajar → mencoba → gagal → memperbaiki → memahami → menciptakan.</b></p>
+        <p>Aplikasi ini dibuat oleh <b>Muhammad Hilmi Azkia Rahman</b>, seorang santri yang berasal dari Sukabumi, Jawa Barat, dan saat ini menempuh pendidikan di <b>Pondok Pesantren Modern El-Alamia</b> yang berada di wilayah Bogor, Jawa Barat.</p>
+        <p>Ketertarikannya terhadap dunia teknologi dan pemrograman mendorongnya untuk mulai mempelajari bagaimana sebuah ide dapat dikembangkan menjadi sebuah aplikasi yang bermanfaat.</p>
+        <p>Sebagai seorang santri, ia memiliki semangat untuk menggabungkan ilmu agama, pendidikan, kreativitas, dan teknologi. Menurutnya, menjadi seorang santri bukanlah batasan untuk mengenal dunia teknologi, tetapi justru menjadi kesempatan untuk menciptakan sesuatu yang positif dan bermanfaat bagi masyarakat.</p>
+        <p>Aplikasi ini merupakan salah satu karya yang lahir dari proses belajar dan eksplorasinya di bidang teknologi. Dalam proses pembuatannya, ia terus mempelajari berbagai hal, mulai dari logika pemrograman, desain antarmuka, struktur aplikasi, hingga pengembangan fitur.</p>
+        <p>Bagi Muhammad Hilmi Azkia Rahman, aplikasi ini bukan sekadar sebuah produk, tetapi juga bagian dari perjalanan untuk membuktikan bahwa seorang santri juga dapat belajar, berkarya, dan menciptakan teknologi.</p>
+        <p class="creator-quote">“Saya masih dalam proses belajar. Namun, saya percaya bahwa dengan ilmu, usaha, doa, dan ketekunan, saya dapat terus berkembang dan menciptakan sesuatu yang bermanfaat bagi banyak orang.”</p>
+        <p class="creator-closing">Dari seorang santri, untuk sebuah karya.<br>Dari satu ide, menjadi sebuah aplikasi.</p>
       </div>
     </div>
   </div>
@@ -2729,7 +2750,6 @@ html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
           <button class="btn outline small" type="button" onclick="requestAdhanNotificationPermission()">Izinkan</button>
         </div>
         <div class="adhan-setting-note">Notifikasi perangkat memakai izin browser/HP. Suara MP3 adzan diputar ketika aplikasi masih aktif; browser tidak menyediakan pengaturan suara MP3 khusus untuk notifikasi sistem.</div>
-        <button class="btn ghost small adhan-test-btn" type="button" onclick="testAdhanSound()">▶ Tes suara adzan</button>
       </div>
       <button class="setting setting-button" type="button" onclick="closeSettings();handleProfileChipClick()"><div><b>Kelola akun & profil</b><span>Nama, foto, email, WhatsApp, dan akun lain</span></div><strong>›</strong></button>
       <button class="setting setting-button" type="button" onclick="closeSettings();openLocationPicker()"><div><b>Lokasi & jadwal salat</b><span>Atur lokasi ibadah dan sumber jadwal</span></div><strong>›</strong></button>
@@ -3752,7 +3772,7 @@ function playAdhanSound(name){
     window.__activeAdhanAudio=audio;
     const p=audio.play();
     if(p&&typeof p.catch==="function"){
-      p.catch(()=>toast("Suara adzan diblokir browser. Tekan “Tes suara adzan” sekali dari Pengaturan lalu coba lagi."));
+      p.catch(()=>toast("Suara adzan diblokir browser. Pastikan suara adzan aktif dan izinkan pemutaran audio."));
     }
   }catch(e){toast("Suara adzan belum bisa diputar di browser ini.")}
 }
