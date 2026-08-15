@@ -1,6 +1,40 @@
-/* Kisah Lillah — adhan notification helper.
-   Uses the single KL app icon for system notifications. */
+/* Kisah Lillah — adhan notification helper + Firebase Cloud Messaging. */
+importScripts("./firebase-config.js");
+try{
+  importScripts(
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js",
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js"
+  );
+}catch(e){}
+
 const KL_ICON="./app-icon-client.png";
+
+let __klFirebaseMessaging=null;
+try{
+  const cfg=self.AIH_FIREBASE_CONFIG;
+  if(self.firebase?.initializeApp && cfg?.apiKey){
+    const app=self.firebase.apps?.find(a=>a.name==="KL")||self.firebase.initializeApp(cfg,"KL");
+    __klFirebaseMessaging=self.firebase.messaging(app);
+    __klFirebaseMessaging.onBackgroundMessage(payload=>{
+      const n=payload?.notification||payload?.data||{};
+      const title=n.title||"Kisah Lillah";
+      const body=n.body||"Ada pengingat dari Kisah Lillah.";
+      self.registration.showNotification(title,{
+        body,
+        tag:n.tag||`firebase-${n.name||"kisah-lillah"}`,
+        renotify:true,
+        icon:KL_ICON,
+        badge:KL_ICON,
+        vibrate:[200,100,200],
+        data:{
+          url:n.url||"./",
+          name:n.name||"",
+          time:n.time||""
+        }
+      });
+    });
+  }
+}catch(e){}
 
 function notificationOptions(data={}){
   return {

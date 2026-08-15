@@ -1,3 +1,26 @@
+## v5.26 — Firebase Cloud Messaging option
+
+- Menambahkan konfigurasi **Firebase Web** untuk project `kisah-2cc70`.
+- Menambahkan opsi **Notifikasi Firebase** di Pengaturan tanpa mengubah struktur room/navigasi.
+- Menambahkan Firebase Cloud Messaging (FCM) ke service worker yang sudah dipakai aplikasi, sehingga notifikasi push dapat diterima ketika aplikasi berada di latar belakang.
+- Token FCM disimpan lokal pada perangkat sebagai `aih_fcm_token_v1`; tidak ada service-account/private key yang dimasukkan ke frontend.
+- Ikon notifikasi tetap memakai **`app-icon-client.png` / logo KL**.
+- Fitur FCM baru aktif setelah **VAPID public key** diisi pada `firebase-config.js` / `AIH_FIREBASE_CONFIG.vapidKey`.
+- FCM Web membutuhkan HTTPS/secure context. Firebase juga mensyaratkan Web Push credentials/VAPID untuk konfigurasi web yang benar. 
+- Fitur notifikasi adzan lokal yang sudah ada tetap dipertahankan; Firebase ditambahkan sebagai jalur push, bukan mengganti struktur notifikasi lama.
+
+### Setup Firebase sekali
+
+1. Firebase Console → **Project settings → Cloud Messaging → Web Push certificates**.
+2. Generate **Key pair** dan salin **public key (VAPID)**.
+3. Buka `firebase-config.js` dan isi:
+   `vapidKey: "PUBLIC_VAPID_KEY_DARI_FIREBASE"`
+4. Deploy aplikasi melalui **HTTPS**.
+5. Buka **Pengaturan → Notifikasi Firebase → Hubungkan**.
+6. Setelah berhasil, token FCM tersimpan di perangkat dan dapat dipakai untuk pengujian push dari Firebase Console.
+
+**Catatan:** mendapatkan token FCM saja belum membuat server otomatis mengirim adzan setiap hari. Untuk pengiriman adzan terjadwal ketika aplikasi benar-benar tidak aktif, diperlukan pengirim/server (misalnya Cloud Functions atau backend lain) yang mengirim pesan FCM berdasarkan jadwal salat pengguna.
+
 ## v5.25 — KL system notification implementation
 
 - Sistem notifikasi adzan sekarang memakai **ikon KL yang sama** (`app-icon-client.png`) pada notifikasi perangkat.
@@ -269,3 +292,26 @@ Perubahan pada revisi client:
 - Brand text changed from “Absensi Ibadah Hijriah” to “Kisah Lillah”.
 - Dzikir Pagi & Petang page populated from the supplied `zikir-selepas-solat-dan-pagi-petang.pdf` text content; cover/images omitted.
 - Mobile bottom navigation is hidden while the dedicated dzikir reader is open.
+
+
+## Firebase Google Login — v5.26 KL backend fix
+
+Google Login pada aplikasi sekarang menggunakan **Firebase Authentication** project `kisah-2cc70`, bukan Supabase Auth.
+
+Frontend/UI aplikasi tidak dirombak. Perubahan backend/integrasi:
+- Firebase Auth compat ditambahkan.
+- Google Sign-In memakai `GoogleAuthProvider`.
+- Login mencoba popup terlebih dahulu dan fallback ke redirect bila popup diblokir.
+- Session dipantau dengan `onAuthStateChanged`.
+- Logout menggunakan Firebase Authentication.
+- FCM VAPID public key sudah ditempatkan di `firebase-config.js`.
+
+### Firebase Console yang wajib diselesaikan
+
+1. Firebase Console → Authentication → Sign-in method → aktifkan **Google**.
+2. Authentication → Settings → Authorized domains → tambahkan domain produksi Vercel, misalnya `nama-project.vercel.app`, serta domain custom jika ada.
+3. Pastikan project yang dipakai adalah **kisah-2cc70**.
+4. Deploy ZIP ini ke GitHub lalu hubungkan repository ke Vercel.
+5. Tes login Google dari domain HTTPS Vercel, bukan dari `file://`.
+
+Tidak perlu menghapus project Vercel lama sebelum deployment baru terbukti bekerja.

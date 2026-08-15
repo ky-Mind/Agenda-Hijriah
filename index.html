@@ -1800,6 +1800,8 @@ html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
 .adhan-permission-row span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
 .adhan-permission-status{font-size:10px;color:var(--muted);line-height:1.35;margin-top:4px}
 .adhan-test-btn{margin-top:4px;width:100%}
+.firebase-status{font-size:10px;color:var(--muted);line-height:1.4;margin-top:2px}
+.firebase-status.ready{color:var(--success);font-weight:750}
 </style>
 </head>
 <body>
@@ -2752,6 +2754,13 @@ html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
         </div>
         <div class="adhan-setting-note">Notifikasi mengikuti izin browser/HP dan memakai ikon KL. Saat aplikasi masih aktif, MP3 adzan dapat diputar; suara notifikasi sistem tetap mengikuti pengaturan perangkat.</div>
       </div>
+      <div class="adhan-setting-group">
+        <div class="adhan-permission-row">
+          <div><b>☁️ Notifikasi Firebase</b><span id="firebaseNotificationText" class="firebase-status">Belum dihubungkan</span></div>
+          <button class="btn outline small" type="button" onclick="enableFirebaseNotifications()">Hubungkan</button>
+        </div>
+        <div class="adhan-setting-note">Firebase Cloud Messaging dipakai untuk push notification saat aplikasi berada di latar belakang. Fitur ini membutuhkan VAPID key dari Firebase Console.</div>
+      </div>
       <button class="setting setting-button" type="button" onclick="closeSettings();handleProfileChipClick()"><div><b>Kelola akun & profil</b><span>Nama, foto, email, WhatsApp, dan akun lain</span></div><strong>›</strong></button>
       <button class="setting setting-button" type="button" onclick="closeSettings();openLocationPicker()"><div><b>Lokasi & jadwal salat</b><span>Atur lokasi ibadah dan sumber jadwal</span></div><strong>›</strong></button>
       <button class="setting setting-button" type="button" onclick="closeSettings();go('koleksi')"><div><b>Koleksi</b><span>Do'a, hadits, dan kata-kata mutiara</span></div><strong>›</strong></button>
@@ -3197,6 +3206,22 @@ async function loadPrayerSchedule(force=false){
 
 </script>
 <script src="./config.js"></script>
+<script src="./firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js"></script>
+<script>
+(function(){
+  try{
+    const cfg=window.AIH_FIREBASE_CONFIG;
+    if(!cfg?.apiKey || !window.firebase?.initializeApp)return;
+    window.__klFirebaseApp=firebase.apps.find(a=>a.name==="KL")||firebase.initializeApp(cfg,"KL");
+    window.__klFirebaseMessaging=firebase.messaging(window.__klFirebaseApp);
+  }catch(e){
+    window.__klFirebaseError=e;
+  }
+})();
+</script>
 <script>
 const DEFAULT_WORSHIP=[
  ["puasa","Puasa Sunnah","🌙",["done","no","period"]],
@@ -3683,12 +3708,13 @@ function getAdhanSettings(){
     const v=JSON.parse(localStorage.getItem(ADHAN_SETTINGS_KEY)||"null");
     return {
       notifications:v?.notifications===true,
-      sound:v?.sound!==false
+      sound:v?.sound!==false,
+      firebase:v?.firebase===true
     };
   }catch(e){return {notifications:false,sound:true}}
 }
 function saveAdhanSettings(v){
-  const next={notifications:!!v.notifications,sound:v.sound!==false};
+  const next={notifications:!!v.notifications,sound:v.sound!==false,firebase:!!v.firebase};
   try{localStorage.setItem(ADHAN_SETTINGS_KEY,JSON.stringify(next))}catch(e){}
   return next;
 }
@@ -3709,6 +3735,14 @@ function renderAdhanSettings(){
   if(pt){
     if(!("Notification" in window))pt.textContent="Browser ini tidak mendukung notifikasi";
     else pt.textContent=`Status: ${Notification.permission}`;
+  }
+  const ft=document.getElementById("firebaseNotificationText");
+  if(ft){
+    const token=localStorage.getItem("aih_fcm_token_v1");
+    const configured=!!window.AIH_FIREBASE_CONFIG?.vapidKey;
+    const ready=!!window.__klFirebaseMessaging && !!token;
+    ft.classList.toggle("ready",ready);
+    ft.textContent=ready?"Firebase terhubung":(configured?"Siap dihubungkan":"VAPID key belum diatur");
   }
 }
 async function requestAdhanNotificationPermission(){
@@ -3781,12 +3815,61 @@ function testAdhanSound(){
   playAdhanSound("Dzuhur");
 }
 function registerAdhanServiceWorker(){
-  if(!("serviceWorker" in navigator)||!window.isSecureContext)return;
+  if(!("serviceWorker" in navigator)||!window.isSecureContext)return Promise.resolve(null);
   try{
     if(!window.__adhanSwPromise){
       window.__adhanSwPromise=navigator.serviceWorker.register("./sw.js").catch(()=>null);
     }
-  }catch(e){}
+    return window.__adhanSwPromise;
+  }catch(e){return Promise.resolve(null)}
+}
+
+async function enableFirebaseNotifications(){
+  const cfg=window.AIH_FIREBASE_CONFIG||{};
+  if(!window.isSecureContext){
+    toast("Firebase notifikasi membutuhkan HTTPS.");
+    renderAdhanSettings();return;
+  }
+  if(!cfg.vapidKey){
+    toast("VAPID key Firebase belum diatur.");
+    renderAdhanSettings();return;
+  }
+  if(!window.__klFirebaseMessaging){
+    toast("Firebase Messaging belum tersedia di browser ini.");
+    renderAdhanSettings();return;
+  }
+  try{
+    if(!("Notification" in window)){
+      toast("Browser ini tidak mendukung notifikasi perangkat.");
+      return;
+    }
+    let permission=Notification.permission;
+    if(permission!=="granted"){
+      permission=await Notification.requestPermission();
+    }
+    if(permission!=="granted"){
+      toast("Izin notifikasi belum diberikan.");
+      renderAdhanSettings();return;
+    }
+    const registration=await registerAdhanServiceWorker();
+    if(!registration){
+      toast("Service Worker belum siap. Coba lagi setelah aplikasi dimuat.");
+      return;
+    }
+    const token=await window.__klFirebaseMessaging.getToken({
+      vapidKey:cfg.vapidKey,
+      serviceWorkerRegistration:registration
+    });
+    if(!token)throw new Error("FCM token kosong");
+    localStorage.setItem("aih_fcm_token_v1",token);
+    const s=getAdhanSettings();
+    saveAdhanSettings({...s,firebase:true,notifications:true});
+    toast("Notifikasi Firebase terhubung ✓");
+  }catch(e){
+    console.error("Firebase Messaging:",e);
+    toast("Firebase belum bisa dihubungkan. Periksa VAPID key dan HTTPS.");
+  }
+  renderAdhanSettings();
 }
 function adhanNotificationContent(name,time){
   const prayerName=name||"Sholat";
@@ -3913,7 +3996,34 @@ function scheduleAdhanNotifications(times){
     setTimeout(()=>scheduleAdhanNotifications(window.__prayerTimes||[]),1500);
   },Math.min(delay,2147483647));
 }
+function initFirebaseMessaging(){
+  try{
+    const messaging=window.__klFirebaseMessaging;
+    if(!messaging||messaging.__aihBound)return;
+    messaging.__aihBound=true;
+    messaging.onMessage(payload=>{
+      const n=payload?.notification||payload?.data||{};
+      const title=n.title||"Kisah Lillah";
+      const body=n.body||"Ada pengingat dari Kisah Lillah.";
+      try{
+        if(Notification?.permission==="granted"){
+          if(navigator.serviceWorker?.controller){
+            navigator.serviceWorker.controller.postMessage({
+              type:"SHOW_ADHAN_NOTIFICATION",
+              title,body,
+              name:payload?.data?.name||"",
+              time:payload?.data?.time||"",
+              tag:payload?.data?.tag||"firebase-kisah-lillah"
+            });
+          }else new Notification(title,{body,icon:"app-icon-client.png",badge:"app-icon-client.png"});
+        }
+      }catch(e){}
+    });
+  }catch(e){}
+}
+
 function initAdhanNotifications(){
+  initFirebaseMessaging();
   renderAdhanSettings();
   registerAdhanServiceWorker();
   scheduleAdhanNotifications(window.__prayerTimes||[]);
@@ -4545,27 +4655,15 @@ async function removeProfilePhoto(){
  syncActiveAccount();updateProfile();toast("Foto profil dihapus ✓")
 }
 
-function getSupabaseClient(){
-  if(window.__aihSupabaseClient) return window.__aihSupabaseClient;
-  const cfg=window.AIH_SUPABASE_CONFIG||{};
-  if(!cfg.url||!cfg.key||!window.supabase?.createClient) return null;
+function getFirebaseAuth(){
   try{
-    window.__aihSupabaseClient=window.supabase.createClient(cfg.url,cfg.key,{
-      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
-    });
-    return window.__aihSupabaseClient;
+    if(!window.__klFirebaseApp || !window.firebase?.auth) return null;
+    if(!window.__klFirebaseAuth) window.__klFirebaseAuth=firebase.auth(window.__klFirebaseApp);
+    return window.__klFirebaseAuth;
   }catch(err){
-    console.error("Supabase init gagal",err);
+    console.error("Firebase Auth init gagal",err);
     return null;
   }
-}
-function isSupabaseConfigured(){
-  const cfg=window.AIH_SUPABASE_CONFIG||{};
-  return !!(cfg.url&&cfg.key&&window.supabase?.createClient);
-}
-function authRedirectUrl(){
-  const cfg=window.AIH_SUPABASE_CONFIG||{};
-  return cfg.redirectTo||window.location.origin+window.location.pathname;
 }
 function updateCloudAuthUI(user){
   const status=document.getElementById("profileAccountStatus");
@@ -4574,50 +4672,44 @@ function updateCloudAuthUI(user){
   if(user){
     if(status)status.textContent=`Jurnal ibadah pribadi • Google terhubung • ${user.email||"akun Google"}`;
     if(btn){btn.textContent="✓ Google terhubung";btn.disabled=true}
-    if(notice)notice.innerHTML=`☁️ <b>Akun Google aktif.</b> Sesi tersimpan dengan Supabase Auth. Profil dapat disinkronkan ke cloud tanpa membagikan password Google ke aplikasi.`;
+    if(notice)notice.innerHTML=`☁️ <b>Akun Google aktif.</b> Sesi tersimpan dengan Firebase Authentication.`;
   }else{
     if(status)status.textContent="Jurnal ibadah pribadi • Akun lokal";
     if(btn){btn.textContent="🔐 Masuk dengan Google";btn.disabled=false}
-    if(notice)notice.innerHTML=`🔐 <b>Google Login siap diaktifkan.</b> Gunakan tombol di atas untuk masuk dengan Google setelah Supabase dan provider Google dikonfigurasi.`;
+    if(notice)notice.innerHTML=`🔐 <b>Masuk dengan Google.</b> Login menggunakan Firebase Authentication.`;
   }
 }
 async function syncCloudProfile(user){
-  const client=getSupabaseClient();
-  if(!client||!user)return;
-  const meta=user.user_metadata||{};
-  const row={
-    id:user.id,
-    full_name:String(meta.full_name||meta.name||profile.name||"Pengguna").slice(0,80),
-    email:user.email||profile.email||"",
-    avatar_url:meta.avatar_url||meta.picture||"",
-    updated_at:new Date().toISOString()
-  };
-  const {error}=await client.from("profiles").upsert(row,{onConflict:"id"});
-  if(error)console.warn("Profil cloud belum tersimpan:",error.message);
+  // Profil aplikasi tetap mengikuti akun lokal yang sudah ada.
+  // Firebase Authentication menjadi sumber identitas Google; tidak ada
+  // service-account/private key yang disimpan di browser.
+  return user||null;
 }
 async function adoptGoogleSession(user){
   if(!user)return;
-  const googleId=`google-${user.id}`;
+  const googleId=`google-${user.uid}`;
   const currentLocal=accounts[activeAccountId];
   if(!accounts[googleId]){
     accounts[googleId]={
       id:googleId,
       profile:{
-        name:user.user_metadata?.full_name||user.user_metadata?.name||currentLocal?.profile?.name||"Pengguna",
+        name:user.displayName||currentLocal?.profile?.name||"Pengguna",
         email:user.email||currentLocal?.profile?.email||"",
-        photo:user.user_metadata?.avatar_url||user.user_metadata?.picture||currentLocal?.profile?.photo||"",
+        photo:user.photoURL||currentLocal?.profile?.photo||"",
         whatsapp:currentLocal?.profile?.whatsapp||DEFAULT_WHATSAPP
       },
       data:currentLocal?.data||{},
       timeData:currentLocal?.timeData||{},
-      activityShared:!!currentLocal?.activityShared
+      activityShared:!!currentLocal?.activityShared,
+      agenda:currentLocal?.agenda,
+      statusMeta:currentLocal?.statusMeta
     };
   }else{
     accounts[googleId].profile={
       ...(accounts[googleId].profile||{}),
-      name:user.user_metadata?.full_name||user.user_metadata?.name||accounts[googleId].profile?.name||"Pengguna",
+      name:user.displayName||accounts[googleId].profile?.name||"Pengguna",
       email:user.email||accounts[googleId].profile?.email||"",
-      photo:user.user_metadata?.avatar_url||user.user_metadata?.picture||accounts[googleId].profile?.photo||"",
+      photo:user.photoURL||accounts[googleId].profile?.photo||"",
       whatsapp:accounts[googleId].profile?.whatsapp||DEFAULT_WHATSAPP
     };
   }
@@ -4631,65 +4723,83 @@ async function adoptGoogleSession(user){
   updateProfile();
   renderDashboard();renderAbsensi();renderCalendar();renderRecap();renderLocationUI();
   updateCloudAuthUI(user);
-  await syncCloudProfile(user);
 }
 async function signInWithGoogle(){
-  const client=getSupabaseClient();
-  if(!client){
-    openModal(
-      "Aktifkan Google Login",
-      "Login Google sudah terpasang di aplikasi, tetapi koneksi Supabase belum diisi. Isi SUPABASE_URL dan SUPABASE_PUBLISHABLE_KEY di file config.js, lalu aktifkan Google Provider di Supabase. Setelah itu tombol ini akan membuka halaman akun Google sungguhan.",
-      "Mengerti",
-      ()=>{}
-    );
+  const auth=getFirebaseAuth();
+  if(!auth){
+    toast("Firebase Authentication belum siap. Periksa konfigurasi Firebase.");
     return;
   }
   try{
-    const {error}=await client.auth.signInWithOAuth({
-      provider:"google",
-      options:{redirectTo:authRedirectUrl()}
-    });
-    if(error)throw error;
+    const provider=new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt:"select_account"});
+    // Popup lebih stabil untuk aplikasi web/PWA karena tidak kehilangan
+    // konteks halaman. Jika popup diblokir, fallback ke redirect.
+    await auth.signInWithPopup(provider);
   }catch(err){
-    console.error(err);
-    toast("Login Google belum bisa dimulai: "+(err?.message||"konfigurasi belum lengkap"));
+    console.error("Firebase Google Login:",err);
+    const code=String(err?.code||"");
+    if(code==="auth/popup-blocked" || code==="auth/cancelled-popup-request"){
+      try{
+        const provider=new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({prompt:"select_account"});
+        await auth.signInWithRedirect(provider);
+        return;
+      }catch(redirectErr){
+        console.error("Firebase Google Redirect:",redirectErr);
+        toast("Login Google gagal: "+(redirectErr?.message||"redirect tidak tersedia"));
+        return;
+      }
+    }
+    if(code==="auth/unauthorized-domain"){
+      toast("Domain Vercel belum diizinkan di Firebase Authentication.");
+      return;
+    }
+    if(code==="auth/operation-not-allowed"){
+      toast("Google Sign-In belum diaktifkan di Firebase Authentication.");
+      return;
+    }
+    toast("Login Google gagal: "+(err?.message||"coba lagi"));
   }
 }
 async function signOutGoogle(){
-  const client=getSupabaseClient();
-  if(!client)return;
-  const {error}=await client.auth.signOut();
-  if(error){toast("Gagal keluar dari Google");return}
-  updateCloudAuthUI(null);
-  toast("Berhasil keluar dari akun Google");
+  const auth=getFirebaseAuth();
+  if(!auth)return;
+  try{
+    await auth.signOut();
+    updateCloudAuthUI(null);
+    toast("Berhasil keluar dari akun Google");
+  }catch(error){
+    console.error("Firebase Logout:",error);
+    toast("Gagal keluar dari akun Google");
+  }
 }
 async function initGoogleAuth(){
-  const client=getSupabaseClient();
-  if(!client){updateCloudAuthUI(null);return}
+  const auth=getFirebaseAuth();
+  if(!auth){
+    updateCloudAuthUI(null);
+    return;
+  }
   try{
-    client.auth.onAuthStateChange((event,session)=>{
-      if(session?.user){
-        setTimeout(()=>adoptGoogleSession(session.user).catch(err=>console.warn("Sinkronisasi profil:",err)),0);
-      }else if(event==="SIGNED_OUT"){
+    // Menangani hasil login redirect jika fallback redirect dipakai.
+    try{ await auth.getRedirectResult(); }catch(err){
+      console.warn("Firebase redirect result:",err);
+      if(err?.code==="auth/unauthorized-domain") toast("Domain Vercel belum diizinkan di Firebase Authentication.");
+    }
+    auth.onAuthStateChanged((user)=>{
+      if(user){
+        setTimeout(()=>adoptGoogleSession(user).catch(err=>console.warn("Sinkronisasi profil:",err)),0);
+      }else{
         updateCloudAuthUI(null);
       }
     });
-    const {data:{session}}=await client.auth.getSession();
-    if(session?.user)await adoptGoogleSession(session.user);
-    else updateCloudAuthUI(null);
   }catch(err){
-    console.warn("Auth init gagal",err);
+    console.warn("Firebase Auth init gagal",err);
     updateCloudAuthUI(null);
   }
 }
 function showGoogleInfo(){
-  if(isSupabaseConfigured()) return signInWithGoogle();
-  openModal(
-    "Masuk dengan Google",
-    "Tombol ini sudah menggunakan alur Google OAuth resmi melalui Supabase. Satu kali konfigurasi diperlukan: buat project Supabase, aktifkan Google Provider, isi URL project + Publishable Key di config.js, lalu tambahkan domain aplikasi pada Redirect URLs. Tidak ada password Google yang disimpan oleh aplikasi.",
-    "Mengerti",
-    ()=>{}
-  );
+  return signInWithGoogle();
 }
 
 function openAccountManager(){renderAccountList();document.getElementById("accountModal").classList.add("show")}
