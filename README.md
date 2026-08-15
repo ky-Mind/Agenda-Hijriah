@@ -315,3 +315,15 @@ Frontend/UI aplikasi tidak dirombak. Perubahan backend/integrasi:
 5. Tes login Google dari domain HTTPS Vercel, bukan dari `file://`.
 
 Tidak perlu menghapus project Vercel lama sebelum deployment baru terbukti bekerja.
+
+
+### Catatan deployment v5.26 — konfigurasi Firebase web
+
+Paket ini adalah aplikasi web statis. Konfigurasi browser Firebase yang dipakai runtime berasal dari `firebase-config.js` melalui `AIH_FIREBASE_CONFIG`; Firebase Web memang menggunakan konfigurasi client-side ini. Environment Variables Vercel yang bernama `VITE_FIREBASE_*` tidak otomatis menggantikan nilai tersebut karena paket ini tidak memakai proses build Vite. Jangan menghapus `firebase-config.js`.
+
+Untuk Google Login, pastikan di Firebase Console project `kisah-2cc70`:
+- Authentication → Sign-in method → Google aktif.
+- Authentication → Settings → Authorized domains berisi domain Vercel produksi yang digunakan.
+- Aplikasi diakses melalui HTTPS.
+
+Untuk FCM Web, `vapidKey` pada `firebase-config.js` adalah public VAPID key dan dapat berada di client. Service worker `sw.js` memakai konfigurasi yang sama.

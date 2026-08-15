@@ -4731,6 +4731,11 @@ async function signInWithGoogle(){
     return;
   }
   try{
+    try{
+      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    }catch(err){
+      console.warn("Firebase persistence tidak tersedia:",err);
+    }
     const provider=new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({prompt:"select_account"});
     // Popup lebih stabil untuk aplikasi web/PWA karena tidak kehilangan
@@ -4781,11 +4786,27 @@ async function initGoogleAuth(){
     return;
   }
   try{
+    // Simpan sesi Google di perangkat agar pengguna tidak langsung
+    // dianggap keluar ketika halaman/PWA dimuat ulang.
+    try{
+      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    }catch(err){
+      console.warn("Firebase persistence tidak tersedia:",err);
+    }
+
+    try{ auth.useDeviceLanguage(); }catch(err){}
+
     // Menangani hasil login redirect jika fallback redirect dipakai.
     try{ await auth.getRedirectResult(); }catch(err){
       console.warn("Firebase redirect result:",err);
-      if(err?.code==="auth/unauthorized-domain") toast("Domain Vercel belum diizinkan di Firebase Authentication.");
+      const code=String(err?.code||"");
+      if(code==="auth/unauthorized-domain"){
+        toast("Domain Vercel belum diizinkan di Firebase Authentication.");
+      }else if(code==="auth/operation-not-allowed"){
+        toast("Google Sign-In belum diaktifkan di Firebase Authentication.");
+      }
     }
+
     auth.onAuthStateChanged((user)=>{
       if(user){
         setTimeout(()=>adoptGoogleSession(user).catch(err=>console.warn("Sinkronisasi profil:",err)),0);
