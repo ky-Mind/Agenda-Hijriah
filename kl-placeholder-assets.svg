@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0d7067"/><stop offset="1" stop-color="#021f18"/></linearGradient></defs>
+  <rect width="1024" height="1024" rx="210" fill="url(#g)"/>
+  <circle cx="512" cy="430" r="205" fill="none" stroke="#d6b25d" stroke-width="34" opacity=".95"/>
+  <path d="M512 225c-110 58-154 183-103 291 47 99 164 145 267 106-82 3-155-44-187-116-39-87-10-186 70-249-15-12-30-23-47-32z" fill="#f7f1dc"/>
+  <text x="512" y="790" text-anchor="middle" fill="#f7f1dc" font-family="Georgia,serif" font-size="116" font-weight="700">KL</text>
+</svg>

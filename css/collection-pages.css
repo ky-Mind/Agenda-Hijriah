@@ -1,0 +1,69 @@
+/* Kisah Lillah — gaya untuk halaman Koleksi (Al-Qur'an, Hadits, Do'a,
+   Kata-kata Mutiara) yang kini dimuat sebagai file terpisah per halaman.
+   Dipisah dari base.css supaya mudah diubah tanpa menyentuh gaya inti. */
+
+.page-loading{min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:6px}
+
+.collection-search-bar,.quran-surah-btn,.hadits-book-btn,.doa-card,.mutiara-card,.doa-cat-btn,.quran-play-btn,.quran-ayat-card,.hadits-card,.page button,.page a,.page [role="button"]{pointer-events:auto!important;cursor:pointer}
+
+.collection-search-bar{margin-bottom:12px}
+.collection-search-bar input,
+input#quranSearchInput,
+.doa-category-bar+.doa-list,
+input[type="search"].input{
+  width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);
+  border-radius:14px;padding:12px 14px;font-size:14px;min-height:46px;
+}
+.collection-search-bar input:focus,input[type="search"]:focus{outline:2px solid var(--primary);outline-offset:1px}
+
+/* ---- Al-Qur'an ---- */
+.quran-surah-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(min-width:768px){.quran-surah-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.quran-surah-btn{display:flex;align-items:center;gap:10px;text-align:left;min-height:76px;padding:12px}
+.quran-surah-number{width:30px;height:30px;flex:0 0 auto;border-radius:10px;background:var(--surface2);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:12px}
+.quran-surah-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.quran-surah-info b{font-size:13.5px}
+.quran-surah-arabic{font-size:20px;color:var(--primary-dark);flex:0 0 auto}
+.quran-detail-head{margin-bottom:10px}
+.quran-detail-head h2{margin:2px 0;font-size:26px}
+.quran-ayat-wrap{display:flex;flex-direction:column;gap:10px}
+.quran-ayat-card{padding:16px}
+.quran-ayat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.quran-ayat-number{width:26px;height:26px;border-radius:50%;background:var(--surface2);color:var(--primary);display:grid;place-items:center;font-size:11px;font-weight:800}
+.quran-play-btn{width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;border:0;font-size:13px;display:grid;place-items:center}
+.quran-play-btn:disabled{background:var(--muted);opacity:.6}
+.quran-ayat-arabic{font-size:22px;line-height:2;margin:6px 0;text-align:right}
+.quran-ayat-latin{font-size:12.5px;color:var(--muted);margin:4px 0}
+.quran-ayat-translation{font-size:13.5px;line-height:1.6;margin:4px 0 0}
+
+/* ---- Hadits ---- */
+.hadits-book-btn{min-height:84px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.hadits-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.hadits-card{padding:16px}
+.hadits-card-head{margin-bottom:8px;color:var(--primary)}
+.hadits-arab{font-size:20px;line-height:2;text-align:right;margin:0 0 8px}
+.hadits-arti{font-size:13.5px;line-height:1.6;margin:0}
+
+/* ---- Do'a ---- */
+.doa-category-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.doa-cat-btn{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;white-space:nowrap}
+.doa-cat-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.doa-list{display:flex;flex-direction:column;gap:10px}
+.doa-card{padding:16px}
+.doa-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.doa-arab{font-size:21px;line-height:2;text-align:right;margin:0 0 6px}
+.doa-latin{font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.doa-arti{font-size:13.5px;line-height:1.6;margin:0}
+
+/* ---- Kata-kata Mutiara ---- */
+.mutiara-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:768px){.mutiara-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mutiara-card{padding:16px}
+.mutiara-arab{font-size:19px;line-height:1.9;text-align:right;margin:0 0 8px}
+.mutiara-arti{font-size:13.5px;line-height:1.6;margin:0 0 6px}
+
+/* Dark mode contrast for the new pages */
+:root[data-theme="dark"] .doa-cat-btn{background:var(--surface2)}
+:root[data-theme="dark"] .quran-surah-number,
+:root[data-theme="dark"] .quran-ayat-number{background:rgba(255,255,255,.08)}
+

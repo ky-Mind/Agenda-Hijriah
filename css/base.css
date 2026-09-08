@@ -1,0 +1,1458 @@
+:root{
+  --bg:#f3f8f6;--surface:#fff;--surface2:#eef6f3;--text:#173b36;--muted:#748682;
+  --primary:#0b6b63;--primary-dark:#084f49;--gold:#d6b25d;--gold-soft:#fff7df;
+  --line:#dfeae6;--danger:#c74d5a;--success:#15956f;--shadow:0 12px 35px rgba(18,69,61,.08);
+  --radius:20px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#edf8f5 0,#f7faf9 360px);color:var(--text);
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}html,body{overflow-x:hidden}body{overscroll-behavior-x:none}
+button:focus-visible,input:focus-visible{outline:3px solid rgba(11,107,99,.22);outline-offset:2px}
+a,button,input,select,textarea,summary,[role="button"],[onclick],[tabindex]:not([tabindex="-1"]),.page *, .nav button, .mobile-nav button, .quran-surah-btn, .hadits-book-btn, .doa-card, .mutiara-card, .collection-card, .card, .btn, .icon-btn, .seg, .day, .status button{pointer-events:auto!important;cursor:pointer}
+.app{min-height:100vh}
+.sidebar{display:none}
+.main{width:100%;padding:12px 14px calc(96px + env(safe-area-inset-bottom));max-width:1180px;margin:auto;pointer-events:auto}.page{pointer-events:auto}.page.active{animation:pageIn .18s ease-out;pointer-events:auto}@keyframes pageIn{from{opacity:.65;transform:translateY(4px)}to{opacity:1;transform:none}}
+.topbar{height:52px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:sticky;top:0;z-index:15;background:rgba(237,248,245,.9);backdrop-filter:blur(12px);margin-left:-14px;margin-right:-14px;padding:0 14px}
+.mobile-brand{display:flex;align-items:center;gap:8px;font-weight:850;font-size:15px}
+.brand-mark{width:34px;height:34px;border-radius:11px;background:var(--gold);display:grid;place-items:center;color:var(--primary-dark)}.brand-mark.image-mark{overflow:hidden;padding:0;background:var(--gold)}.brand-mark.image-mark img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);border:1px solid var(--line);padding:5px 10px 5px 5px;border-radius:999px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#d8eee9;display:grid;place-items:center;color:var(--primary);font-weight:850;font-size:12px;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}
+.page{display:none}.page.active{display:block}
+.page.swipe-in-left{animation:pageSwipeInLeft .22s ease both}
+.page.swipe-in-right{animation:pageSwipeInRight .22s ease both}
+@keyframes pageSwipeInLeft{from{opacity:.35;transform:translate3d(24px,0,0)}to{opacity:1;transform:none}}
+@keyframes pageSwipeInRight{from{opacity:.35;transform:translate3d(-24px,0,0)}to{opacity:1;transform:none}}.page.page-swipe-peek{display:block;position:absolute;top:66px;width:100%;z-index:3;will-change:transform;box-shadow:0 0 30px rgba(18,69,61,.08);pointer-events:none}
+.page.page-swipe-peek.from-right{left:100%}
+.page.page-swipe-peek.from-left{right:100%}
+.page > *{pointer-events:auto}
+.page.page-swipe-dragging{transition:none!important;will-change:transform}
+.main.page-swipe-active{overflow:hidden}
+.main{touch-action:pan-y;overflow-x:hidden}
+.page-swipe-hint{display:none}
+.ps-calendar-card{margin-top:12px;padding:14px}
+.ps-calendar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ps-calendar-head>b,.ps-calendar-head>div>b{font-size:15px}
+.ps-calendar-head small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.ps-calendar-week,.ps-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.ps-calendar-week{margin-bottom:5px;color:var(--muted);font-size:10px;text-align:center;font-weight:800}
+.ps-calendar-grid button{min-height:58px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:7px 3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:inherit;cursor:pointer;transition:.16s ease}
+.ps-calendar-grid button:active{transform:scale(.96)}
+.ps-calendar-grid button.selected{border-color:var(--primary);box-shadow:0 0 0 2px rgba(13,112,103,.12);background:#eef8f6}
+.ps-calendar-grid button.today{background:#fff8df;border-color:#dfbf58}
+.ps-calendar-grid button .ps-day{font-size:15px;font-weight:900}
+.ps-calendar-grid button .ps-hijri{font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;max-width:100%}
+.ps-calendar-grid button .ps-next{font-size:8px;color:var(--primary);font-weight:850}.ps-calendar-grid button .ps-mini-time{font-size:7px;color:var(--primary);font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.1}
+.ps-calendar-grid button .ps-mini-time b{font-weight:900}
+.ps-calendar-grid button:has(.ps-mini-time){justify-content:flex-start}
+.ps-selected-day{margin-top:10px;padding:10px 12px;border-radius:12px;background:#f6f9f8;font-size:11px;color:var(--muted)}
+.ps-selected-day b{color:var(--ink)}
+.prayer-day-backdrop{position:fixed;inset:0;background:rgba(7,31,29,.46);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:100}
+.prayer-day-backdrop.show{display:flex}
+.prayer-day-modal{width:min(560px,100%);max-height:min(88vh,760px);overflow:auto;background:#fff;border-radius:22px;padding:16px;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.pdm-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pdm-head h3{margin:2px 0 2px;font-size:20px}.pdm-head p{margin:0;color:var(--muted);font-size:12px}
+.pdm-location{margin:12px 0;padding:10px 12px;background:#eef8f6;border-radius:12px;font-size:11px;font-weight:750;color:var(--primary)}
+.pdm-times{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pdm-time{border:1px solid var(--line);border-radius:13px;padding:11px 12px;display:flex;align-items:center;justify-content:space-between}
+.pdm-time span{font-size:12px;font-weight:750}.pdm-time b{font-size:16px;color:var(--primary)}
+.pdm-time.next{background:#eef8f6;border-color:#9fd0c8;box-shadow:0 0 0 2px rgba(13,112,103,.07)}
+.pdm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+@media(max-width:767px){
+ .ps-calendar-grid button{min-height:54px}
+ .pdm-times{grid-template-columns:1fr}
+}
+
+.hero{background:linear-gradient(135deg,#0d7067,#084f49);color:#fff;border-radius:25px;padding:24px 20px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.hero:after{content:"☾";position:absolute;right:8px;top:-34px;font-size:150px;opacity:.07}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.16em;opacity:.72}
+.hero h1{font-family:Georgia,serif;font-size:30px;line-height:1.12;margin:7px 0 9px;max-width:680px}
+.hero p{margin:0;opacity:.84;font-size:13px}
+.hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px;position:relative;z-index:2}
+.btn{border:0;border-radius:13px;padding:12px 14px;font-weight:800;min-height:44px;transition:.15s transform,.15s opacity}
+.btn:active{transform:scale(.98)}.btn.primary{background:#fff;color:var(--primary)}.btn.gold{background:var(--gold);color:#173b36}
+.btn.outline{background:var(--surface);border:1px solid var(--line);color:var(--text)}.btn.ghost{background:var(--surface2);color:var(--primary)}
+.btn.full{width:100%}.btn.small{min-height:38px;padding:8px 11px;font-size:12px}
+.grid{display:grid;gap:12px}.stats{grid-template-columns:1fr 1fr;margin-top:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.stat .icon{font-size:19px}.stat .num{font-size:27px;font-weight:900;margin-top:6px}.label{font-size:12px;color:var(--muted)}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:22px 0 10px}
+.section-head h2{font-size:17px;margin:0}.muted{color:var(--muted)}
+.two{grid-template-columns:1fr}.progress{height:9px;background:#e8efed;border-radius:99px;overflow:hidden;margin:11px 0}
+.progress>i{display:block;height:100%;background:var(--primary);border-radius:99px}
+.quote{background:var(--gold-soft);border:1px solid #f0dfb4;border-radius:18px;padding:17px}
+.quote b{font-family:Georgia,serif;font-size:18px;color:#3f3218}.quote p{font-size:12px;color:#5e4d2a;line-height:1.55}
+.date-banner{margin-bottom:12px}.date-banner h2{font-family:Georgia,serif;margin:3px 0;font-size:23px}.date-banner p{margin:0;font-size:12px;color:var(--muted)}
+.list{display:grid;gap:9px}
+.worship{display:flex;flex-direction:column;gap:10px;padding:13px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.w-main{display:flex;align-items:center;gap:10px;min-width:0}.w-name{min-width:0}.w-name b{font-size:14px}.w-ico{width:38px;height:38px;flex:none;border-radius:12px;background:#edf7f4;display:grid;place-items:center}
+.w-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:6px;width:100%}
+.status button{border:1px solid var(--line);background:#fff;border-radius:11px;min-height:40px;padding:7px 6px;font-size:11px;font-weight:750;color:#50625e}
+.status button.active{background:#e3f4ef;border-color:#70b9aa;color:#08675e}.status button.danger.active{background:#faecee;border-color:#e0a4ac;color:#a23c4a}
+.status button .sicon{display:block;font-size:15px;line-height:1.1;margin-bottom:2px}.status button .stext{display:block}
+.save-wrap{position:relative;background:#fff;padding-top:12px;margin-top:2px;z-index:1}
+.save-wrap .btn{box-shadow:0 8px 22px rgba(16,70,63,.16)}
+.save-wrap .whatsapp-send-btn{margin-top:8px;box-shadow:none}.whatsapp-send-btn{display:flex;align-items:center;justify-content:center;gap:8px}.whatsapp-icon{width:22px;height:22px;display:inline-flex;flex:none}.whatsapp-icon svg{width:100%;height:100%;display:block}
+.calendar-card{padding:13px;touch-action:pan-y;user-select:none;overflow:hidden;position:relative}.calendar-card.is-dragging{cursor:grabbing}.calendar-card.is-dragging #days{transition:none!important}.calendar-card #days{will-change:transform,opacity;transition:transform .28s cubic-bezier(.22,.8,.25,1),opacity .2s ease}.calendar-swipe-hint{display:none;text-align:center;color:var(--muted);font-size:10px;margin:2px 0 6px}
+.calendar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.calendar-head h3{margin:0;font-size:17px;text-align:center}.calendar-head small{display:block;color:var(--muted);font-weight:500;font-size:10px;margin-top:3px}.calendar-jump{display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 8px}.calendar-jump span{font-size:10px;color:var(--muted);font-weight:700}.calendar-jump select{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:7px 28px 7px 9px;font-size:11px;font-weight:800;min-height:36px}
+.month-nav{display:flex;gap:6px}.icon-btn{border:1px solid var(--line);background:#fff;border-radius:11px;width:44px;height:44px;font-size:20px;color:var(--text);touch-action:manipulation}.icon-btn:active{transform:scale(.96)}
+.week,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.week{margin:10px 0 6px}.week div{text-align:center;font-size:10px;color:var(--muted);font-weight:700}
+.day{min-width:0;min-height:72px;touch-action:pan-y;border:1px solid #e9efed;background:#fbfdfc;border-radius:11px;padding:7px 5px;text-align:left;position:relative;color:var(--text);display:flex;flex-direction:column;gap:2px}
+.day.empty{border:0;background:transparent}.day .d{font-weight:900;font-size:14px;line-height:1.05}.day .h{font-size:9px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}.day .g{font-size:9px;color:var(--primary);font-weight:800;white-space:nowrap}.day .wd{font-size:8px;color:var(--muted);font-weight:700;margin-top:auto}.day .event{font-size:8px;color:var(--primary-dark);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.day.done{background:#e8f6f1;border-color:#c2e3da}.day.today{box-shadow:inset 0 0 0 1px var(--gold)}.day.selected{outline:2px solid var(--primary);outline-offset:1px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;margin-left:3px;vertical-align:2px}.calendar-legend{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 10px}.calendar-legend span{font-size:9px;color:var(--muted);background:var(--surface2);border-radius:999px;padding:5px 8px;font-weight:700}.calendar-selected{margin-top:10px;border:1px solid var(--line);background:linear-gradient(135deg,#f7fbf9,#fff);border-radius:14px;padding:11px 12px}.calendar-selected strong{display:block;font-size:14px}.calendar-selected small{display:block;color:var(--muted);margin-top:3px;font-size:10px}.calendar-selected .tag{display:inline-block;margin-top:7px;font-size:9px;background:var(--gold-soft);border-radius:999px;padding:4px 7px;font-weight:800;color:#725a18}
+.recap-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:13px}.seg{border:1px solid var(--line);background:#fff;border-radius:11px;min-height:40px;font-size:12px;font-weight:800;color:var(--muted)}.seg.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.recap-hero{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}.metric{background:var(--surface2);border-radius:15px;padding:13px}.metric strong{display:block;font-size:22px}.metric span{font-size:10px;color:var(--muted)}
+.recap-row{padding:13px 0;border-bottom:1px solid var(--line)}.recap-row:last-child{border:0}
+.recap-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.recap-top b{font-size:13px}.recap-meta{font-size:10px;color:var(--muted);margin-top:2px}.bar{height:8px;background:#e8efed;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--gold);border-radius:99px}
+
+/* v3.5 client-friendly refinements */
+.location-primary{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.location-lead{font-size:12px;line-height:1.5}
+.city-chooser{margin-top:10px;padding:11px;border:1px solid var(--line);background:var(--surface2);border-radius:14px}
+.city-chooser label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}
+.location-select{width:100%;min-height:44px;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:12px;padding:9px 10px;font-weight:700;margin-bottom:8px}
+.location-more{margin-top:12px;border:1px solid var(--line);border-radius:13px;padding:9px 11px;background:#fff}
+.location-more summary{font-size:11px;font-weight:800;color:var(--primary);cursor:pointer}
+.location-gps-status{margin:8px 0 2px;padding:9px 11px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);font-size:11px;line-height:1.45;color:var(--primary)}.location-gps-status.error{color:#7b3b2e;background:#fff7f3}.location-gps-status.ok{color:#0b6258;background:#eef9f5}.location-tools-simple{grid-template-columns:1fr auto!important}.location-save-row{margin-top:10px}.location-save-row .btn{min-height:48px;font-weight:900}
+.location-tools-simple .btn:first-child{min-height:44px}
+.calendar-simple-note{text-align:center;color:var(--muted);font-size:10px;margin:-2px 0 8px}
+.calendar-card .calendar-legend,.calendar-card .calendar-jump,.calendar-card .calendar-swipe-hint{display:none}
+.calendar-card .day{min-height:78px;padding:8px 6px}
+.calendar-card .day .d{font-size:15px}
+.calendar-card .day .g{font-size:10px;margin-top:3px}
+.calendar-card .day .h{font-size:9px;order:2}
+.calendar-card .day .g{order:1}
+.calendar-card .day .wd{order:3}
+.calendar-card .day .event{order:4}
+.calendar-selected{margin-top:12px}
+
+/* Client follow-up: profile help + creator */
+.profile-help-fab{
+  position:fixed;right:18px;bottom:92px;width:52px;height:52px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.45);background:var(--gold);color:var(--primary-dark);
+  box-shadow:0 12px 28px rgba(18,69,61,.22);font-size:22px;font-weight:950;z-index:40;
+  display:none;place-items:center;transition:transform .16s ease,box-shadow .16s ease;
+}
+.profile-help-fab:hover{transform:translateY(-2px);box-shadow:0 15px 32px rgba(18,69,61,.28)}
+body.profile-page-open .profile-help-fab{display:grid}
+.profile-help-backdrop{position:fixed;inset:0;background:rgba(6,31,28,.38);backdrop-filter:blur(2px);z-index:41;display:none;touch-action:none}
+body.profile-help-open .profile-help-backdrop{display:block}
+body.profile-help-open{overflow:hidden}
+.profile-help-panel{position:fixed;right:18px;bottom:154px;width:min(390px,calc(100vw - 36px));z-index:44;display:none;max-height:calc(100vh - 190px);overflow:auto;overscroll-behavior:contain}
+.profile-help-panel.show{display:block;animation:helpIn .18s ease-out}
+@keyframes helpIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.help-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(10,55,48,.22);overflow:hidden}
+.help-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.help-head h3{margin:0;font-size:16px}.help-head p{margin:3px 0 0;font-size:10px;color:var(--muted)}
+.help-close{border:0;background:var(--surface2);color:var(--text);width:34px;height:34px;border-radius:50%;font-size:20px}
+.help-bars{display:grid;gap:8px;padding:12px}
+.help-bar{width:100%;display:flex;align-items:center;gap:11px;text-align:left;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:15px;padding:12px;min-height:58px}
+.help-bar:hover{border-color:#7dbbb2}
+.creator-profile-help-bar{
+  border-color:transparent;
+  background:linear-gradient(135deg,#0b6b63 0%,#1b8d7f 52%,#d6b25d 100%);
+  color:#fff;
+  box-shadow:0 8px 20px rgba(11,107,99,.18);
+}
+.creator-profile-help-bar:hover{
+  border-color:transparent;
+  filter:brightness(1.03);
+}
+.creator-profile-help-bar .help-ico{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+.creator-profile-help-bar small{color:rgba(255,255,255,.86)}
+.creator-closing{font-weight:800;line-height:1.7;margin-top:12px}
+html[data-theme="dark"] .creator-profile-help-bar{
+  background:linear-gradient(135deg,#0d5f58 0%,#14786e 52%,#b9923f 100%);
+  box-shadow:0 10px 24px rgba(0,0,0,.25);
+}
+.help-bar .help-ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(11,107,99,.12);font-size:19px;flex:none}
+.help-bar b{display:block;font-size:12px}.help-bar small{display:block;color:var(--muted);font-size:10px;line-height:1.4;margin-top:2px}
+.help-form{display:none;padding:0 12px 12px}.help-form.show{display:block}
+.help-form .field{margin-top:9px}.help-form label{display:block;font-size:10px;font-weight:800;margin:0 0 4px}
+.help-form input,.help-form textarea{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:10px 11px;font-size:12px}
+.help-form textarea{min-height:92px;resize:vertical}
+.help-shot{border:1px dashed #82bdb5;border-radius:12px;padding:10px;background:var(--surface2);font-size:10px;color:var(--muted)}
+.help-shot input{border:0;padding:0;background:transparent;margin-top:6px}
+.help-preview{display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--line);max-height:180px;background:#071b18}
+.help-preview.show{display:block}
+.help-preview img,.help-preview video{display:none;width:100%;height:180px;object-fit:contain;background:#071b18}
+.help-preview.image img,.help-preview.video video{display:block}
+.help-validation{font-size:10px;line-height:1.45;margin-top:8px;padding:9px 10px;border-radius:10px;background:var(--surface2);color:var(--muted)}
+.help-validation.ok{color:var(--success);border:1px solid rgba(21,149,111,.25)}
+.help-submit{width:100%;margin-top:9px}.help-submit:disabled{opacity:.45;cursor:not-allowed}
+.creator-card{display:none;padding:0 12px 12px}.creator-card.show{display:block}
+.creator-copy{max-height:min(52vh,460px);overflow:auto;padding:12px;border:1px solid var(--line);background:var(--surface2);border-radius:14px;font-size:11px;line-height:1.65;color:var(--text)}
+.creator-copy h4{margin:0 0 8px;font-size:14px}.creator-copy p{margin:0 0 9px}.creator-quote{padding:10px 12px;border-left:3px solid var(--gold);background:rgba(214,178,93,.1);border-radius:0 10px 10px 0;font-style:italic}
+html[data-theme="dark"] .profile-help-fab{color:#173b36}
+html[data-theme="dark"] .help-card{box-shadow:0 18px 50px rgba(0,0,0,.48)}
+html[data-theme="dark"] .help-bar,
+html[data-theme="dark"] .help-form input,
+html[data-theme="dark"] .help-form textarea,
+html[data-theme="dark"] .help-shot{
+  background:#0d332e;color:#f1fffb;border-color:#285950;
+}
+html[data-theme="dark"] .help-head,
+html[data-theme="dark"] .help-close,
+html[data-theme="dark"] .help-form label{
+  color:#f1fffb;
+}
+html[data-theme="dark"] .help-validation{background:#0d332e;color:#b7cbc6;border-color:#285950}
+html[data-theme="dark"] .help-submit:disabled{opacity:.5}
+html[data-theme="dark"] .creator-copy{background:#0d332e;color:#f1fffb;border-color:#285950}
+html[data-theme="light"] .help-card{color:var(--text)}
+html[data-theme="light"] .help-close{color:var(--text);background:var(--surface2);border:1px solid var(--line)}
+html[data-theme="light"] .help-form input,
+html[data-theme="light"] .help-form textarea{
+  background:#fff;color:var(--text);border-color:#cbded8;
+}
+html[data-theme="light"] .help-form input::placeholder,
+html[data-theme="light"] .help-form textarea::placeholder{color:#8a9a96}
+html[data-theme="light"] .help-shot{background:#f2f8f6;color:#536965;border-color:#9fc8c0}
+html[data-theme="light"] .help-validation{background:#eef6f3;color:#536965}
+html[data-theme="light"] .help-bar{background:#eef6f3;color:var(--text);border-color:#d5e6e1}
+html[data-theme="light"] .help-bar small{color:#667a75}
+html[data-theme="light"] .creator-copy{background:#eef6f3;color:var(--text)}
+html[data-theme="light"] .creator-copy p,
+html[data-theme="light"] .creator-copy h4{color:var(--text)}
+
+@media(max-width:767px){
+ .profile-help-panel{left:12px;right:12px;bottom:82px;width:auto;max-height:calc(100vh - 112px)}
+ .profile-help-fab{right:16px;bottom:78px}
+ .help-head{position:sticky;top:0;background:var(--surface);z-index:2}
+}
+@media (min-width:900px){
+  .profile-help-fab{right:28px;bottom:28px}.profile-help-panel{right:28px;bottom:92px}
+}
+.profile-card{text-align:center;padding-top:22px}.profile-big{width:92px;height:92px;border-radius:50%;margin:0 auto 8px;background:#d8eee9;color:var(--primary);display:grid;place-items:center;font-weight:900;font-size:25px;overflow:hidden;border:4px solid #fff;box-shadow:0 7px 20px rgba(18,69,61,.12)}.profile-big{position:relative;cursor:pointer;transition:transform .16s ease}.profile-big:active{transform:scale(.97)}
+.crop-modal .modal{width:min(520px,100%);padding:16px}.crop-title{display:flex;align-items:center;gap:9px;margin-bottom:8px}.crop-title h3{margin:0}.crop-sub{font-size:11px;color:var(--muted);line-height:1.45}.crop-stage{display:grid;place-items:center;margin:12px 0 10px}.crop-canvas{width:min(78vw,320px);height:min(78vw,320px);max-width:320px;max-height:320px;border-radius:50%;background:#e9f2ef;box-shadow:0 10px 30px rgba(18,69,61,.14);touch-action:none;display:block;user-select:none;-webkit-user-select:none}
+.crop-mode{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:4px 0 10px}
+.crop-mode button{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:12px;min-height:40px;padding:8px 10px;font-weight:800;font-size:12px}
+.crop-mode button.active{background:var(--surface2);border-color:#82bdb5;color:var(--primary)}
+.crop-gesture{font-size:11px;color:var(--muted);text-align:center;margin:-3px 0 8px}
+.crop-controls{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;gap:8px}.crop-controls button{border:1px solid var(--line);background:#fff;border-radius:11px;min-height:40px;font-size:18px;color:var(--text)}.crop-range{width:100%;accent-color:var(--primary)}.crop-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.profile-big img{width:100%;height:100%;object-fit:cover}.profile-photo-actions{display:flex;justify-content:center;gap:7px;margin:4px 0 12px}.profile-photo-actions .btn{min-height:36px;padding:7px 10px;font-size:11px}.account-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.account-list{display:grid;gap:8px;margin-top:12px}.account-item{display:flex;align-items:center;gap:10px;width:100%;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px;text-align:left}.account-item.active{border-color:#79b8ae;background:#eef8f5}.account-item .mini-photo{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#d8eee9;color:var(--primary);display:grid;place-items:center;font-weight:900;flex:none}.mini-photo img{width:100%;height:100%;object-fit:cover}.account-item b{font-size:12px}.account-item small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.account-check{margin-left:auto;color:var(--primary);font-weight:900}.recap-period-nav{display:grid;grid-template-columns:44px 1fr 44px;gap:7px;align-items:center;margin:2px 0 14px}.period-btn{border:1px solid var(--line);background:#fff;border-radius:11px;min-height:42px;font-size:18px;color:var(--text)}.period-label{text-align:center;min-width:0}.period-label b{display:block;font-size:14px}.period-label span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.insight{background:linear-gradient(135deg,#f4fbf8,#fff8e7);border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:14px}.insight b{font-size:12px}.insight p{font-size:11px;color:var(--muted);line-height:1.5;margin:5px 0 0}
+.prayer-card{margin-top:12px;background:linear-gradient(135deg,#fffdf4,#f2faf7)}.prayer-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.prayer-head h2{margin:0;font-size:16px}.prayer-location{font-size:10px;color:var(--muted);margin-top:3px}.prayer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.prayer-item{background:#fff;border:1px solid var(--line);border-radius:11px;padding:7px 6px;text-align:center}.prayer-item b{display:block;font-size:12px}.prayer-item span{display:block;font-size:15px;font-weight:900;margin-top:3px;color:var(--primary)}.prayer-item.next{border-color:#82bdb5;box-shadow:0 5px 14px rgba(11,107,99,.09)}.prayer-note{font-size:9px;color:var(--muted);line-height:1.35;margin:7px 0 0}.prayer-actions{display:flex;gap:6px;flex-wrap:wrap}.prayer-actions .btn{min-height:36px;padding:7px 10px;font-size:11px}.prayer-status{font-size:10px;color:var(--muted);padding:8px 9px;border:1px dashed var(--line);border-radius:10px;margin-top:7px}.prayer-meta{font-size:9px;color:var(--muted);line-height:1.35;padding:7px 9px;margin-top:5px;border-radius:10px;background:var(--surface2);display:flex;flex-wrap:wrap;gap:4px 10px}.prayer-meta b{color:var(--primary)}.prayer-countdown{margin-top:8px;padding:9px 12px;border-radius:15px;background:linear-gradient(135deg,#0b6b63,#145b56);color:#fff;box-shadow:0 8px 20px rgba(11,107,99,.12)}.prayer-countdown .pc-label{font-size:10px;opacity:.78;text-transform:uppercase;letter-spacing:.08em}.prayer-countdown .pc-main{font-size:20px;font-weight:900;margin-top:2px}.prayer-countdown .pc-sub{font-size:11px;opacity:.86;margin-top:2px}.prayer-countdown.elapsed{background:linear-gradient(135deg,#d8b65a,#b88e2e)}.qibla-help{font-size:10px;color:var(--muted);line-height:1.45;margin-top:8px}.photo-error{font-size:11px;color:var(--danger);margin-top:7px;display:none}
+.location-quick{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.location-quick .btn{min-height:42px}.location-advanced{margin-top:10px;border:1px dashed var(--line);border-radius:12px;padding:9px 10px}.location-advanced summary{font-size:11px;font-weight:800;color:var(--primary);cursor:pointer}.location-tools{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.location-tools .btn{min-height:40px}.location-status{font-size:10px;color:var(--muted);line-height:1.4;margin-top:7px}.location-modal .modal{width:min(520px,100%)}.location-field{margin-top:10px}.location-field label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.location-field input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;outline:none;background:#fff;font-size:12px}.location-field input:focus{border-color:#66a99f}.coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.location-hint{font-size:10px;color:var(--muted);line-height:1.5;margin-top:8px}.location-preview{margin-top:10px;background:#f4faf8;border:1px dashed #c9d8d4;border-radius:13px;padding:10px;font-size:11px;line-height:1.45;display:none}.location-preview.show{display:block}.location-preview b{color:var(--primary)}.qibla-card{margin-top:12px;background:linear-gradient(135deg,#eef8f5,#fffdf4)}.qibla-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.qibla-head h3{margin:0;font-size:15px}.qibla-body{display:grid;grid-template-columns:112px 1fr;gap:12px;align-items:center;margin-top:12px}.qibla-compass{width:112px;height:112px;border-radius:50%;border:8px solid #e4efec;background:radial-gradient(circle,#fff 0 55%,#edf7f4 56% 100%);position:relative;display:grid;place-items:center;box-shadow:0 8px 20px rgba(18,69,61,.1)}.qibla-needle{position:absolute;left:50%;top:50%;width:4px;height:45px;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(0deg);background:var(--primary);border-radius:4px}.qibla-needle:before{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid var(--gold)}.qibla-center{width:14px;height:14px;border-radius:50%;background:var(--primary);border:3px solid #fff;z-index:2}.qibla-degree{font-size:24px;font-weight:900}.qibla-copy{font-size:11px;color:var(--muted);line-height:1.5}.qibla-copy b{color:var(--text)}.map-link{display:inline-flex;align-items:center;gap:5px;margin-top:7px;color:var(--primary);font-weight:800;text-decoration:none;font-size:11px}.photo-saving{font-size:11px;color:var(--primary);margin-top:7px;display:none}.photo-saving.show{display:block}.location-security{margin-top:8px;padding:9px 10px;border-radius:12px;background:#f7faf9;border:1px solid var(--line);font-size:10px;line-height:1.45;color:var(--muted)}.location-security b{color:var(--text)}
+.crop-modal .modal{max-height:calc(100vh - 24px);overflow:auto}/* v3.6: mobile calendar becomes a calm weekly agenda; desktop keeps the full month grid */
+.mobile-agenda-head,.mobile-agenda{display:none}
+.mobile-agenda-head{align-items:center;justify-content:space-between;gap:8px;margin:10px 2px 7px;padding:9px 11px;background:var(--surface2);border:1px solid var(--line);border-radius:13px}
+.mobile-agenda-head span{font-size:11px;font-weight:850;color:var(--primary)}
+.mobile-agenda-head small{font-size:9px;color:var(--muted)}
+.mobile-agenda{gap:7px}
+.mobile-agenda-item{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:9px;width:100%;border:1px solid var(--line);background:#fff;border-radius:15px;padding:9px 10px;text-align:left;color:var(--text);box-shadow:0 5px 16px rgba(18,69,61,.04)}
+.mobile-agenda-item .ma-day{font-size:10px;color:var(--muted);font-weight:800}
+.mobile-agenda-item .ma-date{font-size:18px;font-weight:950;line-height:1.05}
+.mobile-agenda-item .ma-main{min-width:0}
+.mobile-agenda-item .ma-h{font-size:12px;font-weight:850;color:var(--primary)}
+.mobile-agenda-item .ma-g{font-size:10px;color:var(--muted);margin-top:2px}
+.mobile-agenda-item .ma-event{font-size:9px;color:#7b6b47;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-agenda-item .ma-mark{font-size:18px}
+.mobile-agenda-item.selected{border:2px solid var(--primary);padding:8px 9px;background:#f7fcfa}
+.mobile-agenda-item.today:not(.selected){box-shadow:inset 0 0 0 1px var(--gold)}
+@media(max-width:767px){
+  .calendar-card{padding:12px}
+  .calendar-card .week,.calendar-card > .days{display:grid}
+  .calendar-card > .days{grid-template-columns:repeat(7,1fr);gap:4px}
+  .mobile-agenda-head,.mobile-agenda{display:none}
+  .calendar-simple-note{font-size:9px;margin-bottom:6px}
+  .calendar-head h3{font-size:16px}
+  .calendar-head small{font-size:9px}
+  .day{min-height:67px;padding:6px 4px;border-radius:11px}
+  .day .d{font-size:13px}
+  .day .h{font-size:8px;margin-top:2px}
+  .day .g{font-size:8px}
+  .day .wd{font-size:7px}
+  .day .event{font-size:7px}
+  .calendar-selected{margin-top:9px}
+  .calendar-selected .btn{min-height:42px}
+  .location-save-row{margin-top:10px}
+}
+@media(max-width:767px){.prayer-card{padding:12px}.prayer-head h2{font-size:15px}.prayer-actions{gap:4px}.prayer-actions .btn{min-height:32px;padding:6px 8px;font-size:10px}.prayer-grid{grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.prayer-item{padding:6px 4px;border-radius:10px}.prayer-item b{font-size:10px}.prayer-item span{font-size:13px;margin-top:2px}.prayer-item:last-child{grid-column:auto}.prayer-countdown{padding:8px 10px}.prayer-countdown .pc-main{font-size:19px}}
+
+.profile-form{display:grid;gap:12px;text-align:left}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.field input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;outline:none;background:#fff}.field input:focus{border-color:#66a99f}
+.settings{display:grid;gap:8px;margin-top:14px}.setting{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px;border:1px solid var(--line);border-radius:14px}.setting b{font-size:13px}.setting span{font-size:11px;color:var(--muted)}
+.toggle{width:46px;height:26px;border-radius:99px;border:0;background:#cfdad7;position:relative}.toggle:after{content:"";width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;left:3px;top:3px;transition:.2s}.toggle.on{background:var(--primary)}.toggle.on:after{left:23px}
+.community{margin-top:14px}.activity{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}.activity:last-child{border:0}.activity .mini-avatar{width:34px;height:34px;border-radius:50%;background:#eef6f3;display:grid;place-items:center;font-weight:800;font-size:11px;color:var(--primary);flex:none}.activity p{margin:0;font-size:12px;line-height:1.45}.activity small{color:var(--muted);font-size:10px}
+.badge{display:inline-flex;align-items:center;gap:5px;background:#eef7f4;color:var(--primary);border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800}
+.notice{background:#f7faf9;border:1px dashed #c9d8d4;border-radius:14px;padding:12px;font-size:11px;line-height:1.5;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:88px;transform:translate(-50%,16px);background:#103f3b;color:#fff;padding:12px 15px;border-radius:13px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.22s;z-index:100;font-size:12px;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(7,35,32,.48);z-index:90;align-items:flex-end;justify-content:center;padding:12px;touch-action:none;overscroll-behavior:contain;isolation:isolate}.modal-backdrop.show{display:flex}.modal-backdrop.show .modal{touch-action:auto;overscroll-behavior:contain;pointer-events:auto}.modal-backdrop:not(.show){pointer-events:none}.modal-backdrop.show{pointer-events:auto}.modal{background:#fff;border-radius:22px;padding:18px;width:min(480px,100%);box-shadow:0 20px 60px rgba(0,0,0,.18)}.modal h3{margin:0 0 6px;font-size:17px}.modal p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
+.mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;background:#0b4f49;backdrop-filter:blur(14px);border-top:1px solid #12635b;box-shadow:0 -8px 24px rgba(7,52,47,.2);z-index:40;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.mobile-nav button{border:0;background:transparent;color:#a9c5c0;font-size:9px;padding:6px 2px;min-height:52px;touch-action:manipulation;pointer-events:auto;border-radius:12px}.mobile-nav button:active{transform:scale(.96)}.mobile-nav button.active{background:#12635b;color:#fff;font-weight:900}.mobile-nav span{display:block;color:inherit;font-size:20px;line-height:1;margin-bottom:4px;font-family:Georgia,serif;font-weight:700}
+.desktop-only{display:none}
+
+@media(min-width:768px){
+ body{background:linear-gradient(180deg,#edf8f5 0,#f7faf9 460px)}
+ .app{display:flex}.sidebar{display:flex;flex-direction:column;width:238px;flex:none;background:#0b4f49;color:#eaf7f4;min-height:100vh;position:fixed;inset:0 auto 0 0;padding:22px 14px;z-index:20}
+ .brand{display:flex;gap:10px;align-items:center;padding:5px 8px 24px}.brand-icon{width:40px;height:40px;border-radius:12px;background:var(--gold);color:var(--primary-dark);display:grid;place-items:center}.brand b{display:block}.brand small{opacity:.65}
+ .nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#cfe5e1;text-align:left;padding:12px;border-radius:12px;display:flex;gap:10px;align-items:center}.nav button.active,.nav button:hover{background:#12635b;color:#fff}
+ .sidebar-note{margin-top:auto;padding:18px 7px 4px;font-size:10px;line-height:1.5;color:#a9c5c0}
+ .main{margin-left:238px;width:calc(100% - 238px);padding:25px 28px 45px}.mobile-brand{display:none}.desktop-only{display:block}.mobile-nav{display:none}
+ .topbar{margin-bottom:20px}.hero{padding:30px}.hero h1{font-size:36px}.hero-actions{display:flex}.stats{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:1.35fr .65fr}.worship{flex-direction:row;align-items:center}.status{width:auto;display:flex;justify-content:flex-end}.status button{min-width:48px}.recap-hero{grid-template-columns:repeat(4,1fr)}.modal-backdrop{align-items:center}
+}
+@media(min-width:1100px){.main{padding-left:40px;padding-right:40px}.hero h1{font-size:40px}}
+@media(max-width:767px){.crop-modal{padding:8px}.crop-modal .modal{border-radius:22px;padding:16px}.crop-canvas{width:min(76vw,300px);height:min(76vw,300px)}.calendar-card{touch-action:pan-y}.calendar-head .icon-btn{min-width:48px;min-height:48px}.calendar-jump select{min-height:42px}.calendar-jump{gap:6px}.calendar-jump span{display:none}.calendar-swipe-hint{display:block}.section-head{margin-top:18px}.card{padding:14px}.hero{padding:22px 18px}.hero-actions{gap:8px}.btn{min-height:46px}.status button{min-height:44px}.save-wrap{bottom:auto}.toast{bottom:94px;max-width:calc(100vw - 28px);white-space:normal;text-align:center}.mobile-nav{padding-left:6px;padding-right:6px}.mobile-nav button{font-size:10px}.mobile-nav span{font-size:18px}}
+@media(max-width:360px){.main{padding-left:10px;padding-right:10px}.topbar{margin-left:-10px;margin-right:-10px;padding:0 10px}.mobile-brand{font-size:14px}.hero h1{font-size:26px}.status{grid-template-columns:repeat(2,1fr)}.day{min-height:57px;padding:6px 4px}.day .h{font-size:8px}.calendar-card{padding:10px}.week,.days{gap:4px}}
+
+/* v3.8 client-preferred calendar + location UX
+   Keep the 7-column calendar on mobile; reduce visual density without changing the overall format. */
+.calendar-card .days{gap:6px}
+.calendar-card .day{
+  min-height:82px;
+  padding:8px 6px;
+  border-radius:13px;
+  gap:3px;
+  overflow:hidden;
+}
+.calendar-card .day .d{font-size:15px;line-height:1.05}
+.calendar-card .day .g{
+  font-size:10px;
+  line-height:1.15;
+  color:var(--primary);
+  font-weight:850;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.calendar-card .day .h{
+  font-size:9px;
+  line-height:1.1;
+  margin-top:1px;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.calendar-card .day .wd{font-size:8px;line-height:1.05}
+.calendar-card .day .event{font-size:7px;line-height:1.05}
+.calendar-card .day .dot{width:5px;height:5px}
+.location-save-row{
+  margin-top:12px;
+  position:sticky;
+  bottom:0;
+  z-index:2;
+  padding-top:7px;
+  background:linear-gradient(180deg,rgba(255,255,255,0),#fff 20%);
+}
+.location-save-row .btn{
+  min-height:50px;
+  font-size:13px;
+  box-shadow:0 7px 18px rgba(16,70,63,.12);
+}
+@media(max-width:767px){
+  .calendar-card{padding:12px 10px}
+  .calendar-card .week,.calendar-card > .days{gap:4px}
+  .calendar-card .day{min-height:76px;padding:7px 4px;border-radius:12px}
+  .calendar-card .day .d{font-size:14px}
+  .calendar-card .day .g{font-size:9px}
+  .calendar-card .day .h{font-size:8px}
+  .calendar-card .day .wd{font-size:7px}
+  .calendar-card .day .event{display:none}
+  .calendar-card .calendar-simple-note{font-size:9px}
+  .location-modal .modal{
+    max-height:calc(100dvh - 24px);
+    overflow-y:auto;
+  }
+}
+
+html.modal-open,html.modal-open body{overscroll-behavior:none;} html.modal-open body{touch-action:none;} .modal-backdrop.show .modal{max-height:calc(100dvh - 24px);overflow:auto;-webkit-overflow-scrolling:touch;}
+
+/* v4.4 — Kalender Jadwal Salat 30 Hari */
+.prayer-calendar-entry{
+  margin-top:12px;padding:12px;border:1px solid #e4eee9;border-radius:16px;
+  background:linear-gradient(135deg,#f7fcfa,#fffaf0);
+}
+.prayer-calendar-entry .pce-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.prayer-calendar-entry .pce-copy b{font-size:13px}
+.prayer-calendar-entry .pce-copy span{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.prayer-calendar-entry .pce-btn{white-space:nowrap}
+.prayer-schedule-page{padding-bottom:18px}
+.prayer-schedule-hero{
+  background:linear-gradient(135deg,#0d7067,#084f49);color:#fff;border-radius:24px;
+  padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden
+}
+.prayer-schedule-hero:after{content:"☾";position:absolute;right:4px;top:-30px;font-size:135px;opacity:.07}
+.ps-back{display:inline-flex;align-items:center;gap:7px;border:0;background:rgba(255,255,255,.12);color:#fff;
+  border-radius:12px;padding:9px 12px;font-weight:800;min-height:42px}
+.ps-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.72;margin-top:15px}
+.prayer-schedule-hero h1{font-family:Georgia,serif;font-size:28px;line-height:1.1;margin:5px 0 7px}
+.prayer-schedule-hero p{margin:0;font-size:11px;opacity:.82;line-height:1.5}
+.ps-location{margin-top:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ps-location .badge{background:rgba(255,255,255,.12);color:#fff}
+.ps-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0 10px}
+.ps-range{min-width:0}
+.ps-range b{font-size:15px}.ps-range span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.ps-arrows{display:flex;gap:6px}
+.ps-arrows .btn{min-width:44px;padding:8px 11px}
+.ps-tools{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.ps-tools .btn{min-height:42px}
+.prayer-table-card{padding:10px;overflow:hidden}
+.prayer-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:15px}
+.prayer-table{width:100%;min-width:790px;border-collapse:separate;border-spacing:0;font-size:11px}
+.prayer-table th,.prayer-table td{padding:10px 9px;text-align:center;border-bottom:1px solid #e7efec;white-space:nowrap}
+.prayer-table th{position:sticky;top:0;background:#eef7f4;color:var(--primary);font-weight:900;z-index:2}
+.prayer-table th:first-child,.prayer-table td:first-child{text-align:left;position:sticky;left:0;z-index:3}
+.prayer-table th:first-child{background:#eef7f4}.prayer-table td:first-child{background:#fff}
+.prayer-table tr:last-child td{border-bottom:0}
+.prayer-table tbody tr.today td{background:#fff8df}
+.prayer-table .date-main{font-weight:900;font-size:12px}.prayer-table .date-sub{display:block;font-size:9px;color:var(--muted);margin-top:2px}
+.prayer-table .hijri{font-weight:800;color:var(--text)}.prayer-table .time{font-weight:850;color:var(--primary)}
+.prayer-table .next-day{box-shadow:inset 3px 0 0 var(--gold)}
+.ps-mobile-list{display:none}
+.ps-mobile-row{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
+.ps-mobile-row.today{border-color:#d7b55d;box-shadow:inset 0 0 0 1px rgba(214,178,93,.35)}
+.ps-mobile-date{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:9px}
+.ps-mobile-date b{font-size:14px}.ps-mobile-date span{font-size:10px;color:var(--muted);text-align:right}
+.ps-mobile-hijri{font-size:11px;font-weight:850;color:var(--primary);margin-top:2px}
+.ps-times{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.ps-time{border:1px solid #e5eeeb;border-radius:12px;padding:8px;text-align:center;background:#f9fcfb}
+.ps-time span{display:block;font-size:9px;color:var(--muted)}.ps-time b{display:block;font-size:14px;color:var(--primary);margin-top:2px}
+.ps-note{font-size:10px;color:var(--muted);line-height:1.5;margin:10px 2px 0}
+.prayer-columns-backdrop{display:none;position:fixed;inset:0;background:rgba(7,35,32,.48);z-index:95;align-items:flex-end;justify-content:center;padding:10px}
+.prayer-columns-backdrop.show{display:flex}
+.prayer-columns-modal{width:min(520px,100%);background:#fff;border-radius:22px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:calc(100dvh - 20px);overflow:auto}
+.pcm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.pcm-head h3{margin:0;font-size:18px}.pcm-head p{margin:5px 0 0;font-size:11px;color:var(--muted)}
+.pcm-close{border:0;background:var(--surface2);color:var(--primary);width:40px;height:40px;border-radius:12px;font-size:20px}
+.pcm-list{display:grid;gap:7px;margin-top:15px}
+.pcm-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:14px;padding:11px 12px}
+.pcm-item b{font-size:13px}.pcm-item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.pcm-check{width:25px;height:25px;border-radius:8px;border:1px solid #c8d8d3;background:#fff;display:grid;place-items:center;color:#fff;font-size:14px}
+.pcm-check.on{background:var(--primary);border-color:var(--primary)}
+.pcm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
+@media(max-width:767px){
+  .prayer-schedule-hero{padding:18px}.prayer-schedule-hero h1{font-size:25px}
+  .ps-controls{align-items:flex-end}.ps-tools{display:grid;grid-template-columns:1fr 1fr}
+  .ps-tools .btn:last-child{grid-column:span 2}
+  .prayer-table-card{padding:8px}.prayer-table-wrap{display:none}.ps-mobile-list{display:block}
+  .prayer-columns-backdrop{padding:8px}
+}
+@media(min-width:768px){
+  .prayer-schedule-page{max-width:1120px}
+  .ps-mobile-list{display:none}
+}
+
+
+
+/* v5.15 — final client fixes: dark-mode visibility, responsive account form, text-only bug report */
+html[data-theme="dark"] .pdm-time{
+  background:linear-gradient(135deg,#0d332e,#10443d) !important;
+  border-color:#286158 !important;
+  color:#f3fffc !important;
+}
+html[data-theme="dark"] .pdm-time span{color:#f3fffc !important}
+html[data-theme="dark"] .pdm-time b{color:#74e0c7 !important}
+html[data-theme="dark"] .pdm-time.next{
+  background:linear-gradient(135deg,#12675c,#0f554d) !important;
+  border-color:#55bca8 !important;
+  box-shadow:0 0 0 2px rgba(116,224,199,.16),0 8px 22px rgba(0,0,0,.14) !important;
+}
+html[data-theme="dark"] .pdm-time.next span,
+html[data-theme="dark"] .pdm-time.next b{color:#123c36 !important}
+html[data-theme="dark"] .pdm-time.next{
+  background:#eaf7f4 !important;
+  border-color:#69c9b8 !important;
+}
+html[data-theme="dark"] .prayer-day-modal{
+  background:linear-gradient(180deg,#0a2a26,#09231f) !important;
+  color:#f3fffc !important;
+  border:1px solid #25584f;
+}
+html[data-theme="dark"] .pdm-head h3,
+html[data-theme="dark"] .pdm-head p{color:#f3fffc}
+html[data-theme="dark"] .pdm-head p{opacity:.72}
+html[data-theme="dark"] .pdm-location{
+  background:#eef9f7 !important;
+  color:#0b6b63 !important;
+}
+html[data-theme="dark"] .prayer-day-modal .btn.outline{
+  background:#0d332e !important;color:#f3fffc !important;border-color:#286158 !important;
+}
+html[data-theme="dark"] .account-popover{
+  background:linear-gradient(180deg,#0b302b,#092620);
+  border-color:#286158;
+  color:#f3fffc;
+}
+html[data-theme="dark"] .account-popover .field label{color:#f3fffc}
+html[data-theme="dark"] .account-popover .field input{
+  background:#0d332e;color:#f3fffc;border-color:#2b6259;
+}
+html[data-theme="dark"] .account-popover .field input::placeholder{color:#91aaa5}
+.account-popover .field input{
+  width:100%;
+  min-width:0;
+  min-height:46px;
+  -webkit-appearance:none;
+  appearance:none;
+  touch-action:manipulation;
+  pointer-events:auto;
+  user-select:text;
+  -webkit-user-select:text;
+}
+.account-popover{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.account-popover .field{min-width:0}
+.account-popover .btn{touch-action:manipulation}
+@media(max-width:767px){
+  .account-popover{
+    width:calc(100vw - 20px);
+    max-width:520px;
+    max-height:calc(100dvh - 18px);
+    padding:14px;
+    border-radius:20px;
+  }
+  .account-popover-form{gap:10px}
+  .account-popover-form .field input{
+    min-height:48px;
+    font-size:16px; /* prevents mobile browser zoom and makes the field easier to edit */
+    padding:11px 12px;
+  }
+  .account-popover .modal-actions{flex-wrap:wrap}
+}
+
+/* v4.6 client fixes */
+.account-popover{
+  position:fixed;
+  top:50%;
+  left:50%;
+  right:auto;
+  bottom:auto;
+  transform:translate(-50%,-50%);
+  width:min(520px,calc(100vw - 28px));
+  max-height:calc(100dvh - 28px);
+  overflow:auto;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 24px 70px rgba(18,69,61,.20),0 0 0 100vmax rgba(4,23,20,.52);
+  z-index:1000;
+  isolation:isolate;
+  pointer-events:auto;
+  touch-action:pan-y;
+}
+.account-popover[hidden]{display:none}
+.account-popover-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.account-popover-head h3{margin:2px 0 0;font-size:18px}
+.account-popover-summary{display:flex;align-items:center;gap:12px;padding:12px 0}
+.account-popover-identity{min-width:0}
+.account-popover-identity b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.account-popover-identity span,.account-popover-identity small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.profile-big.compact{width:58px;height:58px;margin:0;border-width:3px;font-size:18px;flex:none}
+.account-popover-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.account-popover-form{display:grid;gap:9px;margin-top:12px}
+.account-popover-form .field input{padding:10px 11px}
+.account-popover-divider{height:1px;background:var(--line);margin:13px 0}
+.account-popover-grid{display:grid;gap:7px}
+.account-popover-close{width:100%;margin-top:9px;border:0;background:var(--surface2);color:var(--primary);border-radius:12px;min-height:42px;font-weight:850}
+.profile-compact-card{padding:14px}
+.profile-compact-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.profile-compact-row>.profile-big{margin:0}
+.profile-compact-row>b,.profile-compact-row div>b{display:block;font-size:16px}
+.profile-compact-row span,.profile-compact-row small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.legacy-profile-form{display:none!important}
+.prayer-table-card{display:none!important}
+.ps-calendar-card{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.ps-calendar-card.is-dragging{cursor:grabbing}
+.ps-calendar-grid{touch-action:pan-y}
+.prayer-columns-backdrop,.prayer-day-backdrop{touch-action:none}
+.prayer-columns-modal,.prayer-day-modal{touch-action:auto}
+@media(max-width:767px){
+  .account-popover{top:64px;right:8px;width:calc(100vw - 16px);max-height:calc(100dvh - 74px)}
+}
+
+
+/* v4.7 client polish */
+.account-popover-actions.single-action{grid-template-columns:1fr}
+.account-popover{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.prayer-columns-backdrop,.prayer-day-backdrop{overscroll-behavior:none}
+.prayer-columns-modal,.prayer-day-modal{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.ps-calendar-card{touch-action:pan-y;overscroll-behavior:contain;transition:transform .28s cubic-bezier(.22,.61,.36,1),box-shadow .28s ease}
+.ps-calendar-card.is-dragging{transform:scale(.995);box-shadow:0 10px 28px rgba(18,69,61,.10)}
+.ps-calendar-grid{touch-action:pan-y}
+.ps-calendar-grid button{transition:transform .22s cubic-bezier(.22,.61,.36,1),background-color .22s ease,border-color .22s ease,box-shadow .22s ease}
+.ps-calendar-grid button:active{transform:scale(.975)}
+.location-tools-under-compass{margin-top:12px;margin-bottom:4px}
+.location-tools-under-compass .btn{min-height:46px}
+.prayer-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:8px 10px;font-size:9px;line-height:1.35}
+.prayer-meta span{display:inline}
+
+/* Client v5.2: profile notes + prayer calendar follows main calendar */
+.personal-notes{width:100%;resize:vertical;min-height:120px;border:1px solid var(--line);border-radius:15px;background:var(--surface2);color:var(--text);padding:12px 13px;font-size:12px;line-height:1.55;outline:none}
+.personal-notes:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(11,107,99,.10)}
+.personal-notes-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}.personal-notes-footer small{font-size:9px;color:var(--muted)}
+.ps-calendar-card{padding:13px;touch-action:pan-y;user-select:none;overflow:hidden}
+.ps-calendar-card.is-dragging{cursor:grabbing}
+.ps-calendar-grid{will-change:transform,opacity;transition:transform .28s cubic-bezier(.22,.8,.25,1),opacity .2s ease}
+.ps-calendar-grid button.ps-day-card{min-width:0;min-height:72px;padding:7px 5px;border:1px solid #e9efed;background:#fbfdfc;border-radius:11px;text-align:left;position:relative;color:var(--text);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:2px}
+.ps-calendar-grid button.ps-day-card .ps-day{font-weight:900;font-size:15px;line-height:1.05}
+.ps-calendar-grid button.ps-day-card .ps-g{font-size:9px;color:var(--primary);font-weight:800;white-space:nowrap}
+.ps-calendar-grid button.ps-day-card .ps-hijri{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font-weight:700}
+.ps-calendar-grid button.ps-day-card .ps-wd{font-size:8px;color:var(--muted);font-weight:700;margin-top:auto}
+.ps-calendar-grid button.ps-day-card.today{box-shadow:inset 0 0 0 1px var(--gold);background:var(--gold-soft);border-color:#d6b25d}
+.ps-calendar-grid button.ps-day-card.selected{outline:2px solid var(--primary);outline-offset:1px;background:#e8f6f1;border-color:#70b9aa}
+@media(max-width:767px){
+  .ps-calendar-grid{gap:5px}
+  .ps-calendar-grid button.ps-day-card{min-height:78px;border-radius:11px}
+}
+
+/* Client request: agenda editor + small visual polish */
+.absensi-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.agenda-edit-btn{white-space:nowrap}
+.agenda-editor-page{max-width:760px;margin:0 auto}
+.agenda-editor-sub{margin:3px 0 0;font-size:10px;line-height:1.4}
+.agenda-editor-list{display:grid;gap:8px}
+.agenda-editor-row{display:grid;grid-template-columns:38px 1fr 1fr auto;gap:7px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.agenda-editor-row .agenda-order{display:grid;gap:4px}
+.agenda-editor-row .agenda-order button{width:34px;height:30px;border:1px solid var(--line);background:var(--surface2);color:var(--primary);border-radius:9px;font-weight:900}
+.agenda-editor-row input{width:100%;min-width:0;border:1px solid var(--line);border-radius:11px;background:#fff;padding:10px 11px;font-size:12px;outline:none}
+.agenda-editor-row input:focus{border-color:#66a99f}
+.agenda-editor-row .agenda-emoji-input{text-align:center;font-size:18px}
+.agenda-delete{border:1px solid #f0d8d5;background:#fff7f5;color:#b44b3d;border-radius:11px;min-width:42px;height:42px;font-weight:900}
+.agenda-add-btn{margin-top:10px}
+.agenda-editor-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.agenda-editor-note{margin-top:10px}
+.google-login-btn{display:flex;align-items:center;justify-content:center;gap:9px}
+.google-logo{display:grid;place-items:center;width:22px;height:22px;flex:none;background:#fff;border:1px solid #e1e5e2;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden}.google-logo svg{width:18px;height:18px;display:block}
+.today-accent{background:linear-gradient(135deg,#0b6b63,#17877d)!important;color:#fff!important;border-color:#0b6b63!important;box-shadow:0 5px 14px rgba(11,107,99,.16)}
+.prayer-schedule-open .mobile-nav{display:none!important}
+@media(max-width:767px){
+ .prayer-schedule-open .main{padding-bottom:18px}
+ .agenda-editor-row{grid-template-columns:34px 1fr 44px}
+ .agenda-editor-row .agenda-emoji-input{grid-column:2}
+ .agenda-editor-row .agenda-name-input{grid-column:2}
+ .agenda-editor-row .agenda-delete{grid-column:3;grid-row:1 / span 2}
+ .agenda-editor-row .agenda-order{grid-column:1;grid-row:1 / span 2}
+ .agenda-editor-actions{grid-template-columns:1fr}
+}
+
+/* v4.9 client fixes — only requested polish */
+.main{position:relative}
+.page.page-swipe-peek{position:absolute;top:52px;width:100%;z-index:3;will-change:transform;box-shadow:0 0 30px rgba(18,69,61,.08);pointer-events:none;background:var(--bg)}
+.page.page-swipe-peek.from-right{left:100%;right:auto}
+.page.page-swipe-peek.from-left{left:-100%;right:auto}
+.page.page-swipe-dragging{transition:none!important;will-change:transform}
+.main.page-swipe-active{overflow:hidden}
+@media (max-width:767px){
+  .page.page-swipe-peek{top:52px}
+}
+
+/* Prayer calendar: date-first, detail-on-confirmation */
+.ps-controls,.ps-tools{display:none!important}
+.ps-calendar-card{margin-top:10px;padding:14px}
+.ps-calendar-head{margin-bottom:14px;align-items:center}
+.ps-calendar-head>b{font-size:16px}
+.ps-calendar-head>div>b{font-size:17px}
+.ps-calendar-head small{font-size:10px;line-height:1.4;max-width:250px}
+.ps-calendar-grid{gap:7px}
+.ps-calendar-grid button{
+  min-height:70px;
+  padding:9px 5px;
+  border-radius:15px;
+  background:linear-gradient(180deg,#fff,#f7fbf9);
+  border:1px solid #dfeae6;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 2px 8px rgba(18,69,61,.035);
+}
+.ps-calendar-grid button .ps-day{font-size:18px;line-height:1;font-weight:900}
+.ps-calendar-grid button .ps-hijri{font-size:8px;color:var(--muted);margin-top:4px}
+.ps-calendar-grid button.today{
+  background:var(--gold-soft);
+  border-color:#d6b25d;
+  box-shadow:0 0 0 2px rgba(214,178,93,.12);
+}
+.ps-calendar-grid button.selected{
+  background:#e9f6f2;
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(11,107,99,.13),0 6px 16px rgba(11,107,99,.08);
+}
+.ps-calendar-grid button.today.selected{
+  background:linear-gradient(180deg,#fff7df,#e9f6f2);
+}
+.ps-selected-day{
+  margin-top:12px;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:linear-gradient(135deg,#f6fbf9,#fff);
+  border:1px solid var(--line);
+}
+.ps-selected-day>div{min-width:0}
+.ps-selected-day b{display:block;font-size:12px}
+.ps-selected-day small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.ps-selected-day .btn{flex:none;min-width:132px}
+@media(max-width:767px){
+  .ps-calendar-grid{gap:5px}
+  .ps-calendar-grid button{min-height:64px;border-radius:13px}
+  .ps-calendar-grid button .ps-day{font-size:17px}
+  .ps-selected-day{align-items:stretch;flex-direction:column}
+  .ps-selected-day .btn{width:100%;min-width:0}
+}
+
+/* Main Hijri calendar: selecting a date only moves the selection. */
+.calendar-selected .btn{background:var(--gold);color:#173b36;border-color:transparent;font-weight:900}
+.calendar-selected{padding:12px}
+
+/* Profile page: keep the requested profile area only. */
+#profil .profile-compact-card{margin-bottom:0}
+
+
+/* Kisah Lillah — responsive launch splash (client supplied reference) */
+.kl-splash{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:grid;
+  place-items:center;
+  width:100vw;
+  height:100dvh;
+  min-height:100dvh;
+  overflow:hidden;
+  background:#063d2f;
+  color:#f7f1dc;
+  transition:opacity .38s ease,visibility .38s ease;
+}
+.kl-splash::before{
+  content:"";
+  position:absolute;
+  inset:-3%;
+  background:#021f18 url("splash-client-reference.png") center/100% 100% no-repeat;
+  transform:scale(1.035);
+  filter:saturate(.96) brightness(.9);
+}
+.kl-splash::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(2,31,24,.05),rgba(2,31,24,.12));
+  pointer-events:none;
+}
+.kl-splash-brand,
+.kl-splash-credit{
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
+.kl-splash-icon,.kl-splash-title,.kl-splash-subtitle{display:none}
+.kl-splash.is-hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+@media (max-aspect-ratio: 3/5){.kl-splash::before{background-size:cover;background-position:center}}
+@media (min-width:768px){.kl-splash::before{background-size:cover;background-position:center}}
+@media (prefers-reduced-motion:reduce){
+  .kl-splash{transition:none;}
+}
+@media (max-width:767px){
+  .account-popover{width:min(520px,calc(100vw - 20px));max-height:calc(100dvh - 20px)}
+}
+
+/* v5.1 client-requested polish */
+.section-head-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+.settings-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font-size:18px;display:grid;place-items:center;box-shadow:0 4px 14px rgba(18,69,61,.05)}
+.settings-btn:active{transform:scale(.95)}
+.brand-icon.image-mark{overflow:hidden;padding:0;background:var(--gold)}
+.brand-icon.image-mark img{width:100%;height:100%;display:block;object-fit:cover}
+.profile-shell{max-width:820px;margin:22px auto 0}
+.profile-main-card{padding:20px}
+.profile-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.profile-recap-card,.profile-extra-card{margin-top:12px}
+.profile-recap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.profile-recap-grid>div{padding:13px;border-radius:15px;background:var(--surface2);border:1px solid var(--line)}
+.profile-recap-grid b{display:block;font-size:21px}.profile-recap-grid span{display:block;margin-top:3px;font-size:10px;color:var(--muted)}
+.quick-setting{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);padding:13px 2px;display:grid;grid-template-columns:30px 1fr 18px;gap:9px;text-align:left;align-items:center}
+.quick-setting:last-child{border-bottom:0}.quick-setting>span:first-child{font-size:18px}.quick-setting b,.quick-setting small{display:block}.quick-setting small{font-size:10px;color:var(--muted);margin-top:2px}
+.settings-modal-backdrop{z-index:130}.settings-modal{max-width:560px}.settings-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.settings-list{display:grid;gap:8px;margin-top:14px}.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text)}.setting b,.setting span{display:block;text-align:left}.setting b{font-size:13px}.setting span{font-size:10px;color:var(--muted);margin-top:3px}.setting-button{width:100%;font:inherit}.setting-button>strong{font-size:18px;color:var(--muted)}
+.toggle{width:46px;height:26px;border-radius:99px;border:0;background:#cfdad7;position:relative;flex:none}.toggle:after{content:"";width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;left:3px;top:3px;transition:.2s}.toggle.on{background:var(--primary)}.toggle.on:after{left:23px}
+/* Collection stays as five local buttons and adapts to each viewport. */
+.collection-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.collection-grid{grid-template-columns:1fr}.collection-card{min-height:112px;padding:15px}}
+.collection-reader-page{max-width:100%}
+.collection-reader-head{display:grid;gap:12px;margin-bottom:12px}
+.collection-reader-title{display:flex;align-items:center;gap:12px;padding:2px 0}
+.collection-reader-title .collection-icon{flex:0 0 42px;margin:0}
+.collection-reader-title h2{margin:0}
+.collection-empty-state{min-height:180px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+.collection-empty-state b{font-size:16px}
+.collection-empty-state p{margin:0;color:var(--muted);line-height:1.6}
+@media (min-width:901px){
+  .collection-reader-head{max-width:900px}
+  .collection-empty-state{max-width:900px}
+}
+.collection-card{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:20px;padding:18px;text-align:left;box-shadow:var(--shadow);min-height:150px}.collection-card:active{transform:scale(.985)}.collection-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px rgba(11,107,99,.10),var(--shadow)}.collection-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--surface2);font-size:22px;margin-bottom:14px}.collection-card b,.collection-card small{display:block}.collection-card small{font-size:10px;color:var(--muted);line-height:1.45;margin-top:5px}.collection-detail{display:flex;align-items:center;gap:12px;margin-top:12px} .collection-detail-icon{width:42px;height:42px;border-radius:14px;background:var(--gold-soft);display:grid;place-items:center;font-size:20px}
+.agenda-editor-fields{min-width:0}.agenda-status-toggles{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.agenda-status-toggles label{font-size:9px;color:var(--text);border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:5px 7px;display:flex;align-items:center;gap:4px}.agenda-status-toggles input{accent-color:var(--primary)}
+.status-editor{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.status-editor-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.status-editor-head b{font-size:12px}.status-editor-list{display:grid;gap:6px;margin-top:8px}.status-editor-row{display:grid;grid-template-columns:44px 1fr auto;gap:6px;align-items:center}.status-editor-row input{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);padding:9px;font-size:11px}.status-emoji-input{text-align:center;font-size:16px!important}.status-fixed{font-size:9px;color:var(--muted);padding:0 5px}.status-delete{min-width:34px;height:34px}
+.ps-calendar-grid{transition:transform .25s cubic-bezier(.22,.8,.25,1),opacity .2s ease}.ps-calendar-card.is-dragging{box-shadow:0 12px 32px rgba(18,69,61,.12)}
+html[data-theme="dark"]{
+  --bg:#061b18;--surface:#0b3530;--surface2:#10463f;--text:#f2f8f6;--muted:#a8c0ba;
+  --primary:#69c9b8;--primary-dark:#06231f;--gold:#d8b45f;--gold-soft:#3a3018;
+  --line:#28564f;--danger:#ff8792;--success:#55d3a8;
+  --shadow:0 16px 42px rgba(0,0,0,.42);
+}
+html[data-theme="dark"] body{background:linear-gradient(180deg,#061b18 0,#08221f 460px);color:var(--text)}
+html[data-theme="dark"] .topbar{background:rgba(6,27,24,.92);border-bottom-color:var(--line)}
+html[data-theme="dark"] .profile-chip{background:rgba(11,53,48,.96);border-color:var(--line);color:var(--text)}
+html[data-theme="dark"] .brand-mark.image-mark{background:#d8b45f}
+html[data-theme="dark"] .sidebar{background:#06342f}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .collection-card,
+html[data-theme="dark"] .setting,
+html[data-theme="dark"] .profile-notes-card,
+html[data-theme="dark"] .profile-main-card{
+  background:linear-gradient(145deg,#0c3b35,#092f2b);
+  border-color:#2a5b53;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 14px 32px rgba(0,0,0,.24);
+}
+html[data-theme="dark"] .btn.outline{background:#0b3530;color:var(--text);border-color:#2b5a52}
+html[data-theme="dark"] .btn.ghost{background:#10463f;color:var(--primary)}
+html[data-theme="dark"] .agenda-editor-row,
+html[data-theme="dark"] .agenda-editor-row input,
+html[data-theme="dark"] .status-editor-row input,
+html[data-theme="dark"] .personal-notes{background:#0a2d29;color:var(--text);border-color:#2b5a52}
+html[data-theme="dark"] .day,
+html[data-theme="dark"] .ps-calendar-grid button{
+  background:linear-gradient(145deg,#10453e,#0b3732);
+  border-color:#2b5a52;color:var(--text);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 5px 14px rgba(0,0,0,.18);
+}
+html[data-theme="dark"] .day.empty{background:transparent;box-shadow:none}
+html[data-theme="dark"] .day.done{background:#104b41;border-color:#39776c}
+html[data-theme="dark"] .day.today,
+html[data-theme="dark"] .ps-calendar-grid button.today{background:linear-gradient(145deg,#4b3b18,#342a14);border-color:#d8b45f}
+html[data-theme="dark"] .day.selected,
+html[data-theme="dark"] .ps-calendar-grid button.selected{background:linear-gradient(145deg,#14564e,#0d403a);border-color:#69c9b8}
+html[data-theme="dark"] .ps-selected-day,
+html[data-theme="dark"] .calendar-selected{background:linear-gradient(145deg,#10463f,#0c3934);border-color:#2b5a52;color:var(--text)}
+html[data-theme="dark"] .metric,
+html[data-theme="dark"] .profile-recap-grid>div{background:#10463f;color:var(--text)}
+html[data-theme="dark"] .mobile-nav{background:rgba(6,27,24,.97);border-color:#28564f}
+html[data-theme="dark"] .prayer-countdown.elapsed{background:linear-gradient(135deg,#7e6120,#4e3c16)}
+html[data-theme="dark"] .notice{background:#0d3934;border-color:#2b5a52;color:var(--text)}
+html[data-theme="dark"] .prayer-calendar-entry{background:linear-gradient(145deg,#0f403a,#0b332f);border-color:#2b5a52}
+html[data-theme="dark"] .prayer-schedule-hero{background:linear-gradient(135deg,#0d6b61,#083f3a)}
+html[data-theme="dark"] .ps-calendar-week{color:#a8c0ba}
+html[data-theme="dark"] .ps-selected-day b{color:var(--text)}
+html[data-theme="dark"] .settings-modal,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .account-popover,
+html[data-theme="dark"] .prayer-day-modal,
+html[data-theme="dark"] .prayer-columns-modal{background:#0b3530;color:var(--text);border-color:#2b5a52}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{background:#0a2d29;color:var(--text);border-color:#2b5a52}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#8fa9a3}
+html[data-theme="dark"] .settings-btn{background:#0b3530;color:var(--text);border-color:#2b5a52}
+@media(max-width:767px){
+ .profile-shell{margin-top:10px}.profile-action-grid{grid-template-columns:1fr 1fr}.profile-recap-grid{grid-template-columns:1fr 1fr}
+ .collection-grid{grid-template-columns:1fr}.collection-card{min-height:auto;padding:15px}.collection-icon{margin-bottom:9px}
+ .collection-resource-grid{grid-template-columns:1fr}
+ .agenda-status-toggles{max-height:76px;overflow:auto}
+ .status-editor-row{grid-template-columns:42px 1fr auto}
+}
+@media(min-width:768px){
+ .collection-grid{grid-template-columns:repeat(3,1fr)}
+ .profile-main-card{padding:24px}
+}
+
+/* v5.3 client fixes — dark-mode contrast, touch recovery, notes */
+html[data-theme="dark"] .btn.gold{color:#123b35}
+html[data-theme="dark"] .btn.primary{background:#f4faf8;color:#0b5c54}
+html[data-theme="dark"] .worship{
+  background:linear-gradient(145deg,#102f2b,#0b2926);
+  border-color:#2b5b53;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 8px 20px rgba(0,0,0,.18);
+}
+html[data-theme="dark"] .w-ico{background:#17443d;color:#eaf8f5}
+html[data-theme="dark"] .status button{
+  background:#112d2a;
+  border-color:#3a655e;
+  color:#e6f1ee;
+}
+html[data-theme="dark"] .status button.active{
+  background:#1d5a50;
+  border-color:#69c9b8;
+  color:#f5fffc;
+}
+html[data-theme="dark"] .status button.danger.active{
+  background:#542b31;
+  border-color:#e38a94;
+  color:#fff4f5;
+}
+html[data-theme="dark"] .status button .stext{color:inherit}
+html[data-theme="dark"] .save-wrap{
+  background:transparent;
+  padding:12px 0 0;
+}
+html[data-theme="dark"] .save-wrap .btn.gold{
+  box-shadow:0 8px 20px rgba(216,180,95,.18);
+}
+html[data-theme="dark"] .save-wrap .whatsapp-send-btn{
+  background:#0b4d45;
+  border:1px solid #2b655c;
+  color:#f3fffc;
+}
+html[data-theme="dark"] .prayer-item{
+  background:linear-gradient(145deg,#123b35,#0c302c);
+  border-color:#2b5b53;
+  color:var(--text);
+}
+html[data-theme="dark"] .prayer-item b{color:#edf8f5}
+html[data-theme="dark"] .prayer-item span{color:#69c9b8}
+html[data-theme="dark"] .prayer-item.next{
+  background:linear-gradient(145deg,#e8f7f3,#cfeee7) !important;
+  border-color:#e4c76d !important;
+  box-shadow:0 0 0 2px rgba(228,199,109,.34),0 8px 20px rgba(0,0,0,.18) !important;
+  transform:translateY(-1px);
+}
+html[data-theme="dark"] .prayer-item.next b,
+html[data-theme="dark"] .prayer-item.next span{
+  color:#12483f !important;
+}
+html[data-theme="dark"] .prayer-status{background:#0c302c;color:var(--muted)}
+html[data-theme="dark"] .prayer-meta{background:#10443d;color:var(--muted)}
+html[data-theme="dark"] .prayer-note{color:#a8c0ba}
+html[data-theme="dark"] .location-status{color:#b4cbc5}
+html[data-theme="dark"] .location-security{
+  background:#0d3732;border-color:#2b5b53;color:#b4cbc5;
+}
+html[data-theme="dark"] .location-preview{background:#0d3732;border-color:#2b5b53;color:var(--text)}
+html[data-theme="dark"] .qibla-card{background:linear-gradient(135deg,#103a34,#0c2f2b)}
+html[data-theme="dark"] .qibla-compass{
+  background:radial-gradient(circle,#123d37 0 55%,#0c302c 56% 100%);
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .qibla-center{border-color:#0b3530}
+html[data-theme="dark"] .prayer-calendar-entry{
+  border-color:#2b5b53;
+  background:linear-gradient(135deg,#103b35,#102f2b);
+}
+html[data-theme="dark"] .pce-copy b{color:#eef9f6}
+html[data-theme="dark"] .pce-copy span{color:#a8c0ba}
+html[data-theme="dark"] .icon-btn{
+  background:#103a35;
+  border-color:#2b5b53;
+  color:#f2f8f6;
+}
+html[data-theme="dark"] .day{
+  background:linear-gradient(145deg,#10453e,#0b3732);
+  border-color:#2b5b53;
+  color:var(--text);
+}
+html[data-theme="dark"] .day.empty{background:transparent}
+html[data-theme="dark"] .day.done{background:#145047;border-color:#39776c}
+html[data-theme="dark"] .day .h,
+html[data-theme="dark"] .day .wd{color:#a8c0ba}
+html[data-theme="dark"] .day .g,
+html[data-theme="dark"] .day .event{color:#69c9b8}
+html[data-theme="dark"] .calendar-selected{
+  background:linear-gradient(145deg,#10463f,#0c3934);
+  border-color:#2b5b53;
+  color:var(--text);
+}
+html[data-theme="dark"] .calendar-selected .tag{
+  background:#3b321b;
+  color:#f1d98e;
+}
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card{
+  background:linear-gradient(145deg,#10453e,#0b3732);
+  border-color:#2b5b53;
+  color:var(--text);
+}
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card.today{
+  background:linear-gradient(145deg,#4b3b18,#342a14);
+  border-color:#d8b45f;
+}
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card.selected{
+  background:linear-gradient(145deg,#14564e,#0d403a);
+  border-color:#69c9b8;
+}
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card .ps-g{color:#69c9b8}
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card .ps-hijri,
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card .ps-wd{color:#a8c0ba}
+html[data-theme="dark"] .mobile-agenda-item{
+  background:linear-gradient(145deg,#10453e,#0b3732);
+  color:var(--text);
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .mobile-agenda-item .ma-day,
+html[data-theme="dark"] .mobile-agenda-item .ma-g{color:#a8c0ba}
+html[data-theme="dark"] .mobile-agenda-item .ma-h{color:#69c9b8}
+html[data-theme="dark"] .mobile-agenda-item .ma-event{color:#e0ca83}
+html[data-theme="dark"] .notes-composer{
+  background:linear-gradient(145deg,#0d3833,#0a2f2b);
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .personal-note-title,
+html[data-theme="dark"] .personal-notes{
+  background:#0a2d29;
+  color:#f2f8f6;
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .personal-note-title::placeholder,
+html[data-theme="dark"] .personal-notes::placeholder{color:#8fa9a3}
+html[data-theme="dark"] .saved-note-card{
+  background:linear-gradient(145deg,#103d37,#0c332f);
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .saved-note-card p{color:#d8e8e3}
+html[data-theme="dark"] .notes-empty{background:#0b3530;border-color:#2b5b53}
+html[data-theme="dark"] .notes-count{background:#16443e;color:#a9ded3}
+html[data-theme="dark"] .note-action{
+  background:#0b3530;
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .note-action.danger{background:#482a30;border-color:#704047}
+html[data-theme="dark"] .profile-recap-grid>div{
+  background:#10463f;
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .profile-main-card,
+html[data-theme="dark"] .profile-recap-card,
+html[data-theme="dark"] .profile-notes-card{
+  background:linear-gradient(145deg,#0c3b35,#092f2b);
+}
+html[data-theme="dark"] .settings-modal .toggle{background:#163f39;border-color:#2b5b53}
+html[data-theme="dark"] .settings-modal .toggle.on{background:#0b6b63}
+html[data-theme="dark"] .modal-backdrop{background:rgba(0,0,0,.62)}
+html[data-theme="dark"] .location-modal .modal,
+html[data-theme="dark"] .modal{
+  background:#0b3530;
+  color:var(--text);
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .modal p,
+html[data-theme="dark"] .modal .muted{color:#a8c0ba}
+html[data-theme="dark"] .location-field input,
+html[data-theme="dark"] .location-field select{
+  background:#0a2d29;color:#f2f8f6;border-color:#2b5b53;
+}
+html[data-theme="dark"] .modal .btn.outline{background:#0b3530;color:#f2f8f6}
+html[data-theme="dark"] .modal .btn.ghost{background:#10463f;color:#69c9b8}
+html[data-theme="dark"] .agenda-editor-row{
+  background:#0d3833;border-color:#2b5b53;
+}
+html[data-theme="dark"] .agenda-editor-row input,
+html[data-theme="dark"] .status-editor-row input{
+  background:#0a2d29;color:#f2f8f6;border-color:#2b5b53;
+}
+
+/* Personal notes card — a compact notebook without changing the surrounding profile layout */
+.notes-count{
+  flex:none;padding:5px 8px;border-radius:999px;background:var(--surface2);
+  color:var(--primary);font-size:9px;font-weight:850;border:1px solid var(--line);
+}
+.notes-composer{
+  border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#f9fcfb,#f3f8f6);
+  padding:11px;
+}
+.notes-composer-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.notes-composer-head b{font-size:11px}
+.notes-cancel{
+  border:0;background:var(--surface2);color:var(--primary);border-radius:999px;padding:6px 9px;
+  font-size:9px;font-weight:850;cursor:pointer;
+}
+.personal-note-title{
+  width:100%;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--text);
+  padding:10px 11px;font-size:11px;font-weight:800;outline:none;margin-bottom:7px;
+}
+.personal-note-title::placeholder{color:var(--muted);font-weight:600}
+.saved-notes{display:grid;gap:8px;margin-top:10px}
+.saved-note-card{
+  border:1px solid var(--line);border-radius:15px;background:var(--surface);padding:11px 12px;
+  box-shadow:0 6px 18px rgba(18,69,61,.045);
+}
+.saved-note-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.saved-note-head>div:first-child{min-width:0}
+.saved-note-head b{display:block;font-size:12px;line-height:1.3;overflow-wrap:anywhere}
+.saved-note-head small{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.saved-note-actions{display:flex;gap:5px;flex:none}
+.note-action{
+  width:31px;height:31px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);
+  display:grid;place-items:center;font-size:13px;padding:0;
+}
+.note-action.danger{background:#fff2f3;border-color:#f0d0d4}
+.saved-note-card p{margin:9px 0 0;font-size:10px;line-height:1.55;color:var(--text);overflow-wrap:anywhere}
+.notes-empty{
+  display:grid;justify-items:center;text-align:center;gap:4px;border:1px dashed var(--line);border-radius:15px;
+  padding:18px 14px;background:var(--surface2);color:var(--muted);
+}
+.notes-empty span{font-size:24px}.notes-empty b{font-size:11px;color:var(--text)}
+.notes-empty small{font-size:9px;line-height:1.45;max-width:290px}
+@media(max-width:420px){
+  .saved-note-head{gap:6px}
+  .notes-composer{padding:10px}
+}
+
+
+/* Small polish requested for the existing action areas */
+.save-wrap{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:12px;
+  margin-top:10px;
+  background:linear-gradient(135deg,#f8fcfa,#fffaf0);
+}
+.location-save-row{
+  padding:8px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface2);
+}
+html[data-theme="dark"] .save-wrap{
+  border-color:#2b5b53;
+  background:linear-gradient(145deg,#0d3a34,#0a2e2a);
+}
+html[data-theme="dark"] .location-more{
+  background:#0a2d29;
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .location-select{
+  background:#0a2d29;
+  color:#f2f8f6;
+  border-color:#2b5b53;
+}
+html[data-theme="dark"] .location-save-row{
+  background:#0e3b35;
+  border-color:#2b5b53;
+}
+
+
+/* v5.4 client fix — consistent dark mode + touch recovery */
+html[data-theme="light"]{color-scheme:light}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#061b18;
+  --surface:#0b3530;
+  --surface2:#10463f;
+  --text:#f2f8f6;
+  --muted:#a8c0ba;
+  --primary:#69c9b8;
+  --primary-dark:#06231f;
+  --gold:#d8b45f;
+  --gold-soft:#3a3018;
+  --line:#28564f;
+  --danger:#ff8792;
+  --success:#55d3a8;
+  --shadow:0 16px 42px rgba(0,0,0,.42);
+}
+html[data-theme="dark"],
+html[data-theme="dark"] body{
+  background:#061b18;
+  color:var(--text);
+}
+html[data-theme="dark"] body{
+  background:linear-gradient(180deg,#061b18 0,#08221f 460px);
+}
+html[data-theme="dark"] .topbar{
+  background:rgba(6,27,24,.94);
+  border-bottom-color:var(--line);
+}
+html[data-theme="dark"] .mobile-nav{
+  background:rgba(6,27,24,.98);
+  border-top-color:var(--line);
+}
+html[data-theme="dark"] .mobile-nav button{color:#9eb8b1}
+html[data-theme="dark"] .mobile-nav button.active{color:var(--primary)}
+html[data-theme="dark"] .btn.primary{background:#f4faf8;color:#0b5c54}
+html[data-theme="dark"] .btn.outline,
+html[data-theme="dark"] .btn.ghost,
+html[data-theme="dark"] .icon-btn,
+html[data-theme="dark"] .seg,
+html[data-theme="dark"] .period-btn,
+html[data-theme="dark"] .location-select,
+html[data-theme="dark"] .location-more,
+html[data-theme="dark"] .crop-mode button,
+html[data-theme="dark"] .crop-controls button,
+html[data-theme="dark"] .account-item,
+html[data-theme="dark"] .prayer-item,
+html[data-theme="dark"] .ps-mobile-row,
+html[data-theme="dark"] .worship,
+html[data-theme="dark"] .status button,
+html[data-theme="dark"] .mobile-agenda-item,
+html[data-theme="dark"] .agenda-editor-row,
+html[data-theme="dark"] .agenda-editor-row input,
+html[data-theme="dark"] .status-editor-row input,
+html[data-theme="dark"] .field input,
+html[data-theme="dark"] .location-field input,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .prayer-day-modal,
+html[data-theme="dark"] .prayer-columns-modal,
+html[data-theme="dark"] .setting,
+html[data-theme="dark"] .collection-card,
+html[data-theme="dark"] .profile-main-card,
+html[data-theme="dark"] .profile-recap-card,
+html[data-theme="dark"] .profile-notes-card{
+  color:var(--text);
+}
+html[data-theme="dark"] .btn.outline,
+html[data-theme="dark"] .icon-btn,
+html[data-theme="dark"] .seg,
+html[data-theme="dark"] .period-btn,
+html[data-theme="dark"] .location-select,
+html[data-theme="dark"] .location-more,
+html[data-theme="dark"] .crop-mode button,
+html[data-theme="dark"] .crop-controls button,
+html[data-theme="dark"] .account-item,
+html[data-theme="dark"] .prayer-item,
+html[data-theme="dark"] .ps-mobile-row{
+  background:#0b3530;
+  border-color:var(--line);
+}
+html[data-theme="dark"] .worship,
+html[data-theme="dark"] .status button,
+html[data-theme="dark"] .mobile-agenda-item,
+html[data-theme="dark"] .agenda-editor-row{
+  background:linear-gradient(145deg,#102f2b,#0b2926);
+  border-color:var(--line);
+}
+html[data-theme="dark"] .status button{color:#e6f1ee}
+html[data-theme="dark"] .status button.active{
+  background:#1d5a50;
+  border-color:#69c9b8;
+  color:#f5fffc;
+}
+html[data-theme="dark"] .status button.danger.active{
+  background:#542b31;
+  border-color:#e38a94;
+  color:#fff4f5;
+}
+html[data-theme="dark"] .save-wrap{background:transparent}
+html[data-theme="dark"] .save-wrap .btn.gold{color:#123b35}
+html[data-theme="dark"] .location-preview,
+html[data-theme="dark"] .location-security,
+html[data-theme="dark"] .notice{
+  background:#0d3732;
+  border-color:var(--line);
+  color:var(--muted);
+}
+html[data-theme="dark"] .qibla-card{
+  background:linear-gradient(135deg,#103a34,#0c2f2b);
+}
+html[data-theme="dark"] .qibla-compass{
+  background:radial-gradient(circle,#123d37 0 55%,#0c302c 56% 100%);
+  border-color:var(--line);
+}
+html[data-theme="dark"] .prayer-table td:first-child,
+html[data-theme="dark"] .prayer-table td,
+html[data-theme="dark"] .prayer-table th{
+  background:#0b3530;
+  color:var(--text);
+  border-color:var(--line);
+}
+html[data-theme="dark"] .google-logo{background:#0b3530;border-color:var(--line)}
+html[data-theme="dark"] .pcm-check{background:#0b3530;border-color:var(--line)}
+html[data-theme="dark"] .toggle{background:#163f39}
+html[data-theme="dark"] .toggle:after{background:#f5fbf9}
+html[data-theme="dark"] .toggle.on{background:#0b6b63}
+html[data-theme="dark"] .modal-backdrop{background:rgba(0,0,0,.66)}
+html[data-theme="dark"] .modal h3,
+html[data-theme="dark"] .setting b,
+html[data-theme="dark"] .collection-card b,
+html[data-theme="dark"] .prayer-item b{
+  color:var(--text);
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+  background:#0a2d29;
+  color:var(--text);
+  border-color:var(--line);
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#8fa9a3}
+html[data-theme="dark"] .quote{
+  background:linear-gradient(145deg,#3b3119,#302715);
+  border-color:#806c3a;
+}
+html[data-theme="dark"] .quote b{color:#fff4cf}
+html[data-theme="dark"] .quote p{color:#e6d8ae}
+html[data-theme="dark"] .collection-resource{
+  background:#0b3530;
+  border-color:var(--line);
+  color:var(--text);
+}
+html[data-theme="dark"] .collection-resource-icon{background:#10463f}
+html[data-theme="dark"] .collection-source-note{color:#9fb9b2}
+html[data-theme="dark"] .prayer-day-modal,
+html[data-theme="dark"] .prayer-columns-modal,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .ps-calendar-grid button,
+html[data-theme="dark"] .calendar-jump select,
+html[data-theme="dark"] .location-more,
+html[data-theme="dark"] .crop-mode button,
+html[data-theme="dark"] .crop-controls button,
+html[data-theme="dark"] .period-btn,
+html[data-theme="dark"] .prayer-item,
+html[data-theme="dark"] .location-field input,
+html[data-theme="dark"] .field input,
+html[data-theme="dark"] .agenda-editor-row,
+html[data-theme="dark"] .agenda-editor-row input,
+html[data-theme="dark"] .status-editor-row input,
+html[data-theme="dark"] .mobile-agenda-item,
+html[data-theme="dark"] .save-wrap{
+  background:#0b3530;
+  color:var(--text);
+  border-color:var(--line);
+}
+html[data-theme="dark"] .ps-calendar-grid button.selected,
+html[data-theme="dark"] .ps-calendar-grid button.today{
+  background:#153f39;
+  border-color:#69c9b8;
+}
+html[data-theme="dark"] .account-popover{
+  box-shadow:0 24px 70px rgba(0,0,0,.42),0 0 0 100vmax rgba(0,0,0,.62);
+}
+
+/* Theme changes must never leave a stale interaction lock behind. */
+html:not(.modal-open) body{
+  pointer-events:auto;
+}
+
+
+
+
+/* v5.10 client follow-up: dedicated dzikir reader */
+.dzikir-reader-page{padding-bottom:28px}
+.dzikir-reader-head{margin-bottom:14px}
+.dzikir-intro{padding:20px;margin-bottom:16px}
+.dzikir-intro h3{margin:6px 0 8px;font-size:22px;line-height:1.25}
+.dzikir-source-note{margin-top:12px;padding:11px 13px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:12px;line-height:1.6}
+.dzikir-section{margin-top:18px}
+.dzikir-section-head{display:flex;align-items:flex-start;gap:10px;margin:0 0 10px}
+.dzikir-section-head>span{width:40px;height:40px;border-radius:13px;background:rgba(11,107,99,.12);display:grid;place-items:center;font-size:20px;flex:0 0 auto}
+.dzikir-section-head h3{margin:2px 0 3px;font-size:19px}
+.dzikir-section-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.dzikir-item{position:relative;padding:18px 18px 18px 58px;margin-bottom:10px;overflow:hidden}
+.dzikir-num{position:absolute;left:16px;top:18px;width:30px;height:30px;border-radius:10px;background:rgba(11,107,99,.13);display:grid;place-items:center;font-weight:900;color:var(--primary)}
+.dzikir-label{
+  margin:0 0 8px;
+  font-size:15px;
+  line-height:1.45;
+  font-weight:900;
+  color:var(--primary);
+}
+.dzikir-label + .dzikir-arabic{margin-top:4px}
+.dzikir-body p{margin:8px 0;color:var(--text);line-height:1.75;font-size:14px}
+.dzikir-body small{display:block;color:var(--muted);line-height:1.5;font-size:11px;margin-top:8px}
+.dzikir-arabic{font-family:"Noto Naskh Arabic","Amiri","Times New Roman",serif;font-size:23px;line-height:2.05;text-align:right;color:var(--primary-dark);padding:9px 11px;background:rgba(11,107,99,.055);border-radius:13px;margin:8px 0;direction:rtl}
+.dzikir-benefit{padding:10px 12px!important;background:var(--gold-soft);border-radius:12px}
+.dzikir-end{padding:16px;margin-top:16px}
+.dzikir-end p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.6}
+body.dzikir-open .mobile-nav{display:none!important}
+body.dzikir-open .main{padding-bottom:24px}
+@media (max-width:720px){
+  .dzikir-intro h3{font-size:20px}
+  .dzikir-item{padding:16px 14px 16px 54px}
+  .dzikir-num{left:14px;top:16px}
+  .dzikir-body p{font-size:14px;line-height:1.72}
+  .dzikir-arabic{font-size:21px;line-height:1.95}
+}
+@media (min-width:721px){
+  .dzikir-reader-page{max-width:900px;margin:0 auto}
+  .dzikir-item{padding-right:24px}
+}
+
+
+/* Client revision: dzikir pagi/petang */
+.dzikir-period-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0 0 14px;
+  position:sticky;
+  top:8px;
+  z-index:8;
+}
+.dzikir-period-btn{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:14px;
+  min-height:46px;
+  padding:10px 12px;
+  font-weight:850;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:.15s transform,.15s background,.15s border-color;
+}
+.dzikir-period-btn:active{transform:scale(.985)}
+.dzikir-period-btn.active{
+  background:linear-gradient(135deg,var(--primary),#0b5f58);
+  color:#fff;
+  border-color:var(--primary);
+}
+.dzikir-period-panel{display:block}
+.dzikir-period-panel[hidden]{display:none}
+.dzikir-section-head-period{margin-top:4px}
+.dzikir-item-rich{scroll-margin-top:78px}
+.dzikir-body .dzikir-translation{color:var(--text);font-size:14px;line-height:1.78;margin:10px 0}
+.dzikir-note-line{display:block;margin-top:6px;font-weight:800;color:var(--primary)}
+.dzikir-source{
+  display:block;
+  margin-top:10px;
+  padding:10px 11px;
+  border-left:3px solid var(--gold);
+  border-radius:10px;
+  background:rgba(216,180,95,.10);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+}
+.dzikir-source b{color:var(--text)}
+html[data-theme="dark"] .dzikir-period-btn{
+  background:#0b3530;
+  color:#f2f8f6;
+  border-color:#2b5a52;
+}
+html[data-theme="dark"] .dzikir-period-btn.active{
+  background:linear-gradient(135deg,#1a756b,#0d5049);
+  color:#fff;
+  border-color:#69c9b8;
+}
+html[data-theme="dark"] .dzikir-intro,
+html[data-theme="dark"] .dzikir-end{
+  background:linear-gradient(145deg,#0c3b35,#092f2b);
+}
+html[data-theme="dark"] .dzikir-body .dzikir-translation{color:#f2f8f6}
+html[data-theme="dark"] .dzikir-body small,
+html[data-theme="dark"] .dzikir-source{color:#b9d0ca}
+html[data-theme="dark"] .dzikir-source b{color:#f2f8f6}
+html[data-theme="dark"] .dzikir-arabic{
+  color:#f7fbfa;
+  background:linear-gradient(145deg,#104a43,#0b3732);
+  border:1px solid #2a5b53;
+  text-shadow:0 1px 0 rgba(0,0,0,.18);
+}
+body.dzikir-open .mobile-nav{display:none}
+body.dzikir-open .dzikir-reader-page{padding-bottom:28px}
+@media(max-width:767px){
+  .dzikir-period-switch{top:4px}
+  .dzikir-item-rich{padding:16px 14px 16px 50px}
+  .dzikir-body h4{font-size:15px}
+  .dzikir-arabic{font-size:24px;line-height:2.15}
+  .dzikir-body .dzikir-translation{font-size:13px;line-height:1.8}
+}
+@media(min-width:768px){
+  .dzikir-reader-page{max-width:980px}
+  .dzikir-period-switch{max-width:620px;margin-left:auto;margin-right:auto}
+}
+
+

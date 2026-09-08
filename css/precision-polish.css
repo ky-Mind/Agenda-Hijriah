@@ -1,0 +1,179 @@
+/* Kisah Lillah — v8 precision pass.
+   Fokus: tata letak Al-Qur'an, Hadits, Do'a, Mutiara dibuat presisi dan
+   konsisten — grid 8px, lebar baca nyaman di desktop, skeleton loading
+   (bukan teks "Memuat…" polos), status kosong/gagal yang seragam, dan
+   fokus keyboard yang jelas. Ditulis sebagai lapisan tambahan di atas
+   css/collection-pages.css & css/premium-ui.css, tanpa mengubah keduanya,
+   supaya riwayat perubahan tiap file tetap jelas. */
+
+/* ---------- Lebar baca konsisten & presisi di desktop ---------- */
+.collection-reader-page{max-width:100%}
+#quranIndexView,#quranDetailView,#quranFullscreenReader .quran-ayat-wrap,
+#haditsBookList,#haditsDetailView,
+#doaCategoryView,#doaListView,
+#mutiaraMount{
+  max-width:720px;margin-left:auto;margin-right:auto;width:100%;
+}
+.quran-reading-mode .quran-reading-topbar{max-width:720px;margin-left:auto;margin-right:auto}
+
+/* ---------- Skeleton loading (menggantikan teks "Memuat…" polos) ---------- */
+@keyframes klShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.kl-skeleton{
+  border-radius:14px;background:linear-gradient(90deg,var(--surface2) 25%,var(--line) 37%,var(--surface2) 63%);
+  background-size:200% 100%;animation:klShimmer 1.4s ease-in-out infinite;
+}
+.kl-skeleton-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--surface);margin-bottom:8px}
+.kl-skeleton-circle{width:30px;height:30px;border-radius:10px;flex:0 0 auto}
+.kl-skeleton-lines{flex:1;display:flex;flex-direction:column;gap:6px}
+.kl-skeleton-line{height:11px;border-radius:6px}
+.kl-skeleton-line.w60{width:60%}
+.kl-skeleton-line.w40{width:40%}
+.kl-skeleton-line.w80{width:80%}
+@media (prefers-reduced-motion:reduce){.kl-skeleton{animation:none}}
+
+/* ---------- Status kosong / gagal, satu pola konsisten di semua halaman ---------- */
+.kl-state{
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+  padding:22px 18px;border:1px dashed var(--line);border-radius:16px;background:var(--surface);
+}
+.kl-state b{font-size:13.5px}
+.kl-state p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.6}
+.kl-state .btn{margin-top:8px}
+
+/* ---------- Fokus keyboard yang jelas & konsisten (aksesibilitas) ---------- */
+.quran-surah-row:focus-visible,.hadits-book-btn:focus-visible,.doa-cat-card:focus-visible,
+.quran-toggle-chip:focus-visible,.doa-cat-btn:focus-visible,.btn:focus-visible,.icon-btn:focus-visible,
+.quran-play-btn:focus-visible,.collection-card:focus-visible{
+  outline:2px solid var(--primary);outline-offset:2px;
+}
+
+/* ---------- Presisi tipografi ayat/hadits/do'a: jarak & ritme vertikal ---------- */
+.quran-ayat-card,.hadits-card,.doa-card,.mutiara-card{padding:18px 20px}
+.quran-ayat-head{margin-bottom:10px}
+.quran-ayat-arabic{margin:2px 0 10px;letter-spacing:.2px}
+.quran-ayat-latin{margin:0 0 8px;opacity:.85}
+.quran-ayat-translation{margin:0}
+.hadits-arab{margin:0 0 10px}
+.doa-arab{margin:0 0 8px}
+
+/* Nomor ayat/hadits jadi tab angular kecil yang presisi, bukan lingkaran polos */
+.quran-ayat-number,.quran-surah-number{
+  font-variant-numeric:tabular-nums;letter-spacing:.3px;
+}
+
+/* ---------- Tombol audio: umpan balik lebih jelas saat memutar ---------- */
+.quran-play-btn{position:relative;box-shadow:0 4px 10px rgba(11,107,99,.25)}
+.quran-play-btn[aria-pressed="true"],.quran-play-btn.is-playing{
+  animation:klPulseRing 1.6s ease-out infinite;
+}
+@keyframes klPulseRing{
+  0%{box-shadow:0 0 0 0 rgba(11,107,99,.45)}
+  70%{box-shadow:0 0 0 10px rgba(11,107,99,0)}
+  100%{box-shadow:0 0 0 0 rgba(11,107,99,0)}
+}
+
+/* ---------- Grid buku Hadits & kategori Do'a: tinggi & spasi seragam ---------- */
+.hadits-book-btn,.doa-cat-card{padding:16px 14px}
+.collection-grid .hadits-book-btn{min-height:88px}
+
+/* Lencana nomor generik (dipakai Hadits) — gaya sama dengan lencana nomor
+   ayat/surah di halaman Al-Qur'an, supaya konsisten lintas-halaman. */
+.kl-index-badge{
+  width:26px;height:26px;border-radius:50%;background:var(--surface2);color:var(--primary);
+  display:grid;place-items:center;font-size:11px;font-weight:800;flex:0 0 auto;
+  font-variant-numeric:tabular-nums;
+}
+.hadits-card-head{display:flex;align-items:center;gap:10px}
+
+/* Ikon SVG baru yang menggantikan emoji: warnai dengan primary/teal supaya
+   senada dengan identitas visual, bukan warna teks default yang datar. */
+.help-ico,.stat .icon{color:var(--primary)}
+.help-ico svg,.stat .icon svg{display:block;margin:0 auto}
+
+.quran-detail-head,.hadits-list-head,.doa-list-head{
+  position:sticky;top:0;background:var(--bg);padding-top:6px;padding-bottom:10px;z-index:3;
+}
+
+/* v9: elemen kecil yang tadinya "yatim" (dirujuk JS tapi tak pernah ada di
+   markup, sisa iterasi desain lama) kini benar-benar terpasang. */
+.cal-year-select{
+  border:1px solid var(--line);background:var(--surface);color:var(--text-primary,var(--text));
+  border-radius:10px;font-size:11px;font-weight:700;padding:4px 6px;max-width:78px;
+}
+.google-login-btn.connected{opacity:.75;background:var(--surface2)}
+#profileThemeSummary:empty{display:none}
+
+/* v10: satu ritme visual untuk seluruh ruang aplikasi. */
+:root{
+  --kl-space-1:6px;
+  --kl-space-2:10px;
+  --kl-space-3:14px;
+  --kl-space-4:18px;
+  --kl-space-5:24px;
+  --kl-control-h:44px;
+}
+body{font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.main{max-width:1240px}
+.page.active{animation:klRoomIn .24s cubic-bezier(.22,.8,.25,1) both}
+@keyframes klRoomIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.topbar{border-bottom:1px solid rgba(223,234,230,.72)}
+.page>h1,.page>h2,.page>h3{letter-spacing:-.01em}
+.section-head{margin-top:24px;margin-bottom:12px}
+.section-head h2,.page h2{line-height:1.2}
+.card,.collection-card,.setting,.profile-main-card,.profile-notes-card{border-radius:18px}
+.card,.collection-card{box-shadow:0 10px 28px rgba(18,69,61,.065)}
+.collection-card,.btn,.icon-btn,.seg,.period-btn,.doa-cat-card,.doa-cat-btn,.quran-toggle-chip,.quran-play-btn,.hadits-book-btn{min-height:var(--kl-control-h)}
+.btn,.icon-btn,.seg,.period-btn,.quran-toggle-chip,.doa-cat-btn{font-weight:800}
+.btn,.icon-btn,.seg,.period-btn,.quran-toggle-chip,.doa-cat-btn,.quran-play-btn,.hadits-book-btn,.collection-card{transition:transform .18s cubic-bezier(.22,.8,.25,1),box-shadow .18s ease,border-color .18s ease,background-color .18s ease}
+@media(hover:hover){
+  .card:hover,.collection-card:hover{border-color:#bddbd4;box-shadow:0 14px 32px rgba(18,69,61,.11)}
+  .btn:hover,.icon-btn:hover,.seg:hover,.period-btn:hover,.quran-toggle-chip:hover,.doa-cat-btn:hover{border-color:#9acbc1}
+}
+.btn:focus-visible,.icon-btn:focus-visible,.seg:focus-visible,.period-btn:focus-visible,
+.quran-toggle-chip:focus-visible,.doa-cat-btn:focus-visible,.collection-card:focus-visible,
+.quran-play-btn:focus-visible,.hadits-book-btn:focus-visible{outline:3px solid rgba(11,107,99,.25);outline-offset:3px}
+input,select,textarea{min-height:var(--kl-control-h);border-radius:12px}
+textarea{line-height:1.5}
+.collection-reader-head{max-width:900px;margin-left:auto;margin-right:auto}
+.collection-reader-title{min-height:64px}
+.collection-icon,.w-ico,.stat .icon,.kl-badge{flex-shrink:0}
+.collection-icon svg,.w-ico svg,.stat .icon svg,.kl-badge svg{width:20px;height:20px}
+.status button{min-height:46px}
+.w-ico{color:var(--primary)}
+.w-ico svg{display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.status button .sicon{display:grid;place-items:center;width:22px;height:22px;margin:0 auto 3px;color:var(--muted)}
+.status button .sicon svg{display:block;width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.status button.active .sicon{color:var(--success)}
+.status button.danger .sicon{color:var(--danger)}
+.status button.danger.active .sicon{color:var(--danger)}
+.save-wrap{padding-top:14px}
+.save-wrap>.btn{min-height:48px}
+.calendar-card{border-radius:20px}
+.calendar-head .icon-btn{width:42px;height:42px}
+.day{border-radius:13px;transition:transform .16s ease,background-color .16s ease,border-color .16s ease,box-shadow .16s ease}
+.day:active{transform:scale(.97)}
+.modal,.prayer-day-modal{border-radius:22px}
+.modal-backdrop,.prayer-day-backdrop{backdrop-filter:blur(4px)}
+.toast{max-width:min(420px,calc(100vw - 28px));line-height:1.4}
+.page-swipe-peek{border-radius:18px 18px 0 0;overflow:hidden}
+@media(max-width:767px){
+  .main{padding-left:12px;padding-right:12px}
+  .topbar{margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px}
+  .page.active{animation-duration:.2s}
+  .section-head{margin-top:20px}
+  .card{padding:15px}
+  .collection-card{min-height:116px}
+  .hero{border-radius:20px}
+  .modal-backdrop,.prayer-day-backdrop{padding:8px}
+  .modal,.prayer-day-modal{border-radius:20px;padding:16px}
+}
+@media(max-width:380px){
+  .main{padding-left:10px;padding-right:10px}
+  .topbar{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px}
+  .btn{padding-left:11px;padding-right:11px}
+  .collection-card{min-height:108px;padding:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .page.active,.day,.btn,.icon-btn,.seg,.period-btn,.quran-toggle-chip,.doa-cat-btn,.collection-card{animation:none!important;transition:none!important}
+}
+

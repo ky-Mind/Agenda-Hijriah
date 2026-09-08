@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <!-- v5.17: prevent white browser paint before the Kisah Lillah opening screen -->
+  <style id="critical-launch-style">
+    html,body{margin:0;min-height:100%;background:#021f18!important;color:#f7f1dc;}
+    body{background-color:#021f18!important;}
+  </style>
+  <link rel="preload" as="image" href="splash-client-reference.png" fetchpriority="high">
+<meta name="theme-color" content="#0b4f49" id="themeColorMeta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" sizes="192x192" href="app-icon-client.png">
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem("aih_theme_v1");
+    if(t==="dark" || t==="light") document.documentElement.dataset.theme=t;
+  }catch(e){}
+})();
+</script>
+
+<link rel="apple-touch-icon" href="app-icon-client.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="description" content="Jurnal dan absensi ibadah harian berbasis kalender Hijriah.">
+<title>Kisah Lillah</title>
+<meta name="application-name" content="Kisah Lillah">
+<meta name="apple-mobile-web-app-title" content="Kisah Lillah">
+<!-- v5.25: KL notification icon + adhan notification presentation -->
+<!-- v5.10: client follow-up — app name + local dzikir reader populated from supplied document -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/theme-polish.css">
+<link rel="stylesheet" href="css/collection-pages.css">
+<link rel="stylesheet" href="css/premium-ui.css?v=8">
+<link rel="stylesheet" href="css/precision-polish.css?v=11">
+</head>
+<body>
+
+
+<div class="kl-splash" id="klSplash" aria-label="Kisah Lillah">
+  <div class="kl-splash-brand">
+    <img class="kl-splash-icon" src="app-icon-client.png" alt="Kisah Lillah">
+    <h1 class="kl-splash-title">Kisah Lillah</h1>
+    <p class="kl-splash-subtitle">Catat ibadah, jaga istiqamah.</p>
+  </div>
+  <div class="kl-splash-credit" aria-label="Dibuat oleh Wishxiauw">
+    <small>from</small>
+    <b>Wishxiauw</b>
+  </div>
+</div>
+
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-icon image-mark"><img src="app-icon-client.png" alt="Kisah Lillah"></div><div><b>Kisah Lillah</b><small>Catat ibadah, jaga istiqamah.</small></div></div>
+  <nav class="nav" id="sideNav"></nav>
+  <div class="sidebar-note">Kalender utama memakai Umm al-Qura bila tersedia. Untuk tahun di luar jangkauan browser, kalender otomatis memakai perhitungan Hijriah sipil sebagai fallback agar navigasi tetap tersedia.</div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <div class="mobile-brand"><span class="brand-mark image-mark"><img src="app-icon-client.png" alt="" aria-hidden="true"></span> Kisah Lillah</div>
+  <div class="topbar-actions" aria-hidden="true"></div>
+  <div class="profile-chip" aria-label="Profil pengguna"><span class="avatar" id="avatar">U</span><span id="topName">Pengguna</span></div>
+</header>
+
+<div class="account-popover" id="accountPopover" role="dialog" aria-modal="true" aria-labelledby="accountPopoverTitle" hidden>
+  <div class="account-popover-head">
+    <div>
+      <span class="ps-kicker">AKUN</span>
+      <h3 id="accountPopoverTitle">Profil & akun</h3>
+    </div>
+    <button class="pcm-close" type="button" onclick="closeAccountPopover()" aria-label="Tutup panel akun">×</button>
+  </div>
+  <div class="account-popover-summary">
+    <div class="profile-big compact" id="popoverProfileBig">U</div>
+    <div class="account-popover-identity">
+      <b id="popoverProfileName">Pengguna</b>
+      <span id="popoverProfileEmail">Akun lokal</span>
+      <small id="popoverProfileStatus">Jurnal ibadah pribadi</small>
+    </div>
+  </div>
+  <div class="account-popover-actions single-action">
+    <button class="btn outline" type="button" onclick="document.getElementById('popoverPhotoInput').click()">Ganti foto</button>
+    <input id="popoverPhotoInput" type="file" accept="image/*" hidden onchange="handleProfilePhoto(this.files[0])">
+  </div>
+  <div class="account-popover-form">
+    <div class="field"><label for="popoverNameInput">Nama pengguna</label><input id="popoverNameInput" maxlength="50" placeholder="Masukkan nama"></div>
+    <div class="field"><label for="popoverWhatsappInput">WhatsApp pribadi</label><input id="popoverWhatsappInput" type="tel" inputmode="numeric" maxlength="20" placeholder="0895-0613-8191"></div>
+    <button class="btn gold full" type="button" onclick="savePopoverProfile()">Simpan perubahan</button>
+  </div>
+  <div class="account-popover-divider"></div>
+  <div class="account-popover-grid">
+    <button class="btn outline google-login-btn" id="popoverGoogleLoginBtn" type="button" onclick="signInWithGoogle()"><span class="google-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M21.35 12.1c0-.7-.06-1.37-.18-2H12v3.79h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.18z"/><path fill="#34A853" d="M12 21.5c2.63 0 4.84-.87 6.45-2.37l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.75 9.75 0 0 0 12 21.5z"/><path fill="#FBBC05" d="M6.54 13.57A5.86 5.86 0 0 1 6.24 12c0-.54.1-1.06.3-1.57V7.9H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.1l3.24-2.53z"/><path fill="#EA4335" d="M12 6.4c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.49 14.63 2.5 12 2.5A9.75 9.75 0 0 0 3.3 7.9l3.24 2.53C7.31 8.12 9.46 6.4 12 6.4z"/></svg></span><span>Masuk dengan Google</span></button>
+  </div>
+
+</div>
+
+<section class="page active" id="dashboard">
+  <div class="hero">
+    <div class="eyebrow">Jurnal ibadah harian</div>
+    <h1 id="greeting">Assalamu'alaikum, Pengguna </h1>
+    <p id="heroDate">Memuat tanggal...</p>
+    <div class="hero-actions">
+      <button class="btn primary" onclick="go('absensi')">Isi Absensi</button>
+      <button class="btn gold" onclick="go('kalender')">Buka Kalender</button>
+    </div>
+  </div>
+  <div class="card prayer-card">
+    <div class="prayer-head"><div><h2>Jadwal Sholat Hari Ini</h2><div class="prayer-location" id="prayerLocation">Lokasi belum ditentukan</div></div><div class="prayer-actions"><button class="btn ghost" onclick="useCurrentLocation()" type="button">Lokasi saya</button><button class="btn outline" onclick="setPrayerCity()" type="button">Kota</button><button class="btn outline" onclick="loadPrayerTimes(true)" type="button">↻</button></div></div>
+    <div id="locationStatus" class="location-status">Gunakan lokasi HP agar jadwal lebih tepat, atau pilih titik dari Maps.</div><div id="locationSecurity" class="location-security" hidden></div>
+    <div id="prayerStatus" class="prayer-status">Mengambil jadwal sholat…</div>
+    <div id="prayerMeta" class="prayer-meta" hidden aria-live="polite"></div>
+    <div id="prayerCountdown" class="prayer-countdown" hidden aria-live="polite"><div class="pc-label" id="prayerCountdownLabel">Waktu berikutnya</div><div class="pc-main" id="prayerCountdownMain">--:--:--</div><div class="pc-sub" id="prayerCountdownSub">Menunggu jadwal…</div></div>
+    <div id="prayerGrid" class="prayer-grid" hidden></div>
+    <p class="prayer-note">Satu lokasi dipakai bersama untuk jadwal sholat dan arah kiblat. Default: <b>DKI Jakarta</b>. Jika GPS tersedia, jadwal otomatis dihitung dari titik GPS; jika tidak, pilih kota.</p><div class="prayer-calendar-entry">
+  <div class="pce-head">
+    <div class="pce-copy"><b>Kalender Jadwal Salat</b><span>Lihat jadwal 30 hari ke depan berdasarkan lokasi yang sama.</span></div>
+    <button class="btn gold small pce-btn" type="button" onclick="openPrayerSchedule()">Buka</button>
+  </div>
+</div>
+  </div>
+  <div class="card qibla-card">
+    <div class="qibla-head"><h3>Arah Kiblat</h3><span class="badge" id="qiblaLocationBadge">Belum ada lokasi</span></div>
+    <div class="qibla-body">
+      <div class="qibla-compass" id="qiblaCompass" aria-label="Kompas arah kiblat"><div class="qibla-needle" id="qiblaNeedle"></div><div class="qibla-center"></div></div>
+      <div class="qibla-copy"><div class="qibla-degree" id="qiblaDegree">—°</div><b id="qiblaDirection">Tentukan lokasi untuk menghitung arah kiblat.</b><div id="qiblaDistance" style="margin-top:4px">Jarak ke Ka'bah: —</div><button class="btn gold small" onclick="startQiblaCompass()" type="button" style="margin-top:8px">Aktifkan kompas</button><div class="qibla-help" id="qiblaCompassHelp">Arah kiblat dihitung dari lokasi. Kompas live akan aktif jika browser memberikan sensor orientasi.</div><br><a id="qiblaMapLink" class="map-link" href="#" target="_self" rel="noopener" onclick="openQiblaInMaps(event)">Buka rute ke Ka'bah di Maps ↗</a></div>
+    </div>
+  </div>
+  <div class="location-tools location-tools-simple location-tools-under-compass">
+    <button class="btn gold" onclick="openLocationPicker()" type="button">Atur lokasi ibadah</button>
+    <button class="btn outline" onclick="clearSavedLocation()" type="button">↻ Reset lokasi</button>
+  </div>
+  <div class="grid stats">
+    <div class="card stat"><div class="icon">✅</div><div class="num" id="sDone">0</div><div class="label">Terlaksana hari ini</div></div>
+    <div class="card stat"><div class="icon">❌</div><div class="num" id="sNo">0</div><div class="label">Tidak terlaksana</div></div>
+    <div class="card stat"><div class="icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-1.8-1.3-4.2-2-7-2v13c2.8 0 5.2.7 7 2 1.8-1.3 4.2-2 7-2V4c-2.8 0-5.2.7-7 2Z"/><path d="M12 6v13"/></svg></div><div class="num" id="sKhatam">0</div><div class="label">Khatam hari ini</div></div>
+    <div class="card stat"><div class="icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div class="num" id="sPercent">0%</div><div class="label">Progress hari ini</div></div>
+  </div>
+  <div class="section-head"><h2>Ringkasan hari ini</h2><button class="btn outline small" onclick="go('rekap')">Lihat rekap</button></div>
+  <div class="grid two">
+    <div class="card">
+      <div class="muted" style="font-size:11px">Progress hari ini</div>
+      <div class="progress"><i id="dashProgress" style="width:0%"></i></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px"><b id="dashCount">0 dari 12</b><span class="muted" id="dashPercent">0%</span></div>
+    </div>
+    <div class="quote">
+      <b id="dailyQuoteTitle">“Quotes hari ini”</b>
+      <p id="dailyQuoteText">Catat ikhtiar kecilmu. Konsistensi lebih mudah dijaga ketika perjalananmu terlihat.</p>
+    </div>
+  </div>
+  <div class="community card">
+    <div class="section-head" style="margin:0 0 5px"><h2>Quotes hari ini</h2><span class="badge">Inspirasi</span></div>
+    <p class="muted" style="font-size:11px;line-height:1.5;margin:0">Pengingat singkat untuk menjaga niat, konsistensi, dan langkah baikmu setiap hari.</p>
+    <div class="notice" style="margin-top:10px">Jadwal & absensi tetap offline-first. Login Google disiapkan sebagai tahap cloud berikutnya agar akun bisa aman dipakai lintas perangkat.</div>
+  </div>
+</section>
+
+<section class="page" id="absensi">
+  <div class="card date-banner">
+    <div class="muted" id="absHijri"></div>
+    <h2 id="absDate"></h2>
+    <p id="absGreg"></p>
+  </div>
+  <div class="section-head">
+    <h2>Agenda</h2>
+    <div class="section-head-actions">
+      <button class="btn ghost small" type="button" onclick="openAgendaEditor()">Edit Agenda</button>
+      <button class="btn outline small" onclick="requestChangeDate()">Ganti tanggal</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="list" id="worshipList"></div>
+    <div class="save-wrap">
+      <button class="btn gold full" onclick="saveCurrent()">Simpan Absensi</button>
+      <button class="btn outline full whatsapp-send-btn" onclick="sendAbsensiToWhatsApp()"><span class="whatsapp-icon" aria-hidden="true"><svg viewBox="0 0 32 32" role="img"><path d="M16 3.2A12.8 12.8 0 0 0 5 22.4L3.4 28.7l6.5-1.6A12.8 12.8 0 1 0 16 3.2Z" fill="#25D366"/><path d="M22.4 18.7c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.8.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.5-.7-2.5-1.2-3.5-2.7-.3-.5.3-.4.9-1.4.1-.2.1-.4 0-.6-.1-.2-.8-1.9-1-2.1-.3-.6-.5-.5-.8-.5h-.7c-.2 0-.6.1-.9.4-.3.3-1.1 1-1.1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.8.6-.1 1.9-.8 2.1-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4Z" fill="#fff"/></svg></span><span>Kirim ke WhatsApp pribadi</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="page agenda-editor-page" id="agendaEditor">
+  <div class="section-head">
+    <div><h2>Edit Agenda saya</h2><p class="muted agenda-editor-sub">Tambah, ubah, hapus, atau susun urutan agenda ibadahmu.</p></div>
+    <button class="btn outline small" type="button" onclick="closeAgendaEditor()">‹ Kembali</button>
+  </div>
+  <div class="card">
+    <div class="agenda-editor-list" id="agendaEditorList"></div>
+    <button class="btn outline full agenda-add-btn" type="button" onclick="addAgendaEditorRow()">＋ Tambah agenda</button>
+    <div class="status-editor">
+      <div class="status-editor-head"><b>Button status agenda</b><button class="btn outline small" type="button" onclick="addStatusCategory()">＋ Kategori</button></div>
+      <div class="status-editor-list" id="statusEditorList"></div>
+      <div class="muted" style="font-size:10px;margin-top:6px">Emoji dan teks status bisa diubah. Kategori baru otomatis bisa dipilih pada setiap agenda.</div>
+    </div>
+    <div class="agenda-editor-actions">
+      <button class="btn gold full" type="button" onclick="saveAgendaEditor()">Simpan agenda</button>
+      <button class="btn ghost full" type="button" onclick="resetAgendaEditor()">↺ Kembalikan bawaan</button>
+    </div>
+    <div class="notice agenda-editor-note">Kamu bebas memakai teks dan emoji apa pun. Tombol ↑ ↓ dipakai untuk menyusun urutan agenda.</div>
+  </div>
+</section>
+
+<section class="page" id="kalender">
+  <div class="section-head"><h2>Kalender</h2><button class="btn outline small today-accent" onclick="selectToday()">Hari ini</button></div>
+  <div class="card calendar-card">
+    <div class="calendar-head">
+      <button class="icon-btn" onclick="moveHijriMonth(-1)" aria-label="Bulan sebelumnya">‹</button>
+      <h3 id="calTitle">Safar 1448 H<small id="calSub">Juli–Agustus 2026</small></h3>
+      <select id="calYear" class="cal-year-select" onchange="jumpHijriYear(this.value)" aria-label="Lompat ke tahun Hijriah"></select>
+      <button class="icon-btn" onclick="moveHijriMonth(1)" aria-label="Bulan berikutnya">›</button>
+    </div>
+    <div class="calendar-simple-note">Hijriah utama • tanggal Masehi jelas di setiap hari</div>
+    <div class="week"><div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div></div>
+    <div class="days" id="days"></div>
+    <div class="mobile-agenda-head"><span>Minggu yang dipilih</span><small>Geser tanggal dengan tombol ‹ ›</small></div>
+    <div class="mobile-agenda" id="mobileAgenda"></div>
+    <div class="calendar-selected" id="calendarSelectedInfo"><strong>—</strong><small>Pilih tanggal untuk melihat detail.</small></div>
+  </div>
+</section>
+
+
+<section class="page prayer-schedule-page" id="shalat">
+  <div class="prayer-schedule-hero">
+    <button class="ps-back" type="button" onclick="go('dashboard')">‹ Kembali</button>
+    <div class="ps-kicker">Jadwal ibadah</div>
+    <h1>Kalender Jadwal Salat</h1>
+    <p>Jadwal 30 hari ke depan dalam satu tampilan. Lokasi mengikuti pengaturan jadwal salat harian.</p>
+    <div class="ps-location">
+      <span class="badge" id="psLocationBadge">Memuat lokasi…</span>
+      <button class="btn outline small" type="button" onclick="useCurrentLocationForPrayerSchedule();">Titik lokasi saya</button>
+    </div>
+  </div>
+
+  <div class="card ps-calendar-card">
+    <div class="ps-calendar-head">
+      <div><b id="psCalendarTitle">Kalender Jadwal Salat</b><small id="psCalendarSub">Pilih tanggal untuk mengubah posisi. Lihat keterangan jika ingin membuka detail.</small></div>
+      <button class="btn gold small today-accent" type="button" onclick="selectPrayerToday()">Hari ini</button>
+    </div>
+    <div class="ps-calendar-week"><span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span></div>
+    <div class="ps-calendar-grid" id="psCalendarGrid"></div>
+    <div class="ps-selected-day" id="psSelectedDay">Ketuk salah satu tanggal.</div>
+  </div>
+
+  <div class="card prayer-table-card">
+    <div id="psStatus" class="prayer-status">Mengambil jadwal salat resmi…</div>
+    <div class="prayer-table-wrap" id="psTableWrap" hidden>
+      <table class="prayer-table" aria-label="Jadwal salat 30 hari">
+        <thead id="psTableHead"></thead>
+        <tbody id="psTableBody"></tbody>
+      </table>
+    </div>
+    <div class="ps-mobile-list" id="psMobileList"></div>
+    <p class="ps-note">Sumber waktu mengikuti metode yang dipakai aplikasi dan lokasi pilihanmu. Jadwal ini diperbarui dari sumber daring saat tersedia dan dapat memakai cache perangkat sementara.</p>
+  </div>
+</section>
+
+<div class="prayer-day-backdrop" id="prayerDayModal" role="dialog" aria-modal="true" aria-labelledby="pdmTitle">
+  <div class="prayer-day-modal">
+    <div class="pdm-head">
+      <div><span class="ps-kicker">Rincian tanggal</span><h3 id="pdmTitle">Jadwal Salat</h3><p id="pdmSub">—</p></div>
+      <button class="pcm-close" type="button" onclick="closePrayerDayDetail()" aria-label="Tutup">×</button>
+    </div>
+    <div class="pdm-location" id="pdmLocation">—</div>
+    <div class="pdm-times" id="pdmTimes"></div>
+    <div class="pdm-actions">
+      <button class="btn outline" type="button" onclick="closePrayerDayDetail()">Tutup</button>
+      <button class="btn gold" type="button" onclick="usePrayerDayForAbsensi()">Buka Absensi</button>
+    </div>
+  </div>
+</div>
+
+<div class="prayer-columns-backdrop" id="prayerColumnsModal" role="dialog" aria-modal="true" aria-labelledby="pcmTitle">
+  <div class="prayer-columns-modal">
+    <div class="pcm-head">
+      <div><h3 id="pcmTitle">Kolom yang diperlihatkan</h3><p>Pilih informasi yang ingin ditampilkan di kalender salat.</p></div>
+      <button class="pcm-close" type="button" onclick="closePrayerColumns()" aria-label="Tutup">×</button>
+    </div>
+    <div class="pcm-list" id="pcmList"></div>
+    <div class="pcm-actions">
+      <button class="btn outline" type="button" onclick="closePrayerColumns()">Batal</button>
+      <button class="btn gold" type="button" onclick="savePrayerColumns()">Simpan</button>
+    </div>
+  </div>
+</div>
+<section class="page" id="koleksi">
+  <div class="section-head">
+    <div><h2>Koleksi</h2><p class="muted" style="margin:4px 0 0;font-size:11px">Ruang untuk Al-Qur'an, hadits, do'a, dzikir, dan kata-kata mutiara.</p></div>
+  </div>
+  <div class="collection-grid" aria-label="Koleksi Islami">
+    <!-- Urutan mengikuti penomoran client: 1 Qur'an, 2 Hadits, 3 Do'a, 4 Dzikir, 5 Mutiara. -->
+    <button class="collection-card" type="button" onclick="go('koleksiQuran')" aria-label="Buka Al-Qur'an">
+      <span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-1.8-1.3-4.2-2-7-2v13c2.8 0 5.2.7 7 2 1.8-1.3 4.2-2 7-2V4c-2.8 0-5.2.7-7 2Z"/><path d="M12 6v13"/></svg></span>
+      <b>Al-Qur'an</b>
+      <small>114 surah lengkap dengan terjemahan, transliterasi, dan audio.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiHadits')" aria-label="Buka Hadits Nabi Muhammad">
+      <span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9a3 3 0 0 1 3 3v13a2 2 0 0 1-2-2H8a2 2 0 0 0-2 2V6a2 2 0 0 1 2-2Z"/><path d="M9 9h6M9 13h6"/></svg></span>
+      <b>Hadits Nabi Muhammad ﷺ</b>
+      <small>Kumpulan hadits pilihan dengan arti dan sumber.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiDoa')" aria-label="Buka Kumpulan Do'a">
+      <span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-3 1.5-6 3-8"/><path d="M20 15c0-3-1.5-6-3-8"/><path d="M4 15c1 2 3 3 5 3M20 15c-1 2-3 3-5 3"/><path d="M9 18c1 1.3 2 2 3 2s2-.7 3-2"/></svg></span>
+      <b>Kumpulan Do'a</b>
+      <small>Do'a pilihan untuk menemani aktivitas harian.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiDzikir')" aria-label="Buka Dzikir Pagi dan Petang">
+      <span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M12 4v2M4.9 8.9l1.4 1.4M19.1 8.9l-1.4 1.4M2 19h20M5 19a7 7 0 0 1 14 0"/></svg></span>
+      <b>Dzikir Pagi &amp; Petang</b>
+      <small>Kumpulan dzikir untuk menemani pagi dan petang.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('koleksiMutiara')" aria-label="Buka Kata-kata Mutiara">
+      <span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h.01M11 8h.01M15 8h.01" stroke-width="2.2"/><path d="M4 5h16v10H8l-4 4V5Z"/></svg></span>
+      <b>Kata-kata Mutiara</b>
+      <small>Mahfudzot dan nasihat singkat yang bermakna.</small>
+    </button>
+    <button class="collection-card" type="button" onclick="go('tasbih')" aria-label="Buka Tasbih Digital">
+      <span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.2" r="1.3"/><circle cx="19.6" cy="7.6" r="1.3"/><circle cx="19.6" cy="16.4" r="1.3"/><circle cx="12" cy="20.8" r="1.3"/><circle cx="4.4" cy="16.4" r="1.3"/><circle cx="4.4" cy="7.6" r="1.3"/></svg></span>
+      <b>Tasbih Digital</b>
+      <small>Hitung dzikir dengan getar, suara, dan target putaran.</small>
+    </button>
+  </div>
+</section>
+
+<!-- Tasbih Digital: fitur baru, mandiri (tanpa API luar), sesuai spesifikasi
+     desain (dial melingkar, tombol tap besar, haptic, suara, reset, pemilih bacaan). -->
+<section class="page" id="tasbih">
+  <div class="collection-reader-head">
+    <button class="btn ghost small" type="button" onclick="go('koleksi')" aria-label="Kembali ke Koleksi">‹ Koleksi</button>
+    <div class="collection-reader-title"><span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.2" r="1.3"/><circle cx="19.6" cy="7.6" r="1.3"/><circle cx="19.6" cy="16.4" r="1.3"/><circle cx="12" cy="20.8" r="1.3"/><circle cx="4.4" cy="16.4" r="1.3"/><circle cx="4.4" cy="7.6" r="1.3"/></svg></span><div><h2>Tasbih Digital</h2><p class="muted">Dzikir dengan hitungan otomatis.</p></div></div>
+  </div>
+  <div class="page-mount" id="tasbihMount"></div>
+</section>
+
+<!-- Halaman koleksi internal. Seluruh tombol membuka halaman di dalam aplikasi. -->
+<section class="page collection-reader-page" id="koleksiQuran">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-1.8-1.3-4.2-2-7-2v13c2.8 0 5.2.7 7 2 1.8-1.3 4.2-2 7-2V4c-2.8 0-5.2.7-7 2Z"/><path d="M12 6v13"/></svg></span><div><h2>Al-Qur'an</h2><p class="muted">Ruang bacaan Al-Qur'an.</p></div></div>
+  </div>
+  <div class="page-mount" id="quranMount"></div>
+</section>
+
+<section class="page collection-reader-page" id="koleksiHadits">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9a3 3 0 0 1 3 3v13a2 2 0 0 1-2-2H8a2 2 0 0 0-2 2V6a2 2 0 0 1 2-2Z"/><path d="M9 9h6M9 13h6"/></svg></span><div><h2>Hadits Nabi Muhammad ﷺ</h2><p class="muted">Ruang kumpulan hadits.</p></div></div>
+  </div>
+  <div class="page-mount" id="haditsMount"></div>
+</section>
+
+<section class="page collection-reader-page" id="koleksiDoa">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-3 1.5-6 3-8"/><path d="M20 15c0-3-1.5-6-3-8"/><path d="M4 15c1 2 3 3 5 3M20 15c-1 2-3 3-5 3"/><path d="M9 18c1 1.3 2 2 3 2s2-.7 3-2"/></svg></span><div><h2>Kumpulan Do'a</h2><p class="muted">Ruang kumpulan do'a harian.</p></div></div>
+  </div>
+  <div class="page-mount" id="doaMount"></div>
+</section>
+
+<section class="page collection-reader-page dzikir-reader-page" id="koleksiDzikir">
+  <div class="collection-reader-head dzikir-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title">
+      <span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M12 4v2M4.9 8.9l1.4 1.4M19.1 8.9l-1.4 1.4M2 19h20M5 19a7 7 0 0 1 14 0"/></svg></span>
+      <div><h2>Dzikir Pagi &amp; Petang</h2><p class="muted">Ruang dzikir pagi dan petang berdasarkan dokumen yang dilampirkan.</p></div>
+    </div>
+  </div>
+
+  <div class="dzikir-period-switch" role="tablist" aria-label="Pilih waktu dzikir">
+    <button type="button" class="dzikir-period-btn active" id="dzikirPagiBtn" role="tab" aria-selected="true" onclick="switchDzikirPeriod('pagi')">Dzikir Pagi</button>
+    <button type="button" class="dzikir-period-btn" id="dzikirPetangBtn" role="tab" aria-selected="false" onclick="switchDzikirPeriod('petang')">Dzikir Petang</button>
+  </div>
+
+  <div class="dzikir-intro card">
+    <span class="ps-kicker">PANDUAN DZIKIR</span>
+    <h3>Dzikir Pagi &amp; Petang</h3>
+    <p class="muted">Halaman ini khusus untuk bacaan dzikir pagi dan petang.</p>
+    <div class="dzikir-source-note">Sumber materi: dokumen yang dilampirkan pada proyek. Sampul/gambar tidak dimasukkan. Rujukan hadits dan keterangan sumber dipertahankan pada tiap bacaan.</div>
+  </div>
+
+  <div class="page-mount dzikir-content-mount" id="dzikirMount"><div class="card page-loading"><b>Memuat…</b><p class="muted">Menyiapkan bacaan dzikir.</p></div></div>
+</section>
+
+<section class="page collection-reader-page" id="koleksiMutiara">
+  <div class="collection-reader-head">
+    <button class="btn outline small" type="button" onclick="go('koleksi')">‹ Kembali</button>
+    <div class="collection-reader-title"><span class="collection-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h.01M11 8h.01M15 8h.01" stroke-width="2.2"/><path d="M4 5h16v10H8l-4 4V5Z"/></svg></span><div><h2>Kata-kata Mutiara</h2><p class="muted">Ruang nasihat dan mahfudzot.</p></div></div>
+  </div>
+  <div class="page-mount" id="mutiaraMount"></div>
+</section>
+
+<section class="page" id="rekap">
+  <div class="section-head"><h2>Rekap Ibadah</h2><button class="btn outline small" onclick="renderRecap()">↻ Perbarui</button></div>
+  <div class="card">
+    <div class="recap-controls">
+      <button class="seg active" id="tabDaily" onclick="setRecapMode('daily')">Harian</button>
+      <button class="seg" id="tabWeekly" onclick="setRecapMode('weekly')">Mingguan</button>
+      <button class="seg" id="tabMonthly" onclick="setRecapMode('monthly')">Bulanan</button>
+    </div>
+    <div class="recap-period-nav">
+      <button class="period-btn" onclick="moveRecapPeriod(-1)" aria-label="Periode sebelumnya">‹</button>
+      <div class="period-label"><b id="recapMonth">-</b><span id="recapDesc">-</span></div>
+      <button class="period-btn" onclick="moveRecapPeriod(1)" aria-label="Periode berikutnya">›</button>
+    </div>
+    <button class="btn ghost full" onclick="selectRecapToday()" style="margin-bottom:12px">Kembali ke periode sekarang</button>
+    <div class="recap-hero">
+      <div class="metric"><strong id="rmProgress">0%</strong><span>Progress</span></div>
+      <div class="metric"><strong id="rmDone">0</strong><span>Ibadah terlaksana</span></div>
+      <div class="metric"><strong id="rmDays">0</strong><span>Hari tercatat</span></div>
+      <div class="metric"><strong id="rmKhatam">0</strong><span>Khatam</span></div>
+    </div>
+    <div class="metric" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:8px"><span>Hari tidak terlaksana</span><strong id="rmNo" style="font-size:16px">0</strong></div></div>
+    <div id="recapList"></div>
+    <div class="insight"><b>Insight periode</b><p id="recapInsight">Belum ada cukup data untuk membuat insight.</p></div>
+  </div>
+</section>
+
+<section class="page" id="profil">
+  <div class="profile-shell">
+    <div class="section-head"><div><h2>Profil</h2><p class="muted" style="margin:4px 0 0;font-size:11px">Kelola profil dan ringkasan aktivitasmu di sini.</p></div></div>
+    <div class="card profile-compact-card profile-main-card">
+      <div class="profile-compact-row">
+        <div class="profile-big compact" id="profileBig">U</div>
+        <div>
+          <b id="profileTitle">Pengguna</b>
+          <span id="profileAccountStatus">Jurnal ibadah pribadi • Akun lokal</span>
+          <small>Kelola foto, akun, dan preferensi melalui tombol pengaturan.</small>
+          <small id="profileThemeSummary" class="muted" style="display:block;margin-top:2px"></small>
+        </div>
+      </div>
+      <input id="photoInput" type="file" accept="image/*" hidden onchange="handleProfilePhoto(this.files[0])">
+      <div id="photoError" class="photo-error" role="status"></div><div id="photoSaving" class="photo-saving" role="status">Menyimpan foto…</div>
+      <div class="profile-action-grid">
+        <button class="btn outline" type="button" onclick="openSettings()">Pengaturan</button>
+        <button class="btn gold" type="button" onclick="handleProfileChipClick()">Kelola akun</button>
+      </div>
+    </div>
+
+    <div class="card profile-recap-card">
+      <div class="section-head" style="margin:0 0 10px"><h2>Rekap ibadah</h2><button class="btn outline small" type="button" onclick="go('rekap')">Lihat lengkap</button></div>
+      <div class="profile-recap-grid">
+        <div><b id="profileRecapProgress">0%</b><span>Progress hari ini</span></div>
+        <div><b id="profileRecapDone">0</b><span>Terlaksana</span></div>
+        <div><b id="profileRecapNo">0</b><span>Tidak terlaksana</span></div>
+        <div><b id="profileRecapKhatam">0</b><span>Khatam</span></div>
+      </div>
+    </div>
+
+    <div class="card profile-notes-card">
+      <div class="section-head" style="margin:0 0 10px">
+        <div><h2>Catatan pribadi</h2><p class="muted" style="margin:3px 0 0;font-size:10px">Simpan pengingat, ide, atau catatan kecil untuk dirimu sendiri.</p></div>
+        <span class="notes-count" id="personalNotesCount">0 catatan</span>
+      </div>
+      <div class="notes-composer">
+        <div class="notes-composer-head"><b id="personalNotesFormTitle">Catatan baru</b><button class="notes-cancel" id="personalNotesCancel" type="button" onclick="cancelPersonalNoteEdit()" hidden>Batal edit</button></div>
+        <input id="personalNoteTitle" class="personal-note-title" maxlength="80" placeholder="Judul catatan (opsional)" autocomplete="off">
+        <textarea id="personalNotes" class="personal-notes" rows="5" maxlength="1200" placeholder="Tulis catatan pribadi di sini…"></textarea>
+        <div class="personal-notes-footer">
+          <small id="personalNotesStatus">Tersimpan di perangkat ini</small>
+          <button class="btn gold small" id="personalNotesSaveBtn" type="button" onclick="savePersonalNotes()">Simpan catatan</button>
+        </div>
+      </div>
+      <div class="saved-notes" id="savedPersonalNotes" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<nav class="mobile-nav" id="mobileNav"></nav>
+
+<button class="profile-help-fab" id="profileHelpFab" type="button" onclick="toggleProfileHelp()" aria-label="Bantuan profil" title="Bantuan">?</button>
+<div class="profile-help-backdrop" id="profileHelpBackdrop" onclick="closeProfileHelp()" aria-hidden="true"></div>
+<div class="profile-help-panel" id="profileHelpPanel" aria-live="polite">
+  <div class="help-card">
+    <div class="help-head">
+      <div><h3>Bantuan & Informasi</h3><p>Pilih bantuan yang kamu perlukan.</p></div>
+      <button class="help-close" type="button" onclick="closeProfileHelp()" aria-label="Tutup">×</button>
+    </div>
+    <div class="help-bars" id="profileHelpBars">
+      <button class="help-bar" type="button" onclick="openBugReport()">
+        <span class="help-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9V7a3 3 0 0 1 6 0v2"/><rect x="6" y="9" width="12" height="10" rx="4"/><path d="M6 13H3M21 13h-3M6 17l-2 2M18 17l2 2M6 9l-2-2M18 9l2-2M12 9v10"/></svg></span><span><b>Laporkan bug</b><small>Hubungi pengembang jika ada bagian aplikasi yang bermasalah.</small></span>
+      </button>
+      <button class="help-bar creator-profile-help-bar" type="button" onclick="openCreatorProfile()">
+        <span class="help-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c1.2-3.4 4-5 7-5s5.8 1.6 7 5"/></svg></span><span><b>Profil Pembuat Aplikasi</b><small>Kenali perjalanan pembuat Kisah Lillah.</small></span>
+      </button>
+    </div>
+    <div class="help-form" id="bugReportForm">
+      <button class="btn ghost small" type="button" onclick="backToHelpBars()">‹ Kembali</button>
+      <div class="field"><label for="bugName">Nama</label><input id="bugName" type="text" maxlength="80" placeholder="Nama kamu" autocomplete="name"></div>
+      <div class="field"><label for="bugReason">Alasan / masalah yang terjadi</label><textarea id="bugReason" maxlength="1000" placeholder="Jelaskan bagian yang bermasalah dan langkah yang kamu lakukan…"></textarea></div>
+      <div class="help-validation" id="bugValidation">Lengkapi nama dan alasan (minimal 10 karakter) agar laporan dapat dikirim langsung ke WhatsApp pengembang.</div>
+      <button class="btn gold help-submit" id="bugSubmitBtn" type="button" disabled onclick="sendBugReportToWhatsApp()">Kirim laporan ke WhatsApp</button>
+    </div>
+    <div class="creator-card" id="creatorProfileCard">
+      <button class="btn ghost small" type="button" onclick="backToHelpBars()">‹ Kembali</button>
+      <div class="creator-copy">
+        <h4>Profil Pembuat Aplikasi</h4>
+        <p>Aplikasi ini dibuat oleh <b>Muhammad Hilmi Azkia Rahman</b>, seorang santri yang berasal dari Sukabumi, Jawa Barat, dan saat ini menempuh pendidikan di <b>Pondok Pesantren Modern El-Alamia</b> yang berada di wilayah Bogor, Jawa Barat.</p>
+        <p>Ketertarikannya terhadap dunia teknologi dan pemrograman mendorongnya untuk mulai mempelajari bagaimana sebuah ide dapat dikembangkan menjadi sebuah aplikasi yang bermanfaat.</p>
+        <p>Sebagai seorang santri, ia memiliki semangat untuk menggabungkan ilmu agama, pendidikan, kreativitas, dan teknologi. Menurutnya, menjadi seorang santri bukanlah batasan untuk mengenal dunia teknologi, tetapi justru menjadi kesempatan untuk menciptakan sesuatu yang positif dan bermanfaat bagi masyarakat.</p>
+        <p>Aplikasi ini merupakan salah satu karya yang lahir dari proses belajar dan eksplorasinya di bidang teknologi. Dalam proses pembuatannya, ia terus mempelajari berbagai hal, mulai dari logika pemrograman, desain antarmuka, struktur aplikasi, hingga pengembangan fitur.</p>
+        <p>Bagi Muhammad Hilmi Azkia Rahman, aplikasi ini bukan sekadar sebuah produk, tetapi juga bagian dari perjalanan untuk membuktikan bahwa seorang santri juga dapat belajar, berkarya, dan menciptakan teknologi.</p>
+        <p class="creator-quote">“Saya masih dalam proses belajar. Namun, saya percaya bahwa dengan ilmu, usaha, doa, dan ketekunan, saya dapat terus berkembang dan menciptakan sesuatu yang bermanfaat bagi banyak orang.”</p>
+        <p class="creator-closing">Dari seorang santri, untuk sebuah karya.<br>Dari satu ide, menjadi sebuah aplikasi.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop settings-modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="modal settings-modal">
+    <div class="settings-head"><div><span class="ps-kicker">PREFERENSI</span><h3 id="settingsTitle">Pengaturan</h3></div><button class="pcm-close" type="button" onclick="closeSettings()" aria-label="Tutup">×</button></div>
+    <div class="settings-list">
+      <div class="setting">
+        <div><b>Mode gelap</b><span id="themeSettingText">Gunakan tampilan gelap</span></div>
+        <button class="toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Ubah mode tampilan"></button>
+      </div>
+      <div class="setting">
+        <div><b>Notifikasi adzan</b><span id="adhanNotificationText">Pengingat waktu adzan</span></div>
+        <button class="toggle" id="adhanNotificationToggle" type="button" onclick="toggleAdhanNotifications()" aria-label="Aktifkan atau nonaktifkan notifikasi adzan"></button>
+      </div>
+      <div class="setting">
+        <div><b>Suara adzan</b><span id="adhanSoundText">Putar suara adzan saat waktunya tiba</span></div>
+        <button class="toggle" id="adhanSoundToggle" type="button" onclick="toggleAdhanSound()" aria-label="Aktifkan atau nonaktifkan suara adzan"></button>
+      </div>
+      <div class="adhan-setting-group">
+        <div class="adhan-permission-row">
+          <div><b>Izin notifikasi perangkat</b><span id="adhanPermissionText">Belum diperiksa</span></div>
+          <button class="btn outline small" type="button" onclick="requestAdhanNotificationPermission()">Izinkan</button>
+        </div>
+        <div class="adhan-setting-note">Notifikasi mengikuti izin browser/HP dan memakai ikon KL. Saat aplikasi masih aktif, MP3 adzan dapat diputar; suara notifikasi sistem tetap mengikuti pengaturan perangkat.</div>
+        <div class="adhan-test-row">
+          <button class="btn outline small adhan-test-btn" type="button" onclick="testSubuhNotification()">Tes notifikasi Subuh</button>
+          <button class="btn outline small adhan-test-btn" type="button" onclick="testAdhanNotification()">Tes adzan biasa</button>
+        </div>
+        <div class="adhan-test-row">
+          <button class="btn outline small adhan-test-btn adhan-danger-btn" type="button" onclick="stopAdhanTestNotification()">Matikan test</button>
+          <button class="btn outline small adhan-test-btn adhan-danger-btn" type="button" onclick="disableAllAdhanNotifications()">Matikan semua notifikasi</button>
+        </div>
+      </div>
+      <div class="adhan-setting-group">
+        <div class="adhan-permission-row">
+          <div><b>Notifikasi Firebase</b><span id="firebaseNotificationText" class="firebase-status">Belum dihubungkan</span></div>
+          <button class="btn outline small" type="button" onclick="enableFirebaseNotifications()">Hubungkan</button>
+        </div>
+        <div class="adhan-setting-note">Firebase Cloud Messaging dipakai untuk push notification saat aplikasi berada di latar belakang. Fitur ini membutuhkan VAPID key dari Firebase Console.</div>
+      </div>
+      <button class="setting setting-button" type="button" onclick="closeSettings();handleProfileChipClick()"><div><b>Kelola akun & profil</b><span>Nama, foto, dan WhatsApp</span></div><strong>›</strong></button>
+      <button class="setting setting-button" type="button" onclick="closeSettings();openLocationPicker()"><div><b>Lokasi & jadwal salat</b><span>Atur lokasi ibadah dan sumber jadwal</span></div><strong>›</strong></button>
+      <button class="setting setting-button" type="button" onclick="closeSettings();go('koleksi')"><div><b>Koleksi</b><span>Do'a, hadits, dan kata-kata mutiara</span></div><strong>›</strong></button>
+    </div>
+    <div class="notice" style="margin-top:12px">Mode gelap memakai nuansa gelap dari layar pembuka Kisah Lillah agar tetap selaras dengan identitas aplikasi.</div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="modalTitle">Konfirmasi</h3>
+    <p id="modalText">-</p>
+    <div class="modal-actions">
+      <button class="btn outline" onclick="closeModal()">Batal</button>
+      <button class="btn gold" id="modalConfirm">Lanjutkan</button>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop crop-modal" id="cropModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cropTitle">
+    <div class="crop-title"><span style="font-size:20px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.2"/></svg></span><div><h3 id="cropTitle">Atur foto profil</h3><div class="crop-sub">Geser foto untuk mengatur posisi. Gunakan zoom agar bagian yang kamu inginkan masuk ke lingkaran.</div></div></div>
+    <div class="crop-stage"><canvas id="cropCanvas" class="crop-canvas" width="640" height="640" aria-label="Pratinjau foto profil"></canvas></div>
+    <div class="crop-mode" role="group" aria-label="Mode foto">
+      <button type="button" id="cropModeCrop" class="active" onclick="setCropMode('crop')">Potong foto</button>
+      <button type="button" id="cropModeFull" onclick="setCropMode('full')">Foto penuh</button>
+    </div>
+    <div class="crop-gesture">Geser • Cubit dua jari • ⤢ Zoom tombol • Foto disimpan aman di perangkat</div>
+    <div class="crop-controls">
+      <button type="button" onclick="adjustCropZoom(-.12)" aria-label="Perkecil">−</button>
+      <input id="cropZoom" class="crop-range" type="range" min="1" max="3" step=".01" value="1" oninput="setCropZoom(this.value)" aria-label="Zoom foto">
+      <button type="button" onclick="adjustCropZoom(.12)" aria-label="Perbesar">+</button>
+    </div>
+    <div class="crop-actions">
+      <button class="btn outline" type="button" onclick="closeCropModal()">Batal</button>
+      <button class="btn gold" type="button" onclick="applyCropPhoto()">Gunakan Foto</button>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop location-modal" id="locationModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="locationTitle">
+    <h3 id="locationTitle">Lokasi ibadah</h3>
+    <p class="location-lead">Pilih satu cara. Lokasi ini dipakai untuk <b>jadwal sholat</b> dan <b>arah kiblat</b>.</p>
+    <div class="location-hint" style="margin:0 0 10px;background:var(--surface2);border-radius:12px;padding:9px 11px"><b>Paling mudah:</b> pilih <b>Lokasi HP</b>. Jika dibuka sebagai file di Acode dan GPS ditolak browser, pilih <b>Kota</b>—tidak perlu API key.</div>
+
+    <div class="location-primary">
+      <button class="btn gold" type="button" onclick="useCurrentLocationFromPicker()">Gunakan lokasi HP</button>
+      <button class="btn outline" type="button" onclick="showCityChooser()">Pilih kota</button>
+    </div>
+    <div id="locationGpsStatus" class="location-gps-status" aria-live="polite" hidden></div>
+
+    <div class="city-chooser" id="cityChooser" hidden>
+      <label for="citySelect">Kota terdekat</label>
+      <select id="citySelect" class="location-select" aria-label="Pilih kota">
+        <option value="">Pilih kota…</option>
+        <option>Jakarta</option><option>Bandung</option><option>Sukabumi</option>
+        <option>Bogor</option><option>Depok</option><option>Bekasi</option>
+        <option>Tangerang</option><option>Cianjur</option><option>Cimahi</option>
+        <option>Tasikmalaya</option><option>Garut</option><option>Semarang</option>
+        <option>Yogyakarta</option><option>Surabaya</option><option>Malang</option>
+        <option>Medan</option><option>Palembang</option><option>Makassar</option>
+      </select>
+      <button class="btn ghost full" type="button" onclick="applyCityFromPicker()">Gunakan kota ini</button>
+    </div>
+
+    <details class="location-more">
+      <summary>Opsi lain: gunakan link Maps</summary>
+      <div class="location-field">
+        <label for="mapsUrlInput">Tempel link Google Maps</label>
+        <input id="mapsUrlInput" type="url" inputmode="url" placeholder="https://maps.google.com/…" autocomplete="off">
+      </div>
+      <div class="location-hint">Link Maps yang langsung memuat koordinat akan dibaca otomatis. Link pendek <b>maps.app.goo.gl</b> kadang hanya berisi pengalihan, jadi aplikasi tidak akan menebak titik.</div>
+      <div class="location-preview" id="locationPreview"></div>
+      <details class="location-advanced"><summary>Masukkan koordinat secara manual</summary>
+        <div class="location-field"><label>Latitude & longitude</label><div class="coord-grid"><input id="latInput" inputmode="decimal" placeholder="-6.2000"><input id="lonInput" inputmode="decimal" placeholder="106.8167"></div></div>
+      </details>
+    </details>
+
+    <div class="location-field"><label for="locationLabelInput">Nama lokasi <span class="muted">(opsional)</span></label><input id="locationLabelInput" type="text" placeholder="Contoh: Rumah" maxlength="60"></div>
+    <div class="location-save-row"><button class="btn gold full" type="button" onclick="applySelectedLocation()">Simpan & gunakan lokasi</button></div>
+    <div class="modal-actions"><button class="btn outline" type="button" onclick="closeLocationPicker()">Tutup</button><button class="btn ghost" type="button" onclick="clearSavedLocation();closeLocationPicker()">Hapus lokasi</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/prayer-schedule.js"></script>
+<script src="./config.js"></script>
+<script src="./firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/core.js?v=12"></script>
+</body>
+</html>
+

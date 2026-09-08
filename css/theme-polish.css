@@ -1,0 +1,314 @@
+/* v5.14 — client-requested visual polish only: no feature/structure changes */
+button,.btn,.collection-card,.icon-btn,.seg,.period-btn{ -webkit-tap-highlight-color:transparent; }
+.btn,.icon-btn,.seg,.period-btn,.collection-card,.help-bar,.help-close{
+  transition:transform .18s cubic-bezier(.22,.8,.25,1),background-color .18s ease,
+    border-color .18s ease,color .18s ease,box-shadow .18s ease,opacity .18s ease;
+}
+.btn:hover,.icon-btn:hover,.seg:hover,.period-btn:hover,.collection-card:hover,.help-bar:hover{
+  box-shadow:0 8px 22px rgba(18,69,61,.10);
+}
+.btn:active,.icon-btn:active,.seg:active,.period-btn:active,.collection-card:active,.help-bar:active{
+  transform:translateY(1px) scale(.985);
+}
+
+/* Dark mode: stronger contrast for text called out by client. */
+html[data-theme="dark"] .section-head h2,
+html[data-theme="dark"] .section-head p,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .label,
+html[data-theme="dark"] .recap-meta,
+html[data-theme="dark"] .recap-top b,
+html[data-theme="dark"] .period-label b,
+html[data-theme="dark"] .period-label span,
+html[data-theme="dark"] .insight,
+html[data-theme="dark"] .insight b,
+html[data-theme="dark"] .insight p,
+html[data-theme="dark"] .collection-card,
+html[data-theme="dark"] .collection-card b,
+html[data-theme="dark"] .collection-card small,
+html[data-theme="dark"] .collection-reader-title h2,
+html[data-theme="dark"] .collection-reader-title p,
+html[data-theme="dark"] .collection-empty-state,
+html[data-theme="dark"] .collection-empty-state b,
+html[data-theme="dark"] .collection-empty-state p{
+  color:var(--text);
+}
+html[data-theme="dark"] .collection-card small,
+html[data-theme="dark"] .collection-empty-state p,
+html[data-theme="dark"] .insight p,
+html[data-theme="dark"] .recap-meta,
+html[data-theme="dark"] .period-label span,
+html[data-theme="dark"] .section-head p{
+  color:#bdd1cc;
+}
+html[data-theme="dark"] .collection-card{
+  background:linear-gradient(145deg,#104a43,#0b3530);
+  border-color:#326b61;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 14px 30px rgba(0,0,0,.22);
+}
+html[data-theme="dark"] .collection-card:hover{
+  border-color:#69c9b8;
+  box-shadow:0 12px 28px rgba(0,0,0,.28);
+}
+html[data-theme="dark"] .collection-icon{background:#155047;color:#f5fffc}
+html[data-theme="dark"] .insight{
+  background:linear-gradient(145deg,#173f39,#26341f);
+  border-color:#536b58;
+  color:#f2f8f6;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 24px rgba(0,0,0,.18);
+}
+html[data-theme="dark"] .insight b{color:#f7fbf9}
+html[data-theme="dark"] .insight p{color:#d3e1dc}
+
+/* Dark buttons / controls: no invisible labels. */
+html[data-theme="dark"] .btn.outline,
+html[data-theme="dark"] .btn.ghost,
+html[data-theme="dark"] .icon-btn,
+html[data-theme="dark"] .seg,
+html[data-theme="dark"] .period-btn,
+html[data-theme="dark"] .ps-back{
+  color:#f2f8f6;background:#103f39;border-color:#356b62;
+}
+html[data-theme="dark"] .btn.ghost{color:#bce9df;background:#124a43}
+html[data-theme="dark"] .btn.outline:hover,
+html[data-theme="dark"] .btn.ghost:hover,
+html[data-theme="dark"] .icon-btn:hover,
+html[data-theme="dark"] .seg:hover,
+html[data-theme="dark"] .period-btn:hover,
+html[data-theme="dark"] .ps-back:hover{
+  color:#fff;border-color:#69c9b8;background:#155047;
+}
+html[data-theme="dark"] .btn.gold{
+  color:#173b36;background:linear-gradient(135deg,#e4c56f,#cda44d);
+  box-shadow:0 8px 22px rgba(216,180,95,.18);
+}
+html[data-theme="dark"] .btn.primary{background:#f5fbf9;color:#0b5c54}
+html[data-theme="dark"] .seg.active{
+  background:linear-gradient(135deg,#1b756b,#0d5049);color:#fff;border-color:#69c9b8;
+}
+html[data-theme="dark"] .btn:disabled{
+  color:#8da7a1;background:#12312d;border-color:#274e48;opacity:.72;
+}
+
+/* Prayer schedule dark mode. */
+html[data-theme="dark"] .prayer-schedule-hero{
+  background:linear-gradient(135deg,#0d7067,#08453f);color:#fff;
+}
+html[data-theme="dark"] .prayer-schedule-hero h1,
+html[data-theme="dark"] .prayer-schedule-hero p,
+html[data-theme="dark"] .prayer-schedule-hero .ps-kicker,
+html[data-theme="dark"] .prayer-schedule-hero .ps-location{color:#fff}
+html[data-theme="dark"] .ps-location .badge{
+  color:#f5fffc;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.18);
+}
+html[data-theme="dark"] .ps-calendar-card{
+  background:linear-gradient(145deg,#0c3b35,#092f2b);border-color:#2f665d;
+}
+html[data-theme="dark"] .ps-calendar-head>b,
+html[data-theme="dark"] .ps-calendar-head small{color:#f2f8f6}
+html[data-theme="dark"] .ps-calendar-head small{color:#bcd0ca}
+html[data-theme="dark"] .ps-calendar-week{color:#bcd0ca}
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card,
+html[data-theme="dark"] .ps-calendar-grid button{
+  background:linear-gradient(145deg,#104a43,#0b3530);color:#f2f8f6;border-color:#356b62;
+}
+html[data-theme="dark"] .ps-calendar-grid button .ps-day{color:#f7fbfa}
+html[data-theme="dark"] .ps-calendar-grid button .ps-hijri,
+html[data-theme="dark"] .ps-calendar-grid button .ps-wd{color:#bcd0ca}
+html[data-theme="dark"] .ps-calendar-grid button .ps-g{color:#7cdbc9}
+html[data-theme="dark"] .ps-calendar-grid button.today,
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card.today{
+  background:linear-gradient(145deg,#55431b,#352b16);color:#fff8dc;border-color:#e0bd5e;
+}
+html[data-theme="dark"] .ps-calendar-grid button.selected,
+html[data-theme="dark"] .ps-calendar-grid button.ps-day-card.selected{
+  background:linear-gradient(145deg,#176357,#0f443e);color:#fff;border-color:#76d8c8;
+}
+html[data-theme="dark"] .ps-mobile-row{
+  background:linear-gradient(145deg,#104a43,#0b3530);color:#f2f8f6;border-color:#356b62;
+}
+html[data-theme="dark"] .ps-mobile-date b,
+html[data-theme="dark"] .ps-mobile-hijri{color:#f2f8f6}
+html[data-theme="dark"] .ps-mobile-date span,
+html[data-theme="dark"] .ps-time span{color:#bcd0ca}
+html[data-theme="dark"] .ps-time{
+  background:#0d3b35;border-color:#356b62;color:#f2f8f6;
+}
+html[data-theme="dark"] .ps-time b{color:#7cdbc9}
+
+/* Help is a real modal room: background/nav are inert while open. */
+.profile-help-backdrop{
+  z-index:130;background:rgba(4,20,18,.48);backdrop-filter:blur(5px);
+}
+.profile-help-panel{z-index:132;isolation:isolate;overscroll-behavior:contain}
+.profile-help-panel.show{animation:helpInSmooth .24s cubic-bezier(.22,.8,.25,1)}
+@keyframes helpInSmooth{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.help-card{box-shadow:0 22px 60px rgba(4,30,26,.28),0 0 0 1px rgba(255,255,255,.08)}
+.help-head{position:sticky;top:0;z-index:2;background:inherit}
+.help-close{width:42px;height:42px;border-radius:14px;display:grid;place-items:center}
+html[data-theme="light"] .help-close{background:#edf7f4;color:#0b6b63;border:1px solid #d8eae5}
+html[data-theme="dark"] .help-close{background:#155047;color:#d9f5ee;border:1px solid #356b62}
+html[data-theme="dark"] .help-card{background:linear-gradient(145deg,#0d3934,#092d29);color:#f2f8f6;border-color:#356b62}
+html[data-theme="dark"] .help-bar{background:linear-gradient(145deg,#104a43,#0b3530);color:#f2f8f6;border-color:#356b62}
+html[data-theme="dark"] .help-bar b,
+html[data-theme="dark"] .help-head h3,
+html[data-theme="dark"] .help-form label{color:#f5fbf9}
+html[data-theme="dark"] .help-bar small,
+html[data-theme="dark"] .help-head p{color:#bcd0ca}
+html[data-theme="dark"] .help-form input,
+html[data-theme="dark"] .help-form textarea,
+html[data-theme="dark"] .help-shot{
+  background:#0a302c;color:#f2f8f6;border-color:#356b62;
+}
+html[data-theme="dark"] .help-form input::placeholder,
+html[data-theme="dark"] .help-form textarea::placeholder{color:#90aaa3}
+html[data-theme="dark"] .help-validation{background:#103c36;color:#cfe1dc;border-color:#356b62}
+html[data-theme="dark"] .help-validation.ok{color:#dff8ef;background:#124b42}
+html[data-theme="dark"] .creator-copy{background:#0a302c;color:#f2f8f6;border-color:#356b62}
+html[data-theme="dark"] .creator-copy p{color:#cfe1dc}
+
+/* Native-feeling motion. */
+.main{touch-action:pan-y;overscroll-behavior-x:none}
+.page.page-swipe-peek{backface-visibility:hidden;transform:translate3d(0,0,0);will-change:transform,opacity}
+.page.page-swipe-dragging{transition:none!important}
+@media(prefers-reduced-motion:reduce){
+  .btn,.icon-btn,.seg,.period-btn,.collection-card,.help-bar,.help-close{transition:none!important}
+}
+
+/* v5.18 client fix — keep the account/profile panel fully visible on phone.
+   Do not change the desktop layout; only prevent the mobile panel header/name
+   from being positioned above the viewport. */
+@media (max-width:767px){
+  .account-popover{
+    top:max(12px, env(safe-area-inset-top));
+    transform:translateX(-50%);
+    max-height:calc(100dvh - 24px);
+    height:auto;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+  }
+}
+
+
+/* Client v5.22 — light mode readability fix
+   Keep the existing structure/theme; only remove the dark page backdrop in light mode
+   so text and cards remain readable across every room/page. */
+html[data-theme="light"],
+html[data-theme="light"] body{
+  background:#ffffff !important;
+  color:var(--text);
+}
+html[data-theme="light"] .main{
+  background:transparent;
+}
+html[data-theme="light"] .topbar{
+  background:rgba(255,255,255,.96);
+  border-bottom-color:var(--line);
+}
+html[data-theme="light"] .mobile-nav{
+  background:rgba(255,255,255,.97);
+  border-top-color:var(--line);
+}
+html[data-theme="light"] .section-head h2,
+html[data-theme="light"] .page h1,
+html[data-theme="light"] .page h2,
+html[data-theme="light"] .page h3,
+html[data-theme="light"] .page h4,
+html[data-theme="light"] .page p,
+html[data-theme="light"] .page label{
+  color:var(--text);
+}
+html[data-theme="light"] .muted{
+  color:var(--muted) !important;
+}
+
+html[data-theme="light"] body,
+html:not([data-theme]) body{background:#f7faf9 !important;color:#173b36}
+html[data-theme="light"] .topbar,
+html:not([data-theme]) .topbar{background:rgba(255,255,255,.94) !important}
+
+/* v5.23 client fix — light mode readability only.
+   Keep the existing room/layout; in light mode the decorative hero surfaces
+   become light so all text remains readable. Dark mode is unchanged. */
+html[data-theme="light"] .hero,
+html:not([data-theme]) .hero{
+  background:linear-gradient(180deg,#ffffff 0%,#f7faf9 100%) !important;
+  color:#173b36 !important;
+  border:1px solid #dfeae6;
+}
+html[data-theme="light"] .hero h1,
+html[data-theme="light"] .hero p,
+html[data-theme="light"] .hero .eyebrow,
+html:not([data-theme]) .hero h1,
+html:not([data-theme]) .hero p,
+html:not([data-theme]) .hero .eyebrow{
+  color:#173b36 !important;
+  opacity:1;
+}
+html[data-theme="light"] .hero .btn.primary{
+  background:#0b6b63 !important;
+  color:#fff !important;
+  border-color:#0b6b63;
+}
+html[data-theme="light"] .hero .btn.gold{
+  color:#173b36 !important;
+}
+html[data-theme="light"] .prayer-schedule-hero,
+html:not([data-theme]) .prayer-schedule-hero{
+  background:linear-gradient(180deg,#ffffff 0%,#f7faf9 100%) !important;
+  color:#173b36 !important;
+  border:1px solid #dfeae6;
+}
+html[data-theme="light"] .prayer-schedule-hero h1,
+html[data-theme="light"] .prayer-schedule-hero p,
+html[data-theme="light"] .prayer-schedule-hero .ps-kicker,
+html[data-theme="light"] .prayer-schedule-hero .ps-location,
+html:not([data-theme]) .prayer-schedule-hero h1,
+html:not([data-theme]) .prayer-schedule-hero p,
+html:not([data-theme]) .prayer-schedule-hero .ps-kicker,
+html:not([data-theme]) .prayer-schedule-hero .ps-location{
+  color:#173b36 !important;
+  opacity:1;
+}
+html[data-theme="light"] .prayer-schedule-hero .ps-back,
+html:not([data-theme]) .prayer-schedule-hero .ps-back{
+  background:#eef6f3 !important;
+  color:#0b6b63 !important;
+  border:1px solid #dfeae6;
+}
+html[data-theme="light"] .prayer-schedule-hero .ps-location .badge,
+html:not([data-theme]) .prayer-schedule-hero .ps-location .badge{
+  background:#eef6f3 !important;
+  color:#0b6b63 !important;
+  border-color:#dfeae6 !important;
+}
+
+/* v5.23 client fix — upcoming prayer is visibly selected, but the existing
+   prayer grid/layout remains unchanged. */
+.prayer-item.next{
+  background:linear-gradient(145deg,#e8f7f3,#fff7df) !important;
+  border-color:#0b6b63 !important;
+  box-shadow:0 0 0 2px rgba(11,107,99,.12),0 7px 18px rgba(11,107,99,.12) !important;
+}
+.prayer-item.next b{color:#0b6b63 !important}
+.prayer-item.next span{color:#0b6b63 !important}
+html[data-theme="dark"] .prayer-item.next{
+  background:linear-gradient(145deg,#155047,#3f351a) !important;
+  border-color:#69c9b8 !important;
+  box-shadow:0 0 0 2px rgba(105,201,184,.14),0 7px 18px rgba(0,0,0,.2) !important;
+}
+html[data-theme="dark"] .prayer-item.next b,
+html[data-theme="dark"] .prayer-item.next span{color:#f7fbfa !important}
+
+/* v5.23 — adhan notification preferences */
+.adhan-setting-group{display:grid;gap:8px;margin-top:12px}
+.adhan-setting-note{font-size:10px;color:var(--muted);line-height:1.45}
+.adhan-permission-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface2)}
+.adhan-permission-row b{font-size:12px}
+.adhan-permission-row span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.adhan-permission-status{font-size:10px;color:var(--muted);line-height:1.35;margin-top:4px}
+.adhan-test-btn{margin-top:4px;width:100%}
+.firebase-status{font-size:10px;color:var(--muted);line-height:1.4;margin-top:2px}
+.firebase-status.ready{color:var(--success);font-weight:750}
+
