@@ -14,7 +14,7 @@ try{
 }catch(e){}
 
 const KL_ICON="./app-icon-client.png";
-const KL_CACHE="kl-shell-v7";
+const KL_CACHE="kl-shell-v8";
 const KL_SHELL_FILES=[
   "./",
   "./index.html",
