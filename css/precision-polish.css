@@ -136,6 +136,112 @@ input,select,textarea{min-height:var(--kl-control-h);border-radius:12px}
 textarea{line-height:1.5}
 .collection-reader-head{max-width:900px;margin-left:auto;margin-right:auto}
 .collection-reader-title{min-height:64px}
+
+/* Keep long Arabic passages readable on narrow screens. */
+.dzikir-reader-page{overflow-x:hidden}
+.dzikir-body{min-width:0}
+.dzikir-item{
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr);
+  gap:12px;
+  padding:18px;
+}
+.dzikir-num{
+  position:static;
+  align-self:start;
+  margin-top:1px;
+}
+.dzikir-arabic{
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  line-height:2.7;
+  font-size:clamp(1.2rem,5vw,1.45rem);
+  word-spacing:.12em;
+  text-align:right;
+  unicode-bidi:plaintext;
+  padding-block:14px;
+  font-kerning:normal;
+  text-rendering:optimizeLegibility;
+}
+.dzikir-arabic br{display:block;content:"";margin-block:.55em}
+.dzikir-arabic br + br{display:none}
+.dzikir-recitation{
+  display:block;
+  box-sizing:border-box;
+  max-width:100%;
+  padding-block:10px;
+  line-height:2.45;
+  letter-spacing:0;
+  word-spacing:.08em;
+  text-align:right;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+.dzikir-ayah-symbol{
+  display:inline;
+  white-space:nowrap;
+  margin-inline:.42em;
+  line-height:inherit;
+  vertical-align:baseline;
+  font-size:.82em;
+}
+.dzikir-ayah-unit{
+  white-space:nowrap;
+}
+.dzikir-recitation::before{
+  content:attr(data-surah);
+  display:block;
+  direction:ltr;
+  text-align:left;
+  color:var(--primary);
+  font:800 11px/1.2 system-ui,sans-serif;
+  letter-spacing:.02em;
+  margin-bottom:6px;
+}
+.dzikir-recitation + .dzikir-recitation{
+  margin-top:12px;
+  border-top:1px solid rgba(11,107,99,.24);
+  padding-top:20px;
+}
+.dzikir-body .dzikir-translation,.dzikir-source{overflow-wrap:anywhere}
+
+/* Full-screen Qur'an mode is a continuous reading page, not an inline
+   collection of controls mixed into the Arabic text. */
+.quran-reading-mode{box-sizing:border-box}
+.quran-reading-mode .quran-book-page{overflow:hidden}
+.quran-reading-mode .quran-book-arabic{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  text-align:right;
+  line-height:2.25;
+}
+.quran-reading-mode .quran-book-ayah{
+  display:block;
+  margin:0 0 1.15em;
+  white-space:normal;
+}
+.quran-reading-mode .quran-book-ayah-text{display:inline}
+.quran-reading-mode .quran-book-ayah-number{
+  display:inline-grid;
+  margin-inline-start:.45em;
+}
+.quran-reading-mode .quran-book-play-btn{display:none}
+.quran-reading-mode .quran-book-translation,
+.quran-reading-mode .quran-book-latin{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:600px){
+  .quran-reading-mode .quran-book-page{padding:20px 14px 34px}
+  .quran-reading-mode .quran-book-arabic{font-size:clamp(1.7rem,8vw,2.55rem);line-height:2.1}
+  .dzikir-item{grid-template-columns:28px minmax(0,1fr);gap:10px;padding:16px 14px}
+  .dzikir-num{width:28px;height:28px}
+  .dzikir-arabic{font-size:clamp(1.2rem,5.4vw,1.5rem);line-height:2.55}
+  .dzikir-recitation{line-height:2.35;padding-block:8px;word-spacing:.05em}
+  .dzikir-ayah-symbol{margin-inline:.34em}
+  .dzikir-recitation + .dzikir-recitation{margin-top:10px;padding-top:18px}
+}
 .collection-icon,.w-ico,.stat .icon,.kl-badge{flex-shrink:0}
 .collection-icon svg,.w-ico svg,.stat .icon svg,.kl-badge svg{width:20px;height:20px}
 .status button{min-height:46px}

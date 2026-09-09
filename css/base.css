@@ -865,11 +865,11 @@ html[data-theme="dark"]{
   --shadow:0 16px 42px rgba(0,0,0,.42);
 }
 html[data-theme="dark"]{
-  --bg:#12181b;--surface:#1b242a;--surface2:#212e34;--text:#edf5f2;--muted:#a3b3ae;
+  --bg:#1F4D3E;--surface:#173b31;--surface2:#205846;--text:#edf5f2;--muted:#b7d0c7;
   --primary:#7ebaa0;--primary-dark:#5a977d;--gold:#d7b775;--gold-soft:rgba(215,183,117,.12);
   --line:rgba(148,163,175,.14);--shadow:0 16px 30px rgba(0,0,0,.18);
 }
-html[data-theme="dark"] body{background:linear-gradient(180deg,#12181b 0,#17232a 280px);color:var(--text)}
+html[data-theme="dark"] body{background:#1F4D3E;color:var(--text)}
 html[data-theme="dark"] body::before,html[data-theme="dark"] body::after{
   background:
     linear-gradient(120deg,transparent 0 46%,rgba(126,186,160,.03) 46% 47%,transparent 47% 100%),
@@ -877,7 +877,7 @@ html[data-theme="dark"] body::before,html[data-theme="dark"] body::after{
     radial-gradient(circle at 10% 12%,rgba(126,186,160,.06),transparent 18%),
     radial-gradient(circle at 88% 24%,rgba(215,183,117,.05),transparent 16%);
 }
-html[data-theme="dark"] .topbar{background:rgba(18,24,27,.92);border-bottom-color:var(--line)}
+html[data-theme="dark"] .topbar{background:rgba(23,59,49,.94);border-bottom-color:var(--line)}
 html[data-theme="dark"] .profile-chip{background:rgba(11,53,48,.96);border-color:var(--line);color:var(--text)}
 html[data-theme="dark"] .brand-mark.image-mark{background:#d8b45f}
 html[data-theme="dark"] .sidebar{background:#06342f}

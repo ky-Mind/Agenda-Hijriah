@@ -25,7 +25,7 @@
     if(!mount)return;
     mount.innerHTML=klSkeletonRows(3)+'<div class="kl-skeleton" style="height:160px;margin-top:8px"></div>';
     try{
-      const res=await fetch("./partials/dzikir-content.html",{cache:"force-cache"});
+      const res=await fetch("./partials/dzikir-content.html?v=2",{cache:"no-store"});
       if(!res.ok)throw new Error("HTTP "+res.status);
       mount.innerHTML=await res.text();
     }catch(e){
@@ -35,4 +35,3 @@
   }
   mountDzikir();
 })();
-
