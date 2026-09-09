@@ -2201,6 +2201,11 @@ document.getElementById("mapsUrlInput")?.addEventListener("input",previewMapsLoc
     history.replaceState({aihPage:initial,aihRoot:true},"",location.href);
   }catch(e){}
   window.addEventListener("popstate",e=>{
+    if(document.getElementById("quranFullscreenReader")){
+      window.closeQuranReadingMode?.();
+      try{history.pushState({aihPage:document.querySelector(".page.active")?.id||"dashboard"},"",location.href)}catch(_){}
+      return;
+    }
     const openModal=document.querySelector(".modal-backdrop.show,.prayer-day-backdrop.show,.prayer-columns-backdrop.show");
     if(openModal){
       openModal.querySelector("[aria-label='Tutup'],[data-close]")?.click();
