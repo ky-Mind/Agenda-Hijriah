@@ -19,6 +19,22 @@
   let INDEX=[];
   let currentChapter=null;
   let playAllQueue=null;
+  let quranWakeLock=null;
+
+  async function keepQuranAudioAlive(){
+    if(!("wakeLock" in navigator))return;
+    try{
+      if(!quranWakeLock){
+        quranWakeLock=await navigator.wakeLock.request("screen");
+      }
+    }catch(e){}
+  }
+  function releaseQuranAudioWakeLock(){
+    if(quranWakeLock && typeof quranWakeLock.release === "function"){
+      quranWakeLock.release().catch(()=>{});
+    }
+    quranWakeLock=null;
+  }
 
   function esc(s){
     return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
@@ -146,7 +162,7 @@
   }
   window.toggleQuranDisplayPref=toggleDisplayPref;
 
-  function toolbarHtml(){
+  function toolbarHtml(includeReadMode=true,playId="quranPlayAllBtn"){
     const p=displayPrefs();
     const chip=(key,label)=>`<button type="button" class="quran-toggle-chip${p[key]?" active":""}" id="quranChip_${key}" onclick="toggleQuranDisplayPref('${key}')">${label}</button>`;
     return `
@@ -154,8 +170,8 @@
         ${chip("arabic","Arab")}
         ${chip("latin","Latin")}
         ${chip("translation","Arti")}
-        <button type="button" class="btn outline small" id="quranPlayAllBtn">▶ Putar satu surah</button>
-        <button type="button" class="btn outline small" id="quranReadModeBtn">Mode baca layar penuh</button>
+        <button type="button" class="btn outline small" id="${playId}">▶ Putar satu surah</button>
+        ${includeReadMode?'<button type="button" class="btn outline small" id="quranReadModeBtn">Mode baca layar penuh</button>':""}
       </div>`;
   }
 
@@ -179,30 +195,34 @@
       const audio=document.getElementById(btn.dataset.audio);
       if(!audio)return;
       audio.addEventListener("error",()=>{btn.disabled=true;btn.title="Audio tidak tersedia";btn.textContent="✕";},{once:true});
+      audio.addEventListener("play",()=>keepQuranAudioAlive(),{once:true});
+      audio.addEventListener("pause",()=>{if(audio.paused){releaseQuranAudioWakeLock();}}, {once:false});
+      audio.addEventListener("ended",()=>{btn.textContent="▶";btn.classList.remove("is-playing");releaseQuranAudioWakeLock();});
       btn.addEventListener("click",()=>{
         stopPlayAll();
         container.querySelectorAll("audio").forEach(a=>{if(a!==audio){a.pause();a.currentTime=0;}});
         container.querySelectorAll(".quran-play-btn").forEach(b=>{if(b!==btn){b.classList.remove("is-playing");b.textContent="▶";}});
         if(audio.paused){
+          keepQuranAudioAlive();
           audio.play().catch(()=>{btn.disabled=true;btn.textContent="✕";});
           btn.textContent="⏸";btn.classList.add("is-playing");
         }else{
           audio.pause();btn.textContent="▶";btn.classList.remove("is-playing");
         }
       });
-      audio.addEventListener("ended",()=>{btn.textContent="▶";btn.classList.remove("is-playing");});
     });
   }
 
   function stopPlayAll(){
     if(playAllQueue){playAllQueue.stopped=true;playAllQueue=null;}
+    releaseQuranAudioWakeLock();
   }
 
   function playAllFromContainer(container,chapter){
     stopPlayAll();
     container.querySelectorAll("audio").forEach(a=>{a.pause();a.currentTime=0;});
     container.querySelectorAll(".quran-play-btn").forEach(b=>{b.textContent="▶";b.classList.remove("is-playing");});
-    const cards=[...container.querySelectorAll(".quran-ayat-card")];
+    const cards=[...container.querySelectorAll(".quran-ayat-card,.quran-book-ayah")];
     let i=0;
     const queue={stopped:false};
     playAllQueue=queue;
@@ -235,11 +255,31 @@
         }
       });
     },{threshold:0.6});
-    container.querySelectorAll(".quran-ayat-card").forEach(c=>obs.observe(c));
+    container.querySelectorAll(".quran-ayat-card,.quran-book-ayah").forEach(c=>obs.observe(c));
   }
 
   function ayatWrapHtml(chapter){
     return `<div class="quran-ayat-wrap">${chapter.verses.map(v=>ayatCard(chapter.id,v)).join("")}</div>`;
+  }
+
+  function bookHtml(chapter){
+    return `<article class="quran-book-page">
+      <div class="quran-book-arabic quran-ayat-arabic" dir="rtl" lang="ar">${chapter.verses.map(v=>`
+        <span class="quran-book-ayah" data-ayah="${v.id}">
+          <span class="quran-book-ayah-text">${esc(v.text)}</span>
+          <span class="quran-book-ayah-number">${v.id}</span>
+          <button type="button" class="quran-play-btn quran-book-play-btn" data-audio="qAudioBook_${chapter.id}_${v.id}" aria-label="Putar ayat ${v.id}">▶</button>
+          <audio id="qAudioBook_${chapter.id}_${v.id}" preload="none" src="${AUDIO_URL(chapter.id,v.id)}"></audio>
+        </span>`).join(" ")}</div>
+      <div class="quran-book-translation quran-ayat-translation">${chapter.verses.map(v=>`
+        <p class="quran-book-translation-item" data-ayah="${v.id}">
+          <b>${v.id}.</b> ${esc(v.translation)}
+        </p>`).join("")}</div>
+      <div class="quran-book-latin quran-ayat-latin">${chapter.verses.map(v=>`
+        <p class="quran-book-latin-item" data-ayah="${v.id}">
+          <b>${v.id}.</b> <i>${esc(v.transliteration||"")}</i>
+        </p>`).join("")}</div>
+    </article>`;
   }
 
   async function openSurah(id,scrollToAyah){
@@ -295,14 +335,13 @@
     full.innerHTML=`
       <div class="quran-reading-topbar">
         <button class="btn outline small" type="button" id="quranReadCloseBtn">‹ Tutup mode baca</button>
-        <button class="btn outline small" type="button" id="quranReadPlayAllBtn">▶ Putar surah</button>
       </div>
       <div class="quran-detail-head">
         <h2 dir="rtl" lang="ar">${esc(chapter.name)}</h2>
         <p class="muted">${esc(chapter.transliteration)} • ${chapter.total_verses} ayat</p>
       </div>
-      ${toolbarHtml()}
-      ${ayatWrapHtml(chapter)}`;
+      ${toolbarHtml(false,"quranReadPlayAllBtn")}
+      ${bookHtml(chapter)}`;
     wirePlayButtons(full,chapter);
     applyDisplayPrefs(full);
     trackReadProgress(full,chapter);
@@ -310,7 +349,7 @@
     full.querySelector("#quranReadPlayAllBtn").addEventListener("click",()=>{
       if(playAllQueue)stopPlayAll();else playAllFromContainer(full,chapter);
     });
-    full.scrollTop=0;
+    full.scrollTop=0;full.scrollLeft=0;
   }
   function closeReadingMode(){
     stopPlayAll();
@@ -345,4 +384,3 @@
   window.initQuranPage=mountQuran;
   mountQuran();
 })();
-

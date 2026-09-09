@@ -8,7 +8,7 @@
 
 /* ---------- Lebar baca konsisten & presisi di desktop ---------- */
 .collection-reader-page{max-width:100%}
-#quranIndexView,#quranDetailView,#quranFullscreenReader .quran-ayat-wrap,
+#quranIndexView,#quranDetailView,#quranFullscreenReader .quran-ayat-wrap,#quranFullscreenReader .quran-book-page,
 #haditsBookList,#haditsDetailView,
 #doaCategoryView,#doaListView,
 #mutiaraMount{
@@ -176,4 +176,3 @@ textarea{line-height:1.5}
 @media(prefers-reduced-motion:reduce){
   .page.active,.day,.btn,.icon-btn,.seg,.period-btn,.quran-toggle-chip,.doa-cat-btn,.collection-card{animation:none!important;transition:none!important}
 }
-

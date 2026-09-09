@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" fill="none">
+  <defs>
+    <linearGradient id="emerald" x1="90" y1="60" x2="370" y2="410" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B7067"/><stop offset=".55" stop-color="#084F49"/><stop offset="1" stop-color="#021F18"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="90" y1="70" x2="370" y2="410" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF1BB"/><stop offset=".5" stop-color="#D6B25D"/><stop offset="1" stop-color="#A77A32"/>
+    </linearGradient>
+  </defs>
+  <path d="M389 119C326 66 239 71 176 129C109 191 102 292 154 364C184 406 228 431 277 437"
+        stroke="url(#emerald)" stroke-width="47" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M123 393C186 446 273 441 336 383C403 321 410 220 358 148C328 106 284 81 235 75"
+        stroke="url(#gold)" stroke-width="47" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M320 341H543" stroke="#D6B25D" stroke-width="3" stroke-linecap="round"/>
+  <text x="320" y="150" fill="#173B36" font-family="Georgia,serif" font-size="65" font-weight="700">Kisah</text>
+  <text x="320" y="216" fill="#B38A3D" font-family="Georgia,serif" font-size="65" font-weight="700">Lillah</text>
+  <text x="323" y="375" fill="#748682" font-family="Arial,sans-serif" font-size="16" letter-spacing="4">CATAT IBADAH · JAGA ISTIQAMAH</text>
+</svg>

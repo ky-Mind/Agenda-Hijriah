@@ -8,11 +8,10 @@
   "description": "Jurnal dan absensi ibadah harian berbasis kalender Hijriah dengan pengingat waktu sholat.",
   "icons": [
     {
-      "src": "assets/kisah-lillah-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/kisah-lillah-logo.png",
+      "sizes": "768x768",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
 }
-

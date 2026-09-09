@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="calendarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D97706;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Glow background -->
+  <circle cx="100" cy="100" r="95" fill="url(#glowGradient)" opacity="0.6"/>
+
+  <!-- Main calendar card -->
+  <rect x="40" y="50" width="120" height="120" rx="16" fill="url(#calendarGradient)" filter="drop-shadow(0 4px 12px rgba(0,0,0,0.3))"/>
+
+  <!-- Calendar grid header -->
+  <rect x="45" y="55" width="110" height="20" rx="8" fill="#021f18" opacity="0.9"/>
+
+  <!-- Days label in header -->
+  <text x="50" y="68" font-family="Arial, sans-serif" font-size="9" fill="#F7F1DC" font-weight="bold">Sun</text>
+  <text x="75" y="68" font-family="Arial, sans-serif" font-size="9" fill="#F7F1DC" font-weight="bold">Mon</text>
+  <text x="100" y="68" font-family="Arial, sans-serif" font-size="9" fill="#F7F1DC" font-weight="bold">Wed</text>
+  <text x="125" y="68" font-family="Arial, sans-serif" font-size="9" fill="#F7F1DC" font-weight="bold">Fri</text>
+
+  <!-- Calendar day grid -->
+  <g fill="#F7F1DC" opacity="0.9">
+    <!-- Row 1 -->
+    <text x="52" y="88" font-family="Arial, sans-serif" font-size="8">1</text>
+    <text x="77" y="88" font-family="Arial, sans-serif" font-size="8">2</text>
+    <text x="102" y="88" font-family="Arial, sans-serif" font-size="8">3</text>
+    <text x="127" y="88" font-family="Arial, sans-serif" font-size="8">4</text>
+
+    <!-- Row 2 -->
+    <text x="52" y="103" font-family="Arial, sans-serif" font-size="8">8</text>
+    <text x="77" y="103" font-family="Arial, sans-serif" font-size="8">9</text>
+    <text x="102" y="103" font-family="Arial, sans-serif" font-size="8">10</text>
+    <text x="127" y="103" font-family="Arial, sans-serif" font-size="8">11</text>
+
+    <!-- Row 3 -->
+    <text x="52" y="118" font-family="Arial, sans-serif" font-size="8">15</text>
+    <text x="77" y="118" font-family="Arial, sans-serif" font-size="8">16</text>
+    <text x="102" y="118" font-family="Arial, sans-serif" font-size="8">17</text>
+    <text x="127" y="118" font-family="Arial, sans-serif" font-size="8">18</text>
+  </g>
+
+  <!-- Hijri moon crescent decoration -->
+  <path d="M 110 135 Q 120 135 120 145 Q 120 155 110 155 Q 105 145 110 135" fill="#F7F1DC" opacity="0.7"/>
+  
+  <!-- Highlight circle on current day -->
+  <circle cx="102" cy="118" r="6" fill="none" stroke="#F7F1DC" stroke-width="1.5" opacity="0.8"/>
+
+  <!-- Islamic pattern accent -->
+  <circle cx="50" cy="140" r="3" fill="#F7F1DC" opacity="0.6"/>
+  <circle cx="70" cy="145" r="2.5" fill="#F7F1DC" opacity="0.5"/>
+  <circle cx="90" cy="142" r="2" fill="#F7F1DC" opacity="0.4"/>
+</svg>

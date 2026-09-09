@@ -257,6 +257,7 @@ function go(page,fromHistory=false){
  document.querySelectorAll(".page").forEach(x=>{x.classList.remove("swipe-in-left","swipe-in-right");x.classList.toggle("active",x.id===page)});
  document.querySelectorAll("[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
  document.body.classList.toggle("prayer-schedule-open",page==="shalat");
+document.body.classList.toggle("collection-reader-open",page.startsWith("koleksi")&&page!=="koleksi"||page==="tasbih");
 document.body.classList.toggle("dzikir-open",page==="koleksiDzikir");
 document.body.classList.toggle("profile-page-open",page==="profil");
 if(page!=="profil") closeProfileHelp();
@@ -578,6 +579,7 @@ function applyTheme(theme,save=true){
   }
   const text=document.getElementById("themeSettingText");if(text)text.textContent=dark?"Mode gelap sedang aktif":"Gunakan tampilan gelap";
   const sum=document.getElementById("profileThemeSummary");if(sum)sum.textContent=dark?"Mode gelap":"Mode terang";
+  refreshDevicePermissionText();
   // If no modal is visible, make sure the page is immediately touchable again.
   if(!document.querySelector(".modal-backdrop.show")){
     document.documentElement.classList.remove("modal-open");
@@ -594,6 +596,48 @@ function closeSettings(){
   if(modal)modal.classList.remove("show");
   unlockModalInteraction(modal);
 }
+function refreshDevicePermissionText(){
+  const locText=document.getElementById("deviceLocationText");
+  if(!locText) return;
+  if(!("geolocation" in navigator)){
+    locText.textContent="Browser tidak mendukung lokasi";
+    return;
+  }
+  if(navigator.permissions&&navigator.permissions.query){
+    navigator.permissions.query({name:"geolocation"}).then(permission=>{
+      const state=permission.state||"prompt";
+      locText.textContent = state==="granted"?"Izin lokasi aktif":(state==="denied"?"Lokasi ditolak":"Belum diberikan");
+    }).catch(()=>locText.textContent="Siap dipakai");
+    return;
+  }
+  locText.textContent="Siap dipakai";
+}
+function requestDeviceLocationPermission(){
+  if(!("geolocation" in navigator)){
+    toast("Browser ini tidak mendukung akses lokasi.");
+    refreshDevicePermissionText();
+    return false;
+  }
+  const finish=(ok,message)=>{
+    if(ok){toast(message);}
+    else{toast("Izin lokasi belum diberikan.");}
+    refreshDevicePermissionText();
+  };
+  if(navigator.permissions&&navigator.permissions.query){
+    navigator.permissions.query({name:"geolocation"}).then(permission=>{
+      if(permission.state==="granted"){
+        finish(true,"Izin lokasi aktif ✓");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(()=>finish(true,"Izin lokasi disetujui ✓"),()=>finish(false,"Izin lokasi belum diberikan."),{enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+    }).catch(()=>{
+      navigator.geolocation.getCurrentPosition(()=>finish(true,"Izin lokasi disetujui ✓"),()=>finish(false,"Izin lokasi belum diberikan."),{enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+    });
+    return true;
+  }
+  navigator.geolocation.getCurrentPosition(()=>finish(true,"Izin lokasi disetujui ✓"),()=>finish(false,"Izin lokasi belum diberikan."),{enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+  return true;
+}
 function toggleTheme(){
   applyTheme(getTheme()==="dark"?"light":"dark",true);
   const toggle=document.getElementById("themeToggle");
@@ -602,7 +646,7 @@ function toggleTheme(){
     setTimeout(()=>toggle.focus({preventScroll:true}),0);
   }
 }
-function initTheme(){applyTheme(getTheme(),false);loadPersonalNotes();}
+function initTheme(){applyTheme(getTheme(),false);refreshDevicePermissionText();loadPersonalNotes();}
 function discardDraft(){
  draftRecord={...record(selectedDate)};
  dirty=false;
@@ -718,47 +762,69 @@ function moveHijriMonth(delta){
 
 let calendarSwipeX=0,calendarSwipeY=0,calendarSwipeActive=false,calendarSwipeAxis=null;
 function bindCalendarSwipe(){
- const card=document.querySelector(".calendar-card"),days=document.getElementById("days");
- if(!card||!days||card.dataset.swipeBound==="1")return;
+ bindCalendarLikeSwipe({
+   card:".calendar-card",
+   content:"#days",
+   ignoreTarget:"button,select",
+   onCommit:dir=>moveHijriMonth(dir)
+ });
+}
+function bindCalendarLikeSwipe({card:cardSelector,content:contentSelector,ignoreTarget,onCommit}){
+ const card=document.querySelector(cardSelector),content=document.querySelector(contentSelector);
+ if(!card||!content||card.dataset.swipeBound==="1")return;
  card.dataset.swipeBound="1";
+ let x=0,y=0,active=false,axis=null;
+ const reset=()=>{
+   active=false;axis=null;card.classList.remove("is-dragging");
+   content.style.transform="";content.style.opacity="";content.style.transition="";
+ };
  card.addEventListener("pointerdown",e=>{
-  if(e.pointerType==="mouse" && e.button!==0)return;
-  if(e.target.closest("button")&&!e.target.closest("button.day"))return;
-  if(e.target.closest("select,option"))return;
-  calendarSwipeActive=true;calendarSwipeAxis=null;calendarSwipeX=e.clientX;calendarSwipeY=e.clientY;
-  card.classList.add("is-dragging");
-  try{card.setPointerCapture(e.pointerId)}catch(_){}
+   if(e.pointerType==="mouse"&&e.button!==0)return;
+   if((ignoreTarget&&e.target.closest(ignoreTarget))||e.target.closest("select,option"))return;
+   x=e.clientX;y=e.clientY;active=true;axis=null;card.classList.add("is-dragging");
+   try{card.setPointerCapture(e.pointerId)}catch(_){}
  });
  card.addEventListener("pointermove",e=>{
-  if(!calendarSwipeActive)return;
-  const dx=e.clientX-calendarSwipeX,dy=e.clientY-calendarSwipeY;
-  if(!calendarSwipeAxis){
-   if(Math.abs(dx)<8 && Math.abs(dy)<8)return;
-   calendarSwipeAxis=Math.abs(dx)>Math.abs(dy)*1.08?"x":"y";
-  }
-  if(calendarSwipeAxis!=="x")return;
-  e.preventDefault();
-  const limited=Math.max(-140,Math.min(140,dx*.82));
-  days.style.transform=`translate3d(${limited}px,0,0)`;
-  days.style.opacity=String(1-Math.min(.18,Math.abs(limited)/760));
+   if(!active)return;
+   const dx=e.clientX-x,dy=e.clientY-y;
+   if(!axis){
+     if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
+     axis=Math.abs(dx)>Math.abs(dy)*1.08?"x":"y";
+   }
+   if(axis!=="x")return;
+   e.preventDefault();
+   const limited=Math.max(-140,Math.min(140,dx*.82));
+   content.style.transform=`translate3d(${limited}px,0,0)`;
+   content.style.opacity=String(1-Math.min(.18,Math.abs(limited)/760));
  });
  const end=e=>{
-  if(!calendarSwipeActive)return;
-  calendarSwipeActive=false;card.classList.remove("is-dragging");
-  const dx=e.clientX-calendarSwipeX,dy=e.clientY-calendarSwipeY;
-  const wasHorizontal=calendarSwipeAxis==="x";
-  const threshold=Math.min(72,Math.max(46,card.clientWidth*.13));
-  calendarSwipeAxis=null;
-  if(!wasHorizontal || Math.abs(dx)<threshold || Math.abs(dx)<=Math.abs(dy)*1.15){
-   days.style.transform="";days.style.opacity="";return;
-  }
-  const dir=dx<0?1:-1;
-  suppressCalendarClickUntil=Date.now()+500;
-  animateCalendarMonth(dir);
+   if(!active)return;
+   const dx=e.clientX-x,dy=e.clientY-y,wasHorizontal=axis==="x";
+   const threshold=Math.min(72,Math.max(46,card.clientWidth*.13));
+   if(!wasHorizontal||Math.abs(dx)<threshold||Math.abs(dx)<=Math.abs(dy)*1.15){reset();return}
+   active=false;axis=null;card.classList.remove("is-dragging");
+   content.style.transition="transform .18s ease,opacity .14s ease";
+   const dir=dx<0?1:-1;
+   content.style.transform=`translate3d(${dir>0?-110:110}%,0,0)`;
+   content.style.opacity=".18";
+   setTimeout(()=>{
+     onCommit(dir);
+     const next=document.querySelector(contentSelector);
+     if(!next)return;
+     next.style.transition="none";
+     next.style.transform=`translate3d(${dir>0?110:-110}%,0,0)`;
+     next.style.opacity=".18";
+     requestAnimationFrame(()=>requestAnimationFrame(()=>{
+       next.style.transition="transform .24s cubic-bezier(.22,.8,.25,1),opacity .2s ease";
+       next.style.transform="translate3d(0,0,0)";
+       next.style.opacity="1";
+       setTimeout(()=>{next.style.transition="";next.style.opacity="";next.style.transform=""},280);
+     }));
+   },180);
  };
  card.addEventListener("pointerup",end);
- card.addEventListener("pointercancel",end);
- card.addEventListener("lostpointercapture",end);
+ card.addEventListener("pointercancel",reset);
+ card.addEventListener("lostpointercapture",()=>{if(active)reset()});
 }
 function animateCalendarMonth(dir){
  const oldDays=document.getElementById("days");
@@ -2131,13 +2197,31 @@ document.getElementById("mapsUrlInput")?.addEventListener("input",previewMapsLoc
 (function initRoomHistory(){
   const initial=document.querySelector(".page.active")?.id||"dashboard";
   try{
-    history.replaceState({aihPage:initial},"",location.href);
+    history.scrollRestoration="manual";
+    history.replaceState({aihPage:initial,aihRoot:true},"",location.href);
   }catch(e){}
   window.addEventListener("popstate",e=>{
+    const openModal=document.querySelector(".modal-backdrop.show,.prayer-day-backdrop.show,.prayer-columns-backdrop.show");
+    if(openModal){
+      openModal.querySelector("[aria-label='Tutup'],[data-close]")?.click();
+      try{history.pushState({aihPage:document.querySelector(".page.active")?.id||"dashboard"},"",location.href)}catch(_){}
+      return;
+    }
+    const accountPopover=document.getElementById("accountPopover");
+    if(accountPopover&&!accountPopover.hidden){
+      closeAccountPopover();
+      try{history.pushState({aihPage:document.querySelector(".page.active")?.id||"dashboard"},"",location.href)}catch(_){}
+      return;
+    }
     const current=document.querySelector(".page.active")?.id||"dashboard";
     const target=e.state?.aihPage;
     if(!target||!document.getElementById(target)){
-      try{history.pushState({aihPage:current},"",location.href)}catch(_){}
+      if(current!=="dashboard"){
+        window.__pageSwipeDirection="right";
+        go("dashboard",true);
+      }else{
+        try{history.pushState({aihPage:current,aihRoot:true},"",location.href)}catch(_){}
+      }
       return;
     }
     const allow=window.__allowHistoryPop===true;
@@ -2292,63 +2376,84 @@ function bindPageSwipe(){
   main.addEventListener("pointercancel",()=>{tracking=false;cleanup()});
   main.addEventListener("lostpointercapture",()=>{if(tracking){tracking=false;cleanup()}});
 }
-function bindPrayerScheduleSwipe(){
-  const card=document.querySelector(".ps-calendar-card"),grid=document.getElementById("psCalendarGrid");
-  if(!card||!grid||card.dataset.swipeBound==="1")return;
-  card.dataset.swipeBound="1";
-  let sx=0,sy=0,active=false,axis=null,pointerId=null;
-  const reset=()=>{
-    grid.style.transform="";
-    grid.style.opacity="";
-    grid.style.transition="";
-    card.classList.remove("is-dragging");
-    pointerId=null;
+/* Detail rooms behave like native mobile screens: a right swipe returns to
+   their parent, while vertical movement remains ordinary page scrolling. */
+function bindReaderSwipe(){
+  const main=document.querySelector(".main"); if(!main||main.dataset.readerSwipeBound==="1")return;
+  main.dataset.readerSwipeBound="1";
+  const parents={
+    koleksiQuran:"koleksi",koleksiHadits:"koleksi",koleksiDoa:"koleksi",
+    koleksiDzikir:"koleksi",koleksiMutiara:"koleksi",tasbih:"koleksi",
+    shalat:"dashboard",rekap:"dashboard"
   };
-  card.addEventListener("pointerdown",e=>{
-    if(document.documentElement.classList.contains("modal-open"))return;
+  let sx=0,sy=0,activePage="",tracking=false,axis="";
+  main.addEventListener("pointerdown",e=>{
+    const page=document.querySelector(".page.active"), parent=parents[page?.id];
+    if(!parent||document.documentElement.classList.contains("modal-open"))return;
     if(e.pointerType==="mouse"&&e.button!==0)return;
-    if(e.target.closest("button") && e.target.closest("button")?.matches(".btn"))return;
-    sx=e.clientX;sy=e.clientY;pointerId=e.pointerId;active=true;axis=null;
-    grid.style.transition="none";
-    card.classList.add("is-dragging");
-    try{card.setPointerCapture(e.pointerId)}catch(_){}
+    if(e.target.closest("button,a,input,select,textarea,summary,[role='button'],[role='dialog']"))return;
+    sx=e.clientX;sy=e.clientY;activePage=page.id;tracking=true;axis="";
+    try{main.setPointerCapture(e.pointerId)}catch(_){}
   });
-  card.addEventListener("pointermove",e=>{
-    if(!active)return;
+  main.addEventListener("pointermove",e=>{
+    if(!tracking)return;
     const dx=e.clientX-sx,dy=e.clientY-sy;
     if(!axis){
-      if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
-      axis=Math.abs(dx)>Math.abs(dy)*1.08?"x":"y";
-      if(axis!=="x"){active=false;reset();return}
+      if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
+      axis=Math.abs(dx)>Math.abs(dy)*1.15?"x":"y";
+      if(axis==="y"){tracking=false;return}
     }
-    if(axis!=="x")return;
-    e.preventDefault();
-    const limited=Math.max(-140,Math.min(140,dx*.82));
-    grid.style.transform=`translate3d(${limited}px,0,0)`;
-    grid.style.opacity=String(1-Math.min(.18,Math.abs(limited)/760));
+    if(axis==="x"&&dx>0)e.preventDefault();
   });
   const end=e=>{
-    if(!active)return;
-    active=false;
+    if(!tracking)return;
+    tracking=false;
     const dx=e.clientX-sx,dy=e.clientY-sy;
-    const horizontal=axis==="x";
-    const threshold=Math.min(72,Math.max(46,card.clientWidth*.13));
-    axis=null;
-    if(!horizontal||Math.abs(dx)<threshold||Math.abs(dx)<=Math.abs(dy)*1.08){reset();return}
-    e.preventDefault();
-    const dir=dx<0?-1:1;
-    grid.style.transition="transform .28s cubic-bezier(.22,.8,.25,1),opacity .2s ease";
-    grid.style.transform=`translate3d(${dir*150}px,0,0)`;
-    grid.style.opacity=".72";
-    setTimeout(()=>{
-      window.__selectedPrayerScheduleIso="";
-      reset();
-      movePrayerSchedule(dir<0?10:-10);
-    },170);
+    const parent=parents[activePage];
+    if(axis==="x"&&parent&&dx>=64&&Math.abs(dx)>Math.abs(dy)*1.12){
+      window.__pageSwipeDirection="right";
+      go(parent);
+    }
+    activePage="";axis="";
   };
-  card.addEventListener("pointerup",end);
-  card.addEventListener("pointercancel",()=>{active=false;reset()});
-  card.addEventListener("lostpointercapture",()=>{if(active){active=false;reset()}});
+  main.addEventListener("pointerup",end);
+  main.addEventListener("pointercancel",()=>{tracking=false;activePage="";axis=""});
+  main.addEventListener("lostpointercapture",()=>{tracking=false;activePage="";axis=""});
+}
+/* Bottom-sheet style dialogs can be dismissed with a short downward swipe. */
+function bindModalSwipeDismiss(){
+  document.querySelectorAll(".modal-backdrop,.prayer-day-backdrop,.prayer-columns-backdrop").forEach(backdrop=>{
+    if(backdrop.dataset.swipeDismissBound==="1")return;
+    backdrop.dataset.swipeDismissBound="1";
+    let sy=0,sx=0,tracking=false;
+    backdrop.addEventListener("pointerdown",e=>{
+      if(e.target!==backdrop)return;
+      sy=e.clientY;sx=e.clientX;tracking=true;
+    });
+    backdrop.addEventListener("pointerup",e=>{
+      if(!tracking)return;
+      tracking=false;
+      if(e.clientY-sy>70&&Math.abs(e.clientY-sy)>Math.abs(e.clientX-sx)*1.2){
+        backdrop.querySelector("[data-close],.modal-close,.pdm-close,.pcm-close")?.click();
+        if(backdrop.classList.contains("show")){
+          backdrop.classList.remove("show");
+          document.documentElement.classList.remove("modal-open");
+        }
+      }
+    });
+    backdrop.addEventListener("pointercancel",()=>{tracking=false});
+  });
+}
+function bindPrayerScheduleSwipe(){
+  bindCalendarLikeSwipe({
+    card:".ps-calendar-card",
+    content:"#psCalendarGrid",
+    ignoreTarget:".btn",
+    onCommit:dir=>{
+      window.__selectedPrayerScheduleIso="";
+      movePrayerSchedule(dir<0?10:-10);
+    }
+  });
 }
 
 function bindAccountPopoverDismiss(){
@@ -2362,6 +2467,8 @@ function bindAccountPopoverDismiss(){
 bindPrayerScheduleSwipe();
 bindAccountPopoverDismiss();
 bindPageSwipe();
+bindReaderSwipe();
+bindModalSwipeDismiss();
 
 /* Kisah Lillah launch splash */
 (function(){
@@ -2375,5 +2482,3 @@ bindPageSwipe();
   window.setTimeout(hide,1450);
   window.addEventListener("pageshow",()=>window.setTimeout(hide,1450),{once:true});
 })();
-
-

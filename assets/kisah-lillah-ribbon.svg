@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="emerald" x1="110" y1="70" x2="410" y2="440" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B7067"/><stop offset=".55" stop-color="#084F49"/><stop offset="1" stop-color="#021F18"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="120" y1="90" x2="410" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7E6A2"/><stop offset=".5" stop-color="#D6B25D"/><stop offset="1" stop-color="#A97A30"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#021F18"/>
+  <path d="M385 102C317 54 222 69 164 128C100 193 101 299 166 363C208 404 267 421 321 410"
+        stroke="url(#emerald)" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M127 410C196 458 291 443 349 384C413 319 412 213 347 149C305 108 246 91 192 102"
+        stroke="url(#gold)" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M170 128C224 77 307 69 365 96" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".2" filter="url(#glow)"/>
+</svg>

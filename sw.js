@@ -13,8 +13,8 @@ try{
   );
 }catch(e){}
 
-const KL_ICON="./app-icon-client.png";
-const KL_CACHE="kl-shell-v8";
+const KL_ICON="./assets/kisah-lillah-logo.png";
+const KL_CACHE="kl-shell-v13";
 const KL_SHELL_FILES=[
   "./",
   "./index.html",
@@ -23,7 +23,7 @@ const KL_SHELL_FILES=[
   "./css/collection-pages.css",
   "./css/premium-ui.css",
   "./css/precision-polish.css",
-  "./app-icon-client.png"
+  "./assets/kisah-lillah-logo.png"
 ];
 
 self.addEventListener("install",event=>{
@@ -154,4 +154,3 @@ self.addEventListener("notificationclick",event=>{
     if(clients.openWindow)await clients.openWindow(url);
   })());
 });
-

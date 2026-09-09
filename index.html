@@ -8,11 +8,11 @@
     html,body{margin:0;min-height:100%;background:#021f18!important;color:#f7f1dc;}
     body{background-color:#021f18!important;}
   </style>
-  <link rel="preload" as="image" href="assets/kisah-lillah-icon.svg" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/kisah-lillah-logo.png" fetchpriority="high">
 <meta name="theme-color" content="#0b4f49" id="themeColorMeta">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" type="image/svg+xml" href="assets/kisah-lillah-icon.svg">
+<link rel="icon" type="image/png" href="assets/kisah-lillah-logo.png">
 <script>
 (function(){
   try{
@@ -22,7 +22,7 @@
 })();
 </script>
 
-<link rel="apple-touch-icon" href="assets/kisah-lillah-icon.svg">
+<link rel="apple-touch-icon" href="assets/kisah-lillah-logo.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="Jurnal dan absensi ibadah harian berbasis kalender Hijriah.">
 <title>Kisah Lillah</title>
@@ -33,15 +33,16 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/theme-polish.css">
 <link rel="stylesheet" href="css/collection-pages.css">
-<link rel="stylesheet" href="css/premium-ui.css?v=8">
+<link rel="stylesheet" href="css/premium-ui.css?v=9">
 <link rel="stylesheet" href="css/precision-polish.css?v=11">
+<link rel="stylesheet" href="css/islamic-calendar-icon.css">
 </head>
 <body>
 
 
 <div class="kl-splash" id="klSplash" aria-label="Kisah Lillah">
   <div class="kl-splash-brand">
-    <img class="kl-splash-icon" src="assets/kisah-lillah-icon.svg" alt="Kisah Lillah">
+    <div id="splashIconContainer" class="kl-splash-icon"></div>
     <h1 class="kl-splash-title">Kisah Lillah</h1>
     <p class="kl-splash-subtitle">Catat ibadah, jaga istiqamah.</p>
   </div>
@@ -53,14 +54,14 @@
 
 <div class="app">
 <aside class="sidebar">
-  <div class="brand"><div class="brand-icon image-mark"><img src="assets/kisah-lillah-icon.svg" alt="Kisah Lillah"></div><div><b>Kisah Lillah</b><small>Catat ibadah, jaga istiqamah.</small></div></div>
+  <div class="brand"><div id="sidebarIconContainer" class="brand-icon image-mark"></div><span class="brand-name">Kisah Lillah</span></div>
   <nav class="nav" id="sideNav"></nav>
   <div class="sidebar-note">Kalender utama memakai Umm al-Qura bila tersedia. Untuk tahun di luar jangkauan browser, kalender otomatis memakai perhitungan Hijriah sipil sebagai fallback agar navigasi tetap tersedia.</div>
 </aside>
 
 <main class="main">
 <header class="topbar">
-  <div class="mobile-brand"><span class="brand-mark image-mark"><img src="assets/kisah-lillah-icon.svg" alt="" aria-hidden="true"></span> Kisah Lillah</div>
+  <div class="mobile-brand"><span id="mobileIconContainer" class="brand-mark image-mark"></span> Kisah Lillah</div>
   <div class="topbar-actions" aria-hidden="true"></div>
   <div class="profile-chip" aria-label="Profil pengguna"><span class="avatar" id="avatar">U</span><span id="topName">Pengguna</span></div>
 </header>
@@ -542,6 +543,13 @@
       </div>
       <div class="adhan-setting-group">
         <div class="adhan-permission-row">
+          <div><b>Lokasi perangkat</b><span id="deviceLocationText">Belum diperiksa</span></div>
+          <button class="btn outline small" type="button" onclick="requestDeviceLocationPermission()">Izinkan</button>
+        </div>
+        <div class="adhan-setting-note">Lokasi dipakai untuk jadwal sholat, arah kiblat, dan pembaruan posisi yang lebih akurat saat fitur membutuhkannya.</div>
+      </div>
+      <div class="adhan-setting-group">
+        <div class="adhan-permission-row">
           <div><b>Notifikasi Firebase</b><span id="firebaseNotificationText" class="firebase-status">Belum dihubungkan</span></div>
           <button class="btn outline small" type="button" onclick="enableFirebaseNotifications()">Hubungkan</button>
         </div>
@@ -639,7 +647,22 @@
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js"></script>
 <script src="js/firebase-init.js"></script>
 <script src="js/notifications.js"></script>
-<script src="js/core.js?v=12"></script>
+<script src="js/islamic-calendar-icon.js"></script>
+<script src="js/core.js?v=14"></script>
+
+<!-- Initialize the animated ribbon brand mark -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    ['splashIconContainer','sidebarIconContainer','mobileIconContainer'].forEach(function(id) {
+      const target = document.getElementById(id);
+      if (!target) return;
+      const image = document.createElement('img');
+      image.src = 'assets/kisah-lillah-logo.png';
+      image.alt = '';
+      image.setAttribute('aria-hidden', 'true');
+      target.appendChild(image);
+    });
+  });
+</script>
 </body>
 </html>
-

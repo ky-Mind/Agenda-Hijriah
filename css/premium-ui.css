@@ -40,27 +40,83 @@
 .adhan-danger-btn:active{background:rgba(199,77,90,.08)}
 
 /* ---------- Al-Qur'an: daftar surah vertikal (bukan grid samping) ---------- */
-.quran-surah-list{display:flex;flex-direction:column;gap:8px}
-.quran-surah-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;min-height:auto}
+#koleksiQuran .page-mount{position:relative;isolation:isolate}
+#koleksiQuran .page-mount::before{
+  content:"";position:absolute;inset:0 auto auto 0;width:240px;height:220px;pointer-events:none;
+  background:radial-gradient(circle at 20% 26%,rgba(46,91,68,.05),transparent 36%),
+    linear-gradient(135deg,transparent 0 58%,rgba(184,157,95,.035) 58% 60%,transparent 60% 100%);
+  opacity:.9;z-index:-1;
+}
+#koleksiQuran .page-mount::after{
+  content:"";position:absolute;right:0;bottom:0;width:220px;height:200px;pointer-events:none;
+  background:radial-gradient(circle at 62% 28%,rgba(46,91,68,.03),transparent 35%),
+    linear-gradient(45deg,transparent 0 62%,rgba(184,157,95,.03) 62% 64%,transparent 64% 100%);
+  opacity:.9;z-index:-1;
+}
+.quran-surah-list{display:flex;flex-direction:column;gap:10px}
+.quran-surah-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;min-height:auto;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.68);box-shadow:none}
 .quran-surah-row .quran-surah-number{flex:0 0 auto}
 .quran-surah-row .quran-surah-info{flex:1;min-width:0}
-.quran-surah-row .quran-surah-arabic{flex:0 0 auto}
-.quran-surah-continue{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;margin-bottom:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:0}
+.quran-surah-row .quran-surah-info .muted{display:block;color:var(--muted);font-size:11.5px;line-height:1.5}
+.quran-surah-row .quran-surah-arabic{flex:0 0 auto;font-size:24px;color:var(--primary-dark);opacity:.9}
+.quran-surah-continue{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;margin-bottom:12px;background:linear-gradient(135deg,#2e5b44 0%,#214b3a 100%);color:#fff;border:0;border-radius:22px;box-shadow:none;overflow:hidden;position:relative}
+.quran-surah-continue::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0 55%,rgba(255,255,255,.05) 55% 56%,transparent 56% 100%);opacity:.9}
+.quran-surah-continue > *{position:relative;z-index:1}
 .quran-surah-continue b{display:block;font-size:13px}
-.quran-surah-continue small{display:block;opacity:.85;font-size:11px;margin-top:2px}
-.quran-surah-continue .btn{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.quran-surah-continue small{display:block;opacity:.82;font-size:11px;margin-top:2px}
+.quran-surah-continue .btn{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:12px}
 
 /* Toolbar berisi tombol tampilan (Arab/Latin/Arti), mode baca, dan audio penuh surah */
 .quran-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
-.quran-toggle-chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700}
-.quran-toggle-chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
-.quran-toolbar .btn{padding:8px 14px;min-height:auto;font-size:12px}
+.quran-toggle-chip{border:1px solid var(--line);background:rgba(255,255,255,.72);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700}
+.quran-toggle-chip.active{background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-color:var(--primary);color:#fff;box-shadow:none}
+.quran-toolbar .btn{padding:8px 14px;min-height:auto;font-size:12px;border-radius:12px}
 
 /* Mode baca layar penuh: seperti membuka buku, tanpa gangguan header/nav */
-.quran-reading-mode{position:fixed;inset:0;z-index:1200;background:var(--bg);overflow-y:auto;padding:18px 16px 60px;-webkit-overflow-scrolling:touch}
-.quran-reading-mode .quran-reading-topbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);padding:6px 0 12px;z-index:2}
-.quran-reading-mode .quran-ayat-wrap{max-width:720px;margin:0 auto}
+.quran-reading-mode{position:fixed;inset:0;z-index:1200;background:var(--bg);overflow-y:auto;overflow-x:hidden;padding:0 16px 48px;-webkit-overflow-scrolling:touch}
+.quran-reading-mode::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:linear-gradient(90deg,transparent 0 47%,rgba(46,91,68,.02) 47% 53%,transparent 53% 100%);
+}
+.quran-reading-mode .quran-reading-topbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);padding:14px 0 12px;z-index:2;border-bottom:1px solid var(--line)}
+.quran-reading-mode .quran-ayat-wrap{max-width:none;margin:0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:min(88vw,40rem);gap:16px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:10px 6px 18px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
 body.quran-reading-lock{overflow:hidden}
+body.quran-reading-lock .mobile-nav{display:none!important}
+body.collection-reader-open #mobileNav{display:none!important}
+.quran-reading-mode .quran-detail-head,.quran-reading-mode .quran-toolbar,.quran-reading-mode .quran-book-page{width:min(100%,920px);margin-left:auto;margin-right:auto}
+.quran-reading-mode .quran-detail-head{padding:30px 0 6px}
+.quran-reading-mode .quran-detail-head h2{font-size:clamp(2.3rem,6vw,4.2rem);text-align:right}
+.quran-reading-mode .quran-toolbar{padding:8px 0 16px}
+.quran-reading-mode .quran-book-page{padding:clamp(24px,5vw,56px) clamp(18px,6vw,72px) 48px;border:1px solid var(--line);border-radius:26px;background:var(--surface);box-shadow:0 18px 42px rgba(16,59,51,.08)}
+.quran-reading-mode .quran-book-arabic{font-family:"Noto Naskh Arabic","Amiri","Times New Roman",serif;font-size:clamp(2rem,4.5vw,3.25rem);line-height:2.15;text-align:justify;color:var(--text)}
+.quran-reading-mode .quran-book-ayah{display:inline;white-space:normal}
+.quran-reading-mode .quran-book-ayah-text{display:inline}
+.quran-reading-mode .quran-book-ayah-number{display:inline-grid;place-items:center;width:1.7em;height:1.7em;margin:0 .25em;color:var(--primary);border:1px solid var(--line);border-radius:50%;font:700 .35em/1 system-ui,sans-serif;vertical-align:middle}
+.quran-reading-mode .quran-book-play-btn{display:inline-grid;width:1.55em;height:1.55em;margin:0 .2em;font:700 .34em/1 system-ui,sans-serif;vertical-align:middle}
+.quran-reading-mode .quran-book-translation{border-top:1px solid var(--line);margin-top:28px;padding-top:18px}
+.quran-reading-mode .quran-book-translation-item{margin:0 0 10px;color:var(--muted);font-size:14px;line-height:1.75}
+.quran-reading-mode .quran-book-translation-item b{color:var(--primary)}
+.quran-reading-mode .quran-book-latin{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
+.quran-reading-mode .quran-book-latin-item{margin:0 0 9px;font-size:13px;line-height:1.7}
+@media(max-width:600px){
+  .quran-reading-mode{padding-left:10px;padding-right:10px}
+  .quran-reading-mode .quran-reading-topbar{padding-top:10px}
+  .quran-reading-mode .quran-book-page{border-radius:18px}
+  .quran-reading-mode .quran-book-arabic{font-size:clamp(1.85rem,9vw,2.7rem);line-height:2.05}
+}
+
+html[data-theme="dark"] #koleksiQuran .page-mount::before,
+html[data-theme="dark"] #koleksiQuran .page-mount::after,
+html[data-theme="dark"] .quran-reading-mode::before{opacity:.75}
+html[data-theme="dark"] .quran-surah-row,
+html[data-theme="dark"] .quran-surah-continue,
+html[data-theme="dark"] .quran-toggle-chip,
+html[data-theme="dark"] .quran-reading-mode .quran-reading-topbar{background:linear-gradient(145deg,#1d2a30,#18262d);border-color:rgba(183,196,188,.12)}
+html[data-theme="dark"] .quran-toggle-chip{color:var(--muted)}
+html[data-theme="dark"] .quran-surah-row .quran-surah-info .muted{color:rgba(237,245,242,.72)}
+html[data-theme="dark"] .quran-surah-row .quran-surah-arabic{color:#97d1b0}
+html[data-theme="dark"] .quran-surah-continue small{color:rgba(255,255,255,.8)}
+html[data-theme="dark"] .quran-reading-mode .quran-reading-topbar{background:rgba(18,24,27,.72)}
 
 /* ---------- Do'a: kategori dulu, bukan langsung semua ---------- */
 .doa-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -143,4 +199,3 @@ html[data-theme="dark"] .mobile-nav button.active{background:#12635b;color:#fff}
 .mobile-nav .nav-icon svg{width:21px;height:21px;stroke-width:1.65}
 .mobile-nav .nav-label{font-size:9px;line-height:1.1;margin:0;font-family:inherit;font-weight:700}
 @media(max-width:767px){.mobile-nav .nav-label{font-size:10px}.mobile-nav .nav-icon svg{width:20px;height:20px}}
-

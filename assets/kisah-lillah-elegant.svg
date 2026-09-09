@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="emerald" x1="90" y1="60" x2="420" y2="410" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B7067"/><stop offset=".55" stop-color="#084F49"/><stop offset="1" stop-color="#021F18"/>
+    </linearGradient>
+    <linearGradient id="champagne" x1="100" y1="80" x2="430" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF1BB"/><stop offset=".5" stop-color="#D6B25D"/><stop offset="1" stop-color="#A77A32"/>
+    </linearGradient>
+  </defs>
+  <path d="M389 119C326 66 239 71 176 129C109 191 102 292 154 364C184 406 228 431 277 437"
+        stroke="url(#emerald)" stroke-width="47" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M123 393C186 446 273 441 336 383C403 321 410 220 358 148C328 106 284 81 235 75"
+        stroke="url(#champagne)" stroke-width="47" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M180 116C240 73 314 73 370 105" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".18"/>
+  <path d="m154 261 5 11 11 5-11 5-5 11-5-11-11-5 11-5 5-11Zm204-73 4 9 9 4-9 4-4 9-4-9-9-4 9-4 4-9Z" fill="#F4DE99"/>
+</svg>

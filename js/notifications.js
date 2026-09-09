@@ -254,8 +254,8 @@ function showAdhanNotification(name,time){
         body:content.body,
         tag:content.tag,
         renotify:true,
-        icon:"app-icon-client.png",
-        badge:"app-icon-client.png"
+        icon:"assets/kisah-lillah-logo.png",
+        badge:"assets/kisah-lillah-logo.png"
       });
     }
   }catch(e){
@@ -263,8 +263,8 @@ function showAdhanNotification(name,time){
       new Notification(content.title,{
         body:content.body,
         tag:content.tag,
-        icon:"app-icon-client.png",
-        badge:"app-icon-client.png"
+        icon:"assets/kisah-lillah-logo.png",
+        badge:"assets/kisah-lillah-logo.png"
       });
     }catch(_){}
   }
@@ -371,7 +371,7 @@ function initFirebaseMessaging(){
               time:payload?.data?.time||"",
               tag:payload?.data?.tag||"firebase-kisah-lillah"
             });
-          }else new Notification(title,{body,icon:"app-icon-client.png",badge:"app-icon-client.png"});
+          }else new Notification(title,{body,icon:"assets/kisah-lillah-logo.png",badge:"assets/kisah-lillah-logo.png"});
         }
       }catch(e){}
     });
@@ -441,4 +441,3 @@ async function disableAllAdhanNotifications(){
   }catch(e){}
   toast("Semua notifikasi dimatikan.");
 }
-
