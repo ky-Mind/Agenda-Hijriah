@@ -73,8 +73,7 @@
 .quran-toolbar .btn{padding:8px 14px;min-height:auto;font-size:12px;border-radius:12px}
 
 /* Mode baca layar penuh: seperti membuka buku, tanpa gangguan header/nav */
-.quran-reading-mode{position:fixed;inset:0;z-index:1200;background:var(--bg);overflow-y:auto;overflow-x:hidden;padding:0 16px 48px;-webkit-overflow-scrolling:touch;opacity:1;transition:opacity .18s ease}
-.quran-reading-mode.is-closing{opacity:0;pointer-events:none}
+.quran-reading-mode{position:fixed;inset:0;z-index:1200;background:var(--bg);overflow-y:auto;overflow-x:hidden;padding:0 16px 48px;-webkit-overflow-scrolling:touch}
 .quran-reading-mode::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
   background:linear-gradient(90deg,transparent 0 47%,rgba(46,91,68,.02) 47% 53%,transparent 53% 100%);
@@ -99,7 +98,6 @@ body.collection-reader-open #mobileNav{display:none!important}
 .quran-reading-mode .quran-book-translation-item b{color:var(--primary)}
 .quran-reading-mode .quran-book-latin{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
 .quran-reading-mode .quran-book-latin-item{margin:0 0 9px;font-size:13px;line-height:1.7}
-.quran-reading-mode .quran-book-latin-item i{font-family:Georgia,"Times New Roman",serif;font-style:normal;letter-spacing:.015em;word-spacing:.14em}
 @media(max-width:600px){
   .quran-reading-mode{padding-left:10px;padding-right:10px}
   .quran-reading-mode .quran-reading-topbar{padding-top:10px}

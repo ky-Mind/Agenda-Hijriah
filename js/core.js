@@ -765,7 +765,8 @@ function bindCalendarSwipe(){
  bindCalendarLikeSwipe({
    card:".calendar-card",
    content:"#days",
-   ignoreTarget:"button,select",
+   // Date cells are buttons, but they must also be valid swipe starting points.
+   ignoreTarget:"select,option",
    onCommit:dir=>moveHijriMonth(dir)
  });
 }
@@ -784,7 +785,7 @@ function bindCalendarLikeSwipe({card:cardSelector,content:contentSelector,ignore
    x=e.clientX;y=e.clientY;active=true;axis=null;card.classList.add("is-dragging");
    try{card.setPointerCapture(e.pointerId)}catch(_){}
  });
- card.addEventListener("pointermove",e=>{
+ const move=e=>{
    if(!active)return;
    const dx=e.clientX-x,dy=e.clientY-y;
    if(!axis){
@@ -796,7 +797,9 @@ function bindCalendarLikeSwipe({card:cardSelector,content:contentSelector,ignore
    const limited=Math.max(-140,Math.min(140,dx*.82));
    content.style.transform=`translate3d(${limited}px,0,0)`;
    content.style.opacity=String(1-Math.min(.18,Math.abs(limited)/760));
- });
+ };
+ card.addEventListener("pointermove",move);
+ window.addEventListener("pointermove",move,true);
  const end=e=>{
    if(!active)return;
    const dx=e.clientX-x,dy=e.clientY-y,wasHorizontal=axis==="x";
@@ -823,8 +826,12 @@ function bindCalendarLikeSwipe({card:cardSelector,content:contentSelector,ignore
    },180);
  };
  card.addEventListener("pointerup",end);
+ // Keep the gesture reliable when the browser hands the pointer to scrolling
+ // or releases capture before the card receives pointerup.
+ window.addEventListener("pointerup",end,true);
  card.addEventListener("pointercancel",reset);
- card.addEventListener("lostpointercapture",()=>{if(active)reset()});
+ window.addEventListener("pointercancel",reset,true);
+ card.addEventListener("lostpointercapture",()=>{if(active)card.classList.remove("is-dragging")});
 }
 function animateCalendarMonth(dir){
  const oldDays=document.getElementById("days");
@@ -1881,7 +1888,7 @@ function useCurrentLocationForPrayerSchedule(){
     const accuracy=Math.round(pos.coords.accuracy||0);
     const v={lat,lon,accuracy,label:"Lokasi HP saat ini",source:"gps",timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||"Asia/Jakarta",at:Date.now()};
     saveLocation(v);renderLocationUI();
-    prayerScheduleOffset=0;
+    window.__prayerScheduleOffset=0;
     window.__selectedPrayerScheduleIso=prayerScheduleIso(timezoneDate(prayerScheduleLocation().tz));
     loadPrayerSchedule(true);
     toast(`Titik lokasi ditemukan${accuracy?` • akurasi ±${accuracy} m`:""} ✓`);
@@ -2201,11 +2208,6 @@ document.getElementById("mapsUrlInput")?.addEventListener("input",previewMapsLoc
     history.replaceState({aihPage:initial,aihRoot:true},"",location.href);
   }catch(e){}
   window.addEventListener("popstate",e=>{
-    if(document.getElementById("quranFullscreenReader")){
-      window.closeQuranReadingMode?.();
-      try{history.pushState({aihPage:document.querySelector(".page.active")?.id||"dashboard"},"",location.href)}catch(_){}
-      return;
-    }
     const openModal=document.querySelector(".modal-backdrop.show,.prayer-day-backdrop.show,.prayer-columns-backdrop.show");
     if(openModal){
       openModal.querySelector("[aria-label='Tutup'],[data-close]")?.click();
@@ -2453,7 +2455,7 @@ function bindPrayerScheduleSwipe(){
   bindCalendarLikeSwipe({
     card:".ps-calendar-card",
     content:"#psCalendarGrid",
-    ignoreTarget:".btn",
+    ignoreTarget:".ps-calendar-head button,.ps-selected-day button",
     onCommit:dir=>{
       window.__selectedPrayerScheduleIso="";
       movePrayerSchedule(dir<0?10:-10);

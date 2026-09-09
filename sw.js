@@ -14,7 +14,7 @@ try{
 }catch(e){}
 
 const KL_ICON="./assets/kisah-lillah-logo.png";
-const KL_CACHE="kl-shell-v14";
+const KL_CACHE="kl-shell-v23";
 const KL_SHELL_FILES=[
   "./",
   "./index.html",

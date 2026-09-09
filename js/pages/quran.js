@@ -39,9 +39,6 @@
   function esc(s){
     return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   }
-  function cleanTransliteration(value){
-    return String(value||"").normalize("NFKC").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
-  }
   function norm(s){
     return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g,"").trim();
   }
@@ -187,7 +184,7 @@
           <button type="button" class="icon-btn quran-play-btn" data-audio="${audioId}" aria-label="Putar ayat ${v.id}">▶</button>
         </div>
         <p class="quran-ayat-arabic" dir="rtl" lang="ar">${esc(v.text)}</p>
-        <p class="quran-ayat-latin"><i>${esc(cleanTransliteration(v.transliteration))}</i></p>
+        <p class="quran-ayat-latin"><i>${esc(v.transliteration||"")}</i></p>
         <p class="quran-ayat-translation">${esc(v.translation)}</p>
         <audio id="${audioId}" preload="none" src="${AUDIO_URL(surahId,v.id)}"></audio>
       </div>`;
@@ -250,47 +247,15 @@
 
   function trackReadProgress(container,chapter){
     if(!("IntersectionObserver" in window))return;
-    let scheduled=false;
-    let lastAyah=0;
-    const saveVisibleAyah=()=>{
-      scheduled=false;
-      const cards=[...container.querySelectorAll(".quran-ayat-card,.quran-book-ayah")];
-      const viewportCenter=(container.getBoundingClientRect?.().top||0)+((container.clientHeight||innerHeight)/2);
-      const visible=cards.filter(card=>{
-        const r=card.getBoundingClientRect();
-        return r.bottom>0&&r.top<innerHeight;
-      });
-      const candidates=visible.length?visible:cards;
-      const target=candidates.reduce((best,card)=>{
-        const r=card.getBoundingClientRect();
-        const distance=Math.abs((r.top+r.height/2)-viewportCenter);
-        if(!best||distance<best.distance)return {card,distance};
-        return best;
-      },null)?.card;
-      if(target&&typeof recordQuranRead==="function"){
-        const ayahId=Number(target.dataset.ayah);
-        if(ayahId!==lastAyah){
-          lastAyah=ayahId;
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting && typeof recordQuranRead==="function"){
+          const ayahId=Number(en.target.dataset.ayah);
           recordQuranRead(chapter.id,chapter.transliteration,ayahId,chapter.total_verses);
-          renderContinueCard();
         }
-      }
-    };
-    const schedule=()=>{
-      if(scheduled)return;
-      scheduled=true;
-      requestAnimationFrame(saveVisibleAyah);
-    };
-    const obs=new IntersectionObserver(schedule,{threshold:[0,.35,.6,1]});
-    container.addEventListener("scroll",schedule,{passive:true});
-    window.addEventListener("scroll",schedule,{passive:true});
+      });
+    },{threshold:0.6});
     container.querySelectorAll(".quran-ayat-card,.quran-book-ayah").forEach(c=>obs.observe(c));
-    schedule();
-    return ()=>{
-      obs.disconnect();
-      container.removeEventListener("scroll",schedule);
-      window.removeEventListener("scroll",schedule);
-    };
   }
 
   function ayatWrapHtml(chapter){
@@ -312,7 +277,7 @@
         </p>`).join("")}</div>
       <div class="quran-book-latin quran-ayat-latin">${chapter.verses.map(v=>`
         <p class="quran-book-latin-item" data-ayah="${v.id}">
-          <b>${v.id}.</b> <i>${esc(cleanTransliteration(v.transliteration))}</i>
+          <b>${v.id}.</b> <i>${esc(v.transliteration||"")}</i>
         </p>`).join("")}</div>
     </article>`;
   }
@@ -389,14 +354,9 @@
   function closeReadingMode(){
     stopPlayAll();
     const full=document.getElementById("quranFullscreenReader");
-    if(full){
-      full.querySelectorAll("audio").forEach(a=>a.pause());
-      full.classList.add("is-closing");
-      window.setTimeout(()=>full.remove(),180);
-    }
+    if(full){full.querySelectorAll("audio").forEach(a=>a.pause());full.remove();}
     document.body.classList.remove("quran-reading-lock");
   }
-  window.closeQuranReadingMode=closeReadingMode;
 
   function backToIndex(){
     stopPlayAll();

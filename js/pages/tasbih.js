@@ -106,6 +106,7 @@
   }
 
   function tap(){
+    if(!document.getElementById("tasbihTapBtn"))return;
     state.count++;
     const reachedTarget=state.count%state.target===0;
     buzz(reachedTarget?[30,40,30,40,60]:[15]);
@@ -165,4 +166,3 @@
   window.initTasbihPage=mountTasbih;
   mountTasbih();
 })();
-

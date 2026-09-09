@@ -146,6 +146,41 @@ textarea{line-height:1.5}
 .status button.active .sicon{color:var(--success)}
 .status button.danger .sicon{color:var(--danger)}
 .status button.danger.active .sicon{color:var(--danger)}
+
+/* Compact, transparent list rows inspired by dense chat lists. */
+#absensi .date-banner,
+#absensi > .card{
+  background:transparent;
+  box-shadow:none;
+}
+#absensi > .card{
+  border:0;
+  padding:0;
+}
+#absensi .list{
+  gap:5px;
+}
+#absensi .worship{
+  gap:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:transparent;
+}
+#absensi .status{
+  gap:4px;
+}
+#absensi .status button{
+  background:transparent;
+  border-radius:9px;
+  min-height:38px;
+  padding:5px 6px;
+}
+#absensi .status button.active{
+  background:rgba(227,244,239,.18);
+}
+#absensi .status button.danger.active{
+  background:rgba(250,236,238,.14);
+}
 .save-wrap{padding-top:14px}
 .save-wrap>.btn{min-height:48px}
 .calendar-card{border-radius:20px}

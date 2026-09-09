@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="css/theme-polish.css">
 <link rel="stylesheet" href="css/collection-pages.css">
 <link rel="stylesheet" href="css/premium-ui.css?v=9">
-<link rel="stylesheet" href="css/precision-polish.css?v=11">
+<link rel="stylesheet" href="css/precision-polish.css?v=14">
 <link rel="stylesheet" href="css/islamic-calendar-icon.css">
 </head>
 <body>
@@ -234,8 +234,12 @@
 
   <div class="card ps-calendar-card">
     <div class="ps-calendar-head">
-      <div><b id="psCalendarTitle">Kalender Jadwal Salat</b><small id="psCalendarSub">Pilih tanggal untuk mengubah posisi. Lihat keterangan jika ingin membuka detail.</small></div>
-      <button class="btn gold small today-accent" type="button" onclick="selectPrayerToday()">Hari ini</button>
+      <div class="ps-calendar-heading"><b id="psCalendarTitle">Kalender Jadwal Salat</b><small id="psCalendarSub">Pilih tanggal untuk mengubah posisi. Lihat keterangan jika ingin membuka detail.</small></div>
+      <div class="ps-calendar-actions" aria-label="Navigasi rentang jadwal salat">
+        <button class="ps-range-btn" type="button" onclick="movePrayerSchedule(-10)" aria-label="Rentang sebelumnya" title="Rentang sebelumnya">‹</button>
+        <button class="btn gold small today-accent" type="button" onclick="selectPrayerToday()">Hari ini</button>
+        <button class="ps-range-btn" type="button" onclick="movePrayerSchedule(10)" aria-label="Rentang berikutnya" title="Rentang berikutnya">›</button>
+      </div>
     </div>
     <div class="ps-calendar-week"><span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span></div>
     <div class="ps-calendar-grid" id="psCalendarGrid"></div>
@@ -639,7 +643,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/prayer-schedule.js"></script>
+<script src="js/prayer-schedule.js?v=4"></script>
 <script src="./config.js"></script>
 <script src="./firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
@@ -648,7 +652,7 @@
 <script src="js/firebase-init.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/islamic-calendar-icon.js"></script>
-<script src="js/core.js?v=15"></script>
+<script src="js/core.js?v=21"></script>
 
 <!-- Initialize the animated ribbon brand mark -->
 <script>

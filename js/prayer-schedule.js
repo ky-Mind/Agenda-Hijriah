@@ -7,9 +7,10 @@ const PRAYER_SCHEDULE_LABELS={
   Imsak:["Imsak","Waktu imsak"],Subuh:["Subuh","Waktu subuh"],Terbit:["Terbit","Terbit matahari"],
   Dzuhur:["Dzuhur","Waktu dzuhur"],Ashar:["Ashar","Waktu ashar"],Maghrib:["Maghrib","Waktu maghrib"],Isya:["Isya","Waktu isya"]
 };
-let prayerScheduleOffset=0;
+window.__prayerScheduleOffset=Number(window.__prayerScheduleOffset)||0;
 let prayerScheduleRows=[];
 let prayerScheduleDraftColumns=null;
+let prayerScheduleLoadToken=0;
 
 function prayerScheduleStorageKey(startKey,locationKey){
   return `${PRAYER_SCHEDULE_KEY}_${locationKey}_${startKey}_${PRAYER_METHOD}`;
@@ -28,7 +29,7 @@ function prayerScheduleMonthKey(d){return `${d.getFullYear()}-${String(d.getMont
 function addDaysLocal(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
 function prayerScheduleStartDate(){
   const loc=prayerScheduleLocation(),base=timezoneDate(loc.tz);
-  return addDaysLocal(base,prayerScheduleOffset);
+  return addDaysLocal(base,Number(window.__prayerScheduleOffset)||0);
 }
 function fmtShortDate(d){
   return new Intl.DateTimeFormat("id-ID",{day:"2-digit",month:"short",year:"numeric"}).format(d).replace(/\./g,"");
@@ -77,10 +78,18 @@ function closePrayerColumns(){
   modal?.classList.remove("show");
   unlockModalInteraction(modal);
 }
-function resetPrayerSchedule(){prayerScheduleOffset=0;loadPrayerSchedule(true)}
-function movePrayerSchedule(days){prayerScheduleOffset+=days;loadPrayerSchedule(false)}
+function resetPrayerSchedule(){window.__prayerScheduleOffset=0;loadPrayerSchedule(true)}
+function movePrayerSchedule(days){
+  window.__prayerScheduleOffset=(Number(window.__prayerScheduleOffset)||0)+Number(days||0);
+  const loc=prayerScheduleLocation(),start=prayerScheduleStartDate(),end=addDaysLocal(start,29);
+  // Update immediately from the local calculation, then refresh from the API
+  // without making the swipe wait for a network response.
+  prayerScheduleRows=buildOfflinePrayerRows(start,end,loc);
+  renderPrayerSchedule();
+  loadPrayerSchedule(false);
+}
 function openPrayerSchedule(){
-  prayerScheduleOffset=0;
+  window.__prayerScheduleOffset=0;
   go("shalat");
   loadPrayerSchedule(false);
 }
@@ -155,7 +164,7 @@ function renderPrayerSchedule(){
   const loc=prayerScheduleLocation(),start=prayerScheduleStartDate(),end=addDaysLocal(start,29),cols=prayerScheduleColumns();
   const badge=document.getElementById("psLocationBadge"); if(badge)badge.textContent=`📍 ${loc.label}`;
   const rangeTitle=document.getElementById("psRangeTitle"),rangeSub=document.getElementById("psRangeSub");
-  if(rangeTitle)rangeTitle.textContent=prayerScheduleOffset===0?"30 Hari Ke Depan":"Jadwal 30 Hari";
+  if(rangeTitle)rangeTitle.textContent=(Number(window.__prayerScheduleOffset)||0)===0?"30 Hari Ke Depan":"Jadwal 30 Hari";
   if(rangeSub)rangeSub.textContent=`${fmtShortDate(start)} — ${fmtShortDate(end)} • ${loc.tz}`;
   renderPrayerScheduleCalendar();
   if(!prayerScheduleRows.length){
@@ -252,7 +261,7 @@ function usePrayerDayForAbsensi(){
   closePrayerDayDetail();go("absensi");
 }
 function selectPrayerToday(){
-  prayerScheduleOffset=0;window.__selectedPrayerScheduleIso=prayerScheduleIso(timezoneDate(prayerScheduleLocation().tz));
+  window.__prayerScheduleOffset=0;window.__selectedPrayerScheduleIso=prayerScheduleIso(timezoneDate(prayerScheduleLocation().tz));
   loadPrayerSchedule(false);
 }
 function solarOfflinePrayerTimes(d,lat,lon,tz){
@@ -320,12 +329,14 @@ function buildOfflinePrayerRows(start,end,loc){
 
 async function loadPrayerSchedule(force=false){
   const status=document.getElementById("psStatus");if(!status)return;
+  const loadToken=++prayerScheduleLoadToken;
   const loc=prayerScheduleLocation(),start=prayerScheduleStartDate(),end=addDaysLocal(start,29),startKey=prayerScheduleIso(start),cacheKey=prayerScheduleStorageKey(startKey,loc.locationKey);
   renderPrayerSchedule();
   if(!force){
     try{
       const cached=JSON.parse(localStorage.getItem(cacheKey)||"null");
       if(cached?.rows?.length&&Date.now()-Number(cached.fetchedAt||0)<12*60*60*1000){
+        if(loadToken!==prayerScheduleLoadToken)return;
         prayerScheduleRows=cached.rows.map(x=>({...x,date:prayerScheduleDateFromIso(x.iso)}));
         renderPrayerSchedule();return;
       }
@@ -333,11 +344,14 @@ async function loadPrayerSchedule(force=false){
   }
   status.hidden=false;status.textContent="Mengambil jadwal salat resmi…";
   try{
-    prayerScheduleRows=await fetchPrayerScheduleRows(start,end,loc);
-    if(!prayerScheduleRows.length)throw new Error("Tidak ada jadwal");
-    try{localStorage.setItem(cacheKey,JSON.stringify({rows:prayerScheduleRows.map(x=>({...x,date:undefined})),fetchedAt:Date.now(),location:loc.label,timezone:loc.tz}))}catch(e){}
+    const rows=await fetchPrayerScheduleRows(start,end,loc);
+    if(!rows.length)throw new Error("Tidak ada jadwal");
+    if(loadToken!==prayerScheduleLoadToken)return;
+    prayerScheduleRows=rows;
+    try{localStorage.setItem(cacheKey,JSON.stringify({rows:rows.map(x=>({...x,date:undefined})),fetchedAt:Date.now(),location:loc.label,timezone:loc.tz}))}catch(e){}
     renderPrayerSchedule();
   }catch(err){
+    if(loadToken!==prayerScheduleLoadToken)return;
     // Offline/local-file fallback so the calendar still responds even when the
     // AlAdhan API cannot be reached from content:// or an offline device.
     prayerScheduleRows=buildOfflinePrayerRows(start,end,loc);
@@ -347,5 +361,3 @@ async function loadPrayerSchedule(force=false){
     renderPrayerSchedule();
   }
 }
-
-

@@ -42,7 +42,13 @@ a,button,input,select,textarea,summary,[role="button"],[onclick],[tabindex]:not(
 .main{touch-action:pan-y;overflow-x:hidden}
 .page-swipe-hint{display:none}
 .ps-calendar-card{margin-top:12px;padding:14px}
-.ps-calendar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ps-calendar-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.ps-calendar-heading{min-width:0}
+.ps-calendar-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.ps-range-btn{width:34px;height:34px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);color:var(--primary);font:700 25px/1 Arial,sans-serif;display:grid;place-items:center;cursor:pointer;transition:transform .16s ease,background-color .16s ease,border-color .16s ease,box-shadow .16s ease}
+.ps-range-btn:hover{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 6px 16px rgba(13,112,103,.18)}
+.ps-range-btn:active{transform:scale(.9)}
+.ps-range-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .ps-calendar-head>b,.ps-calendar-head>div>b{font-size:15px}
 .ps-calendar-head small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
 .ps-calendar-week,.ps-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
@@ -70,6 +76,10 @@ a,button,input,select,textarea,summary,[role="button"],[onclick],[tabindex]:not(
 .pdm-time.next{background:#eef8f6;border-color:#9fd0c8;box-shadow:0 0 0 2px rgba(13,112,103,.07)}
 .pdm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 @media(max-width:767px){
+ .ps-calendar-head{align-items:flex-start}
+ .ps-calendar-actions{gap:4px}
+ .ps-range-btn{width:32px;height:32px;border-radius:10px;font-size:23px}
+ .ps-calendar-actions .today-accent{padding-inline:10px}
  .ps-calendar-grid button{min-height:54px}
  .pdm-times{grid-template-columns:1fr}
 }
@@ -293,7 +303,7 @@ html[data-theme="light"] .creator-copy h4{color:var(--text)}
 .notice{background:#f7faf9;border:1px dashed #c9d8d4;border-radius:14px;padding:12px;font-size:11px;line-height:1.5;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:88px;transform:translate(-50%,16px);background:#103f3b;color:#fff;padding:12px 15px;border-radius:13px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.22s;z-index:100;font-size:12px;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(7,35,32,.48);z-index:90;align-items:flex-end;justify-content:center;padding:12px;touch-action:none;overscroll-behavior:contain;isolation:isolate}.modal-backdrop.show{display:flex}.modal-backdrop.show .modal{touch-action:auto;overscroll-behavior:contain;pointer-events:auto}.modal-backdrop:not(.show){pointer-events:none}.modal-backdrop.show{pointer-events:auto}.modal{background:#fff;border-radius:22px;padding:18px;width:min(480px,100%);box-shadow:0 20px 60px rgba(0,0,0,.18)}.modal h3{margin:0 0 6px;font-size:17px}.modal p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
-.mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;background:#0b4f49;backdrop-filter:blur(14px);border-top:1px solid #12635b;box-shadow:0 -8px 24px rgba(7,52,47,.2);z-index:40;padding:6px 4px calc(6px + env(safe-area-inset-bottom));pointer-events:none}
+.mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;background:#0b4f49;backdrop-filter:blur(14px);border-top:1px solid #12635b;box-shadow:0 -8px 24px rgba(7,52,47,.2);z-index:40;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
 .mobile-nav button{border:0;background:transparent;color:#a9c5c0;font-size:9px;padding:6px 2px;min-height:52px;touch-action:manipulation;pointer-events:auto;border-radius:12px}.mobile-nav button:active{transform:scale(.96)}.mobile-nav button.active{background:#12635b;color:#fff;font-weight:900}.mobile-nav span{display:block;color:inherit;font-size:20px;line-height:1;margin-bottom:4px;font-family:Georgia,serif;font-weight:700}
 .desktop-only{display:none}
 
