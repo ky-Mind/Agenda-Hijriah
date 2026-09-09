@@ -1209,9 +1209,9 @@ html[data-theme="dark"] .location-save-row{
 html[data-theme="light"]{color-scheme:light}
 html[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#061b18;
-  --surface:#0b3530;
-  --surface2:#10463f;
+  --bg:#1F4D3E;
+  --surface:#173b31;
+  --surface2:#205846;
   --text:#f2f8f6;
   --muted:#a8c0ba;
   --primary:#69c9b8;
@@ -1225,7 +1225,7 @@ html[data-theme="dark"]{
 }
 html[data-theme="dark"],
 html[data-theme="dark"] body{
-  background:#061b18;
+  background:#1F4D3E;
   color:var(--text);
 }
 html[data-theme="dark"] body{

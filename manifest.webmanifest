@@ -3,7 +3,7 @@
   "short_name": "Kisah Lillah",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#021f18",
+  "background_color": "#1F4D3E",
   "theme_color": "#0b4f49",
   "description": "Jurnal dan absensi ibadah harian berbasis kalender Hijriah dengan pengingat waktu sholat.",
   "icons": [
