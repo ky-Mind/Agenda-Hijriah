@@ -45,8 +45,6 @@ Prompt sumber tidak membawa file biner asli. Agar proyek tetap dapat dimuat, pak
 - `app-icon-client.png` dan `splash-client-reference.png`: placeholder visual valid yang dapat diganti dengan aset branding asli.
 - `assets/audio/adzan.mp3` dan `assets/audio/adzan-subuh.mp3`: file audio placeholder berdurasi singkat. Ganti dengan rekaman adzan yang sesuai sebelum produksi.
 
-File `kl-placeholder-assets.svg` adalah sumber desain placeholder dan boleh dihapus setelah aset branding asli tersedia.
-
 ## Pemeriksaan cepat
 
 Validasi sintaks JavaScript dan JSON dapat dijalankan dengan:

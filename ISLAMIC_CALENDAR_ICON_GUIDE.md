@@ -52,9 +52,6 @@ Saya telah mengintegrasikan Islamic Calendar Icon Component ke dalam aplikasi Ki
    - SVG fallback icon (untuk backup jika perlu external reference)
    - Design: Kalender Islam dengan gradient warna amber/gold
 
-### 5. **ramadan_calendar_icon.png** (BARU - TIDAK DIGUNAKAN)
-   - File ini dibuat sebagai backup tetapi tidak digunakan karena SVG di-embed inline
-
 ## Cara Menggunakan Icon di File Lain
 
 ### Contoh 1: Menambahkan icon di halaman baru
