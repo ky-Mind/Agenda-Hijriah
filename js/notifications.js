@@ -36,14 +36,6 @@ function renderAdhanSettings(){
     if(!("Notification" in window))pt.textContent="Browser ini tidak mendukung notifikasi";
     else pt.textContent=`Status: ${Notification.permission}`;
   }
-  const ft=document.getElementById("firebaseNotificationText");
-  if(ft){
-    const token=localStorage.getItem("aih_fcm_token_v1");
-    const configured=!!window.AIH_FIREBASE_CONFIG?.vapidKey;
-    const ready=!!window.__klFirebaseMessaging && !!token;
-    ft.classList.toggle("ready",ready);
-    ft.textContent=ready?"Firebase terhubung":(configured?"Siap dihubungkan":"VAPID key belum diatur");
-  }
 }
 async function requestAdhanNotificationPermission(){
   if(!("Notification" in window)){
@@ -180,52 +172,14 @@ function registerAdhanServiceWorker(){
   }catch(e){return Promise.resolve(null)}
 }
 
-async function enableFirebaseNotifications(){
-  const cfg=window.AIH_FIREBASE_CONFIG||{};
-  if(!window.isSecureContext){
-    toast("Firebase notifikasi membutuhkan HTTPS.");
-    renderAdhanSettings();return;
-  }
-  if(!cfg.vapidKey){
-    toast("VAPID key Firebase belum diatur.");
-    renderAdhanSettings();return;
-  }
-  if(!window.__klFirebaseMessaging){
-    toast("Firebase Messaging belum tersedia di browser ini.");
-    renderAdhanSettings();return;
-  }
+async function autoConnectFirebaseNotifications(user){
+  if(!user||!("Notification" in window)||Notification.permission!=="granted"||!window.__klFirebaseMessaging)return;
   try{
-    if(!("Notification" in window)){
-      toast("Browser ini tidak mendukung notifikasi perangkat.");
-      return;
-    }
-    let permission=Notification.permission;
-    if(permission!=="granted"){
-      permission=await Notification.requestPermission();
-    }
-    if(permission!=="granted"){
-      toast("Izin notifikasi belum diberikan.");
-      renderAdhanSettings();return;
-    }
-    const registration=await registerAdhanServiceWorker();
-    if(!registration){
-      toast("Service Worker belum siap. Coba lagi setelah aplikasi dimuat.");
-      return;
-    }
-    const token=await window.__klFirebaseMessaging.getToken({
-      vapidKey:cfg.vapidKey,
-      serviceWorkerRegistration:registration
-    });
-    if(!token)throw new Error("FCM token kosong");
-    localStorage.setItem("aih_fcm_token_v1",token);
-    const s=getAdhanSettings();
-    saveAdhanSettings({...s,firebase:true,notifications:true});
-    toast("Notifikasi Firebase terhubung ✓");
-  }catch(e){
-    console.error("Firebase Messaging:",e);
-    toast("Firebase belum bisa dihubungkan. Periksa VAPID key dan HTTPS.");
-  }
-  renderAdhanSettings();
+    const cfg=window.AIH_FIREBASE_CONFIG||{},registration=await registerAdhanServiceWorker();
+    if(!registration||!cfg.vapidKey)return;
+    const token=await window.__klFirebaseMessaging.getToken({vapidKey:cfg.vapidKey,serviceWorkerRegistration:registration});
+    if(token)localStorage.setItem("aih_fcm_token_v1",token);
+  }catch(err){console.warn("FCM otomatis belum tersambung:",err)}
 }
 function adhanNotificationContent(name,time){
   const prayerName=name||"Sholat";

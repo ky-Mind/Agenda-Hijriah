@@ -60,6 +60,10 @@ function cloneStatusMeta(meta){
  });
  return out;
 }
+async function switchGoogleAccount(){
+ await signOutGoogle();
+ setTimeout(()=>signInWithGoogle(),150);
+}
 function loadStatusMetaForAccount(accountId){
  const acc=accounts[accountId];
  STATUS_META=cloneStatusMeta(acc?.statusMeta);
@@ -89,6 +93,8 @@ let suppressCalendarClickUntil=0;
 let recapCursorDate=new Date(selectedDate);
 let recapCursorHijri={...hijriCursor};
 let activityShared=!!accounts[activeAccountId].activityShared;
+let firestoreAbsensiUnsubscribe=null;
+let firestoreAbsensiDateKey="";
 if(!profile.whatsapp)profile.whatsapp=DEFAULT_WHATSAPP;
 loadStatusMetaForAccount(activeAccountId);
 WORSHIP=loadAgendaForAccount(activeAccountId);
@@ -182,6 +188,31 @@ function syncActiveAccount(){
  }
  accounts[activeAccountId].data=data;accounts[activeAccountId].timeData=timeData;accounts[activeAccountId].profile=safeProfile;accounts[activeAccountId].activityShared=activityShared;accounts[activeAccountId].statusMeta=cloneStatusMeta(STATUS_META);
  return persistAccounts()
+}
+function restoreLocalAccountAfterLogout(){
+ const localId=Object.keys(accounts).find(id=>id.startsWith("local-"))||Object.keys(accounts)[0];
+ if(!localId||!accounts[localId])return;
+ activeAccountId=localId;
+ const account=accounts[localId];
+ data=account.data||{};
+ timeData=account.timeData||{};
+ loadStatusMetaForAccount(localId);
+ WORSHIP=loadAgendaForAccount(localId);
+ profile=account.profile||{name:"Pengguna",email:"",whatsapp:DEFAULT_WHATSAPP,photo:""};
+ if(!profile.whatsapp)profile.whatsapp=DEFAULT_WHATSAPP;
+ activityShared=!!account.activityShared;
+ selectedDate=today();
+ hijriCursor=getHijriParts(selectedDate);
+ draftRecord={...record(selectedDate)};
+ recapCursorDate=today();
+ recapCursorHijri=getHijriParts(recapCursorDate);
+ persistAccounts();
+ updateProfile();
+ hydrateProfilePhoto();
+ renderDashboard();
+ renderAbsensi();
+ renderCalendar();
+ renderRecap();
 }
 function makeAccountId(){return "local-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7)}
 function profileAvatarMarkup(p,cls=""){return p&&p.photo?`<img class="${cls}" src="${p.photo}" alt="">`:initials(p&&p.name)}
@@ -361,10 +392,94 @@ function renderAbsensi(){
   return `<div class="worship"><div class="w-main"><div class="w-ico">${agendaIcon(id,ic)}</div><div class="w-name"><b>${name}</b><div class="w-sub">${r[id]?statusInfo(r[id])[1]+timeLabel:"Belum diisi"}</div></div></div><div class="status">${statuses.map(s=>`<button class="${r[id]===s?"active":""} ${s==="no"?"danger":""}" onclick="setStatus('${id}','${s}')" aria-label="${statusInfo(s)[1]}"><span class="sicon">${statusIcon(s)}</span><span class="stext">${statusInfo(s)[1]}</span></button>`).join("")}</div></div>`
  }).join("");
 }
+function getFirestore(){
+ try{
+  return window.__klFirebaseDb||null;
+ }catch(err){
+  console.error("Firestore belum siap:",err);
+  return null;
+ }
+}
+function getCloudUser(){
+ try{return window.__klFirebaseAuth?.currentUser||null}catch(err){return null}
+}
+function firestoreStatus(status){
+ return status==="done"||status==="khatam"?"terlaksana":status==="no"?"tidak_terlaksana":status==="period"?"datang_bulan":null;
+}
+function localStatus(status){
+ return status==="terlaksana"?"done":status==="tidak_terlaksana"?"no":status==="datang_bulan"?"period":null;
+}
+function firestoreAbsensiRef(dateKey){
+ const db=getFirestore(),user=getCloudUser();
+ if(!db||!user)return null;
+ return db.collection("users").doc(user.uid).collection("absensi_harian").doc(dateKey);
+}
+function cloudAbsensiPayload(recordValue){
+ const payload={updated_at:firebase.firestore.FieldValue.serverTimestamp()};
+ WORSHIP.forEach(([id])=>{
+  const normalized=firestoreStatus(recordValue?.[id]);
+  payload[id]=normalized||firebase.firestore.FieldValue.delete();
+ });
+ return payload;
+}
+async function saveAbsensiToFirestore(dateKey,recordValue){
+ const ref=firestoreAbsensiRef(dateKey);
+ if(!ref)return false;
+ try{
+  await ref.set(cloudAbsensiPayload(recordValue),{merge:true});
+  return true;
+ }catch(err){
+  console.error("Gagal menyimpan absensi ke Firestore:",err);
+  toast("Absensi lokal tersimpan, tetapi gagal disinkronkan ke Firestore.");
+  return false;
+ }
+}
+function applyFirestoreAbsensi(snapshot,dateKey){
+ const raw=snapshot.exists?snapshot.data()||{}:{};
+ const cloudRecord={};
+ Object.entries(raw).forEach(([id,status])=>{
+  if(id==="updated_at")return;
+  const normalized=localStatus(status);
+  if(normalized)cloudRecord[id]=normalized;
+ });
+ data[dateKey]=cloudRecord;
+ if(!Object.keys(cloudRecord).length)delete data[dateKey];
+ syncActiveAccount();
+ if(key(selectedDate)===dateKey&&!dirty){
+  draftRecord={...cloudRecord};
+  renderAbsensi();
+ }
+ renderDashboard();
+ renderCalendar();
+ renderRecap();
+}
+function subscribeAbsensiDate(date){
+ const dateKey=key(date);
+ if(firestoreAbsensiDateKey===dateKey&&firestoreAbsensiUnsubscribe)return;
+ if(firestoreAbsensiUnsubscribe){firestoreAbsensiUnsubscribe();firestoreAbsensiUnsubscribe=null}
+ firestoreAbsensiDateKey="";
+ const ref=firestoreAbsensiRef(dateKey);
+ if(!ref)return;
+ firestoreAbsensiDateKey=dateKey;
+ ref.get().then(snapshot=>applyFirestoreAbsensi(snapshot,dateKey)).catch(err=>{
+  console.error("Gagal mengambil absensi dari Firestore:",err);
+  toast("Data absensi Firestore tidak dapat dimuat.");
+ });
+ firestoreAbsensiUnsubscribe=ref.onSnapshot(
+  snapshot=>applyFirestoreAbsensi(snapshot,dateKey),
+  err=>{
+   console.error("Gagal memuat realtime absensi dari Firestore:",err);
+   toast("Data absensi Firestore tidak dapat dimuat.");
+  }
+ );
+}
 function setStatus(id,status){
  if(draftRecord[id]===status)delete draftRecord[id];else draftRecord[id]=status;
  dirty=true;
  renderAbsensi();
+ saveAbsensiToFirestore(key(selectedDate),draftRecord).then(ok=>{
+  if(ok)toast("Status absensi tersimpan ke Firestore ✓");
+ });
 }
 function agendaEditorRows(){
   return [...document.querySelectorAll("#agendaEditorList .agenda-editor-row")].map(row=>({
@@ -671,6 +786,7 @@ function saveCurrent(){
  if(Object.keys(nextTimes).length) timeData[k]=nextTimes;
  else delete timeData[k];
  syncActiveAccount();
+ saveAbsensiToFirestore(k,draftRecord);
  dirty=false;
  renderDashboard();
  renderCalendar();
@@ -933,12 +1049,12 @@ function renderCalendar(){
 function pickDate(k){
  if(Date.now()<suppressCalendarClickUntil)return;
  const [y,m,d]=k.split("-").map(Number);const next=new Date(y,m-1,d,12);
- if(dirty){openModal("Ganti tanggal?","Perubahan absensi pada tanggal ini belum disimpan. Ganti tanggal tanpa menyimpan?","Ganti tanggal",()=>{discardDraft();selectedDate=next;hijriCursor=getHijriParts(next);draftRecord={...record(next)};renderCalendar();renderCalendarSelectedInfo()});return}
- selectedDate=next;hijriCursor=getHijriParts(next);draftRecord={...record(next)};renderCalendar();renderCalendarSelectedInfo()
+ if(dirty){openModal("Ganti tanggal?","Perubahan absensi pada tanggal ini belum disimpan. Ganti tanggal tanpa menyimpan?","Ganti tanggal",()=>{discardDraft();selectedDate=next;hijriCursor=getHijriParts(next);draftRecord={...record(next)};subscribeAbsensiDate(next);renderCalendar();renderCalendarSelectedInfo()});return}
+ selectedDate=next;hijriCursor=getHijriParts(next);draftRecord={...record(next)};subscribeAbsensiDate(next);renderCalendar();renderCalendarSelectedInfo()
 }
 function openAbsensiForSelectedDate(){
  const d=selectedDate||today();
- draftRecord={...record(d)};dirty=false;
+ draftRecord={...record(d)};dirty=false;subscribeAbsensiDate(d);
  go("absensi");
 }
 function setRecapMode(mode){recapMode=mode;["daily","weekly","monthly"].forEach(x=>document.getElementById("tab"+x[0].toUpperCase()+x.slice(1)).classList.toggle("active",x===mode));renderRecap()}
@@ -1276,6 +1392,10 @@ function updateCloudAuthUI(user){
     if(popStatus)popStatus.textContent="Jurnal ibadah pribadi";
     if(btn){btn.querySelector("span:last-child")&&(btn.querySelector("span:last-child").textContent="Masuk dengan Google");btn.disabled=false;btn.classList.remove("connected");}
   }
+  const switchButton=document.querySelector('[onclick^="switchGoogleAccount"]');
+  if(switchButton)switchButton.disabled=!user;
+  const signOutButton=document.getElementById("signOutGoogleBtn");
+  if(signOutButton)signOutButton.disabled=false;
 }
 async function syncCloudProfile(user){
   // Profil aplikasi tetap mengikuti akun lokal yang sudah ada.
@@ -1367,10 +1487,17 @@ async function signInWithGoogle(){
 }
 async function signOutGoogle(){
   const auth=getFirebaseAuth();
-  if(!auth)return;
+  if(!auth){toast("Firebase Authentication belum siap.");return}
+  if(!auth.currentUser){
+    closeAccountPopover();
+    restoreLocalAccountAfterLogout();
+    updateCloudAuthUI(null);
+    toast("Tidak ada akun Google yang sedang masuk.");
+    return;
+  }
   try{
     await auth.signOut();
-    updateCloudAuthUI(null);
+    closeAccountPopover();
     toast("Berhasil keluar dari akun Google");
   }catch(error){
     console.error("Firebase Logout:",error);
@@ -1407,8 +1534,11 @@ async function initGoogleAuth(){
 
     auth.onAuthStateChanged((user)=>{
       if(user){
-        setTimeout(()=>adoptGoogleSession(user).catch(err=>console.warn("Sinkronisasi profil:",err)),0);
+        setTimeout(()=>adoptGoogleSession(user).then(()=>loadCloudProfile(user)).then(()=>subscribeAbsensiDate(selectedDate)).then(()=>window.autoConnectFirebaseNotifications?.(user)).catch(err=>console.warn("Sinkronisasi akun:",err)),0);
       }else{
+        if(firestoreAbsensiUnsubscribe){firestoreAbsensiUnsubscribe();firestoreAbsensiUnsubscribe=null}
+        firestoreAbsensiDateKey="";
+        restoreLocalAccountAfterLogout();
         updateCloudAuthUI(null);
       }
     });
@@ -1837,6 +1967,47 @@ function syncAccountPopover(){
   const ei=document.getElementById("popoverEmailInput");if(ei)ei.value=profile?.email||"";
   const wi=document.getElementById("popoverWhatsappInput");if(wi)wi.value=profile?.whatsapp||DEFAULT_WHATSAPP;
 }
+function firestoreProfileRef(user=getCloudUser()){
+ const db=getFirestore();
+ return db&&user?db.collection("users").doc(user.uid):null;
+}
+async function saveCloudProfile(){
+ const user=getCloudUser(),ref=firestoreProfileRef(user);
+ if(!user||!ref)return false;
+ try{
+  await ref.set({
+   display_name:profile.name||"Pengguna",
+   email:user.email||profile.email||"",
+   photo_url:profile.photo||user.photoURL||"",
+   whatsapp:profile.whatsapp||"",
+   updated_at:firebase.firestore.FieldValue.serverTimestamp()
+  },{merge:true});
+  return true;
+ }catch(err){
+  console.error("Gagal menyimpan profil ke Firestore:",err);
+  toast("Profil tersimpan lokal, tetapi gagal disinkronkan.");
+  return false;
+ }
+}
+async function loadCloudProfile(user){
+ const ref=firestoreProfileRef(user);
+ if(!ref)return;
+ try{
+  const snapshot=await ref.get(),cloud=snapshot.exists?(snapshot.data()||{}):{};
+  profile={
+   ...profile,
+   name:cloud.display_name||user.displayName||profile.name||"Pengguna",
+   email:user.email||cloud.email||profile.email||"",
+   photo:cloud.photo_url||user.photoURL||profile.photo||"",
+   whatsapp:cloud.whatsapp||profile.whatsapp||DEFAULT_WHATSAPP
+  };
+  if(!snapshot.exists)await saveCloudProfile();
+  syncActiveAccount();updateProfile();hydrateProfilePhoto();
+ }catch(err){
+  console.error("Gagal memuat profil dari Firestore:",err);
+  toast("Profil lokal digunakan karena data cloud belum dapat dimuat.");
+ }
+}
 function handleProfileChipClick(){
   const current=document.querySelector(".page.active")?.id;
   if(current==="profil"){openAccountPopover();return}
@@ -1867,7 +2038,8 @@ function savePopoverProfile(){
   if(hiddenName)hiddenName.value=name;if(hiddenWhatsapp)hiddenWhatsapp.value=whatsapp;
   // Email berasal dari Firebase Google Authentication dan ditampilkan di ringkasan akun.
   // Jangan mengubahnya dari form profil.
-  profile={...profile,name,whatsapp};syncActiveAccount();updateProfile();syncAccountPopover();toast("Profil berhasil disimpan ✓");
+  profile={...profile,name,whatsapp};syncActiveAccount();updateProfile();syncAccountPopover();
+  saveCloudProfile().then(ok=>toast(ok?"Profil tersimpan ke Firebase ✓":"Profil berhasil disimpan lokal ✓"));
 }
 function useCurrentLocationForPrayerSchedule(){
   if(window.__gpsDirectBusy)return;
