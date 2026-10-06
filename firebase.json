@@ -1,0 +1,11 @@
+{
+  "firestore": {"rules": "firestore.rules"},
+  "hosting": {
+    "public": ".",
+    "ignore": ["firebase.json", "firestore.rules", "package.json", "vercel.json", "scripts/**", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {"source": "/sw.js", "headers": [{"key": "Cache-Control", "value": "no-cache"}]},
+      {"source": "/firebase-config.js", "headers": [{"key": "Cache-Control", "value": "no-cache"}]}
+    ]
+  }
+}

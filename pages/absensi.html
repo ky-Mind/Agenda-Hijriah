@@ -1,0 +1,12 @@
+<div class="wrap">
+  <div class="head row sp"><div><h1>Absensi ibadah</h1><p>Centang yang terlaksana, silang yang terlewat, lalu tekan Simpan.</p></div><a class="btn sm" href="#/rekap">Lihat rekap</a></div>
+  <div class="card">
+    <div class="row sp wrapm"><div class="row"><button class="btn sm" data-r="prev" aria-label="Hari sebelumnya">‹</button><div><b data-r="hijri"></b><div class="muted" data-r="masehi"></div></div><button class="btn sm" data-r="nextd" aria-label="Hari berikutnya">›</button></div><div class="row"><input type="date" data-r="pick" aria-label="Pilih tanggal" style="width:auto"><button class="btn sm" data-r="today">Hari ini</button></div></div>
+    <div class="row sp mt"><span class="muted" data-r="ringkas"></span><b data-r="pct"></b></div><div class="bar" style="margin-top:6px"><i data-r="bar" style="width:0"></i></div>
+  </div>
+  <div class="card"><div class="row sp"><h2>Daftar ibadah</h2><div class="row"><button class="btn sm" data-r="all">Centang semua</button><button class="btn sm" data-r="edit" aria-pressed="false">Ubah daftar</button></div></div><div data-r="list"></div>
+    <form class="row mt" data-r="addform" hidden><input type="text" data-r="newic" maxlength="4" placeholder="✨" aria-label="Ikon" style="width:64px;text-align:center"><input type="text" placeholder="Nama ibadah baru" maxlength="60" data-r="newname" aria-label="Nama ibadah" style="flex:1;min-width:140px"><button class="btn primary">Tambah</button><button type="button" class="btn" data-r="reset">Kembalikan bawaan</button></form></div>
+  <div class="card"><h2>Catatan hari ini</h2><textarea data-r="note" rows="3" maxlength="500" placeholder="Catatan pribadi (opsional)" style="margin-top:8px"></textarea></div>
+  <div class="card"><h2>7 hari terakhir</h2><div data-r="week" class="chart" style="margin-top:8px"></div></div>
+  <div class="savebar"><span class="muted" data-r="state"></span><div class="row"><button class="btn wa" data-r="wa"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/></svg>Kirim ke WhatsApp</button><button class="btn primary" data-r="save">Simpan absensi</button></div></div>
+</div>
