@@ -1,0 +1,1 @@
+{"name":"kisah-lillah","version":"4.0.0","private":true,"description":"Kisah Lillah, agenda Hijriah dan ibadah harian (SPA offline-first)","scripts":{"start":"python3 -m http.server 8080","verify":"node scripts/verify-config.mjs","build":"node scripts/verify-config.mjs"}}

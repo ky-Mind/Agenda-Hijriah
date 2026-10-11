@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    match /users/{uid} {
+      allow read, write: if owner(uid);                       // profil (data lama Agenda)
+      match /absensi_harian/{day} { allow read, write: if owner(uid); }   // absensi lama Agenda
+      match /data/{doc} {                                      // data Kisah Lillah (sinkron antar perangkat)
+        allow read: if owner(uid);
+        allow write: if owner(uid) && request.resource.data.keys().size() < 2000;
+      }
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

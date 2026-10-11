@@ -1,0 +1,42 @@
+<div class="wrap">
+  <div class="head"><h1>Profil</h1><p>Identitas, izin, tampilan, dan data.</p></div>
+  <div class="card"><h2>Identitas</h2>
+    <div class="row" style="gap:16px;margin-top:8px"><div class="avatar lg" data-r="avatar"></div><div class="row"><button class="btn sm" data-r="pick">Ganti foto</button><button class="btn sm danger" data-r="rmphoto" hidden>Hapus foto</button></div><input type="file" accept="image/*" data-r="photo" hidden></div>
+    <div class="field mt"><label for="p-name">Nama lengkap</label><input id="p-name" type="text" data-r="name" maxlength="50" placeholder="Nama lengkap" autocomplete="name"></div>
+    <div class="field"><label for="p-wa">Nomor WhatsApp</label><input id="p-wa" type="tel" inputmode="numeric" data-r="wa" maxlength="20" placeholder="0812-3456-7890" autocomplete="tel"><small class="muted">Rekap ibadah dikirim ke nomor ini. Kosongkan jika ingin memilih kontak sendiri di WhatsApp.</small></div>
+    <div class="row"><button class="btn primary" data-r="save">Simpan</button><button class="btn" data-r="watest">Kirim tes ke WhatsApp</button></div></div>
+  <div class="card"><h2>Akun Google</h2><p class="muted" data-r="who">Belum masuk. Masuk agar data tersimpan di cloud dan sama di desktop dan ponsel.</p><p class="muted" data-r="status"></p><p data-r="autherr" class="dirty" hidden style="font-size:13px;margin-top:6px"></p>
+    <div class="fixbox" data-r="fix" hidden><b>Perbaiki sekali saja (± 1 menit)</b><ol><li>Tekan <i>Salin aturan</i>.</li><li>Buka <i>Firebase Console</i> › Firestore Database › tab <b>Rules</b>.</li><li>Hapus isi lama, tempel, lalu tekan <b>Publish</b>.</li><li>Kembali ke sini. Data otomatis terkirim, tanpa perlu masuk ulang.</li></ol><div class="row"><button class="btn primary sm" data-r="copyrules">Salin aturan</button><a class="btn sm" data-r="console" target="_blank" rel="noopener">Buka Firebase Console</a></div></div>
+    <div class="row mt"><button class="btn primary" data-r="login">Masuk dengan Google</button><button class="btn" data-r="syncnow" hidden>Sinkron sekarang</button><button class="btn" data-r="logout" hidden>Keluar</button></div></div>
+  <div class="card"><h2>Lokasi &amp; notifikasi</h2>
+    <div class="perm"><div><b>Lokasi shalat</b><small class="muted" data-r="locname"></small></div><div class="row"><span class="badge" data-r="gbadge"></span><button class="btn sm" data-r="gps">Gunakan lokasi saya</button></div></div>
+    <div class="perm"><div><b>Pengingat adzan</b><small class="muted" data-r="perm"></small></div><div class="row"><span class="badge" data-r="nbadge"></span><button class="btn sm" data-r="tnotif" aria-pressed="false">Aktifkan</button></div></div>
+    <div class="perm"><div><b>Suara adzan</b><small class="muted">Memutar MP3 adzan saat waktunya tiba</small></div><button class="btn sm" data-r="tsound" aria-pressed="false">Mati</button></div>
+    <div class="row mt"><button class="btn sm" data-r="atest">Coba pengingat</button><button class="btn sm" data-r="astop">Hentikan suara</button><a class="btn sm" href="#/shalat">Cari lokasi lain</a></div>
+    <p class="muted mt" style="font-size:13px">Pengingat berjalan selama Kisah Lillah terbuka di perangkat. Saat benar-benar tertutup, notifikasi butuh server push (FCM).</p></div>
+  <div class="card"><h2>Mode offline</h2><p class="muted" style="margin-bottom:6px">Aplikasi bisa dibuka tanpa internet setelah dimuat sekali. Unduh data di bawah agar Al-Qur'an dan jadwal shalat tetap tersedia tanpa sinyal.</p>
+    <div class="perm"><div><b>Al-Qur'an (114 surah)</b><small class="muted" data-r="qstat"></small></div><button class="btn sm" data-r="qdl">Unduh</button></div>
+    <div class="bar" data-r="qbarw" hidden><i data-r="qbar" style="width:0"></i></div>
+    <div class="perm"><div><b>Jadwal shalat 3 bulan</b><small class="muted" data-r="tstat"></small></div><button class="btn sm" data-r="tdl">Siapkan</button></div>
+    <p class="muted mt" style="font-size:13px">Hadits dan do'a yang pernah dibuka otomatis tersimpan. Absensi selalu tersimpan di perangkat dan tersinkron saat online.</p></div>
+  <div class="card"><h2>Tampilan</h2><div class="chips" style="margin:8px 0 0"><button class="chip" data-t="auto">Ikuti perangkat</button><button class="chip" data-t="light">Terang</button><button class="chip" data-t="dark">Gelap</button></div></div>
+  <div class="card"><h2>Koreksi tanggal Hijriah</h2><p class="muted" style="margin-bottom:8px">Jika tanggal Hijriah berbeda sehari dengan ketetapan Kemenag, geser di sini.</p><div class="chips" style="margin:0"><button class="chip" data-h="-1">−1 hari</button><button class="chip" data-h="0">Standar</button><button class="chip" data-h="1">+1 hari</button></div></div>
+  <div class="card"><h2>Cadangan data</h2><div class="row" style="margin-top:8px"><button class="btn" data-r="export">Unduh cadangan</button><button class="btn" data-r="import">Pulihkan dari file</button><button class="btn danger" data-r="wipe">Hapus data di perangkat ini</button></div><input type="file" accept="application/json" data-r="file" hidden></div>
+  <div class="card"><h2>Bantuan</h2>
+    <details class="fold"><summary>Laporkan bug</summary>
+      <div class="field mt"><label for="b-name">Nama</label><input id="b-name" type="text" data-r="bname" maxlength="80" placeholder="Nama kamu"></div>
+      <div class="field"><label for="b-reason">Alasan / masalah yang terjadi</label><textarea id="b-reason" data-r="breason" rows="4" maxlength="1000" placeholder="Jelaskan bagian yang bermasalah dan langkah yang kamu lakukan…"></textarea></div>
+      <p class="muted" data-r="bval" style="font-size:13px;margin-bottom:8px"></p>
+      <button class="btn primary" data-r="bsend" disabled>Kirim laporan ke WhatsApp</button></details>
+    <details class="fold"><summary>Profil pembuat aplikasi</summary>
+      <div class="creator mt">
+        <p>Aplikasi ini dibuat oleh <b>Muhammad Hilmi Azkia Rahman</b>, seorang santri yang berasal dari Sukabumi, Jawa Barat, dan saat ini menempuh pendidikan di <b>Pondok Pesantren Modern El-Alamia</b> yang berada di wilayah Bogor, Jawa Barat.</p>
+        <p>Ketertarikannya terhadap dunia teknologi dan pemrograman mendorongnya untuk mulai mempelajari bagaimana sebuah ide dapat dikembangkan menjadi sebuah aplikasi yang bermanfaat.</p>
+        <p>Sebagai seorang santri, ia memiliki semangat untuk menggabungkan ilmu agama, pendidikan, kreativitas, dan teknologi. Menurutnya, menjadi seorang santri bukanlah batasan untuk mengenal dunia teknologi, tetapi justru menjadi kesempatan untuk menciptakan sesuatu yang positif dan bermanfaat bagi masyarakat.</p>
+        <p>Aplikasi ini merupakan salah satu karya yang lahir dari proses belajar dan eksplorasinya di bidang teknologi. Dalam proses pembuatannya, ia terus mempelajari berbagai hal, mulai dari logika pemrograman, desain antarmuka, struktur aplikasi, hingga pengembangan fitur.</p>
+        <p>Bagi Muhammad Hilmi Azkia Rahman, aplikasi ini bukan sekadar sebuah produk, tetapi juga bagian dari perjalanan untuk membuktikan bahwa seorang santri juga dapat belajar, berkarya, dan menciptakan teknologi.</p>
+        <blockquote>“Saya masih dalam proses belajar. Namun, saya percaya bahwa dengan ilmu, usaha, doa, dan ketekunan, saya dapat terus berkembang dan menciptakan sesuatu yang bermanfaat bagi banyak orang.”</blockquote>
+        <p class="muted">Dari seorang santri, untuk sebuah karya.<br>Dari satu ide, menjadi sebuah aplikasi.</p>
+      </div></details>
+    <p class="muted mt" style="font-size:13px">Kisah Lillah · Catat ibadah, jaga istiqamah.</p></div>
+</div>
