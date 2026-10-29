@@ -1,0 +1,16 @@
+{
+  "name": "kisah-lillah-web",
+  "version": "5.0.0",
+  "private": true,
+  "description": "Folder deploy Kisah Lillah (root directory Vercel/Firebase Hosting). Dependensi hanya untuk API.",
+  "scripts": {
+    "verify": "node scripts/verify-config.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "web-push": "^3.6.7"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "kisah-lillah",
+  "version": "5.0.0",
+  "private": true,
+  "description": "Kisah Lillah: aplikasi web (www/) dan pembungkus native Android/iPhone (Capacitor)",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "native": "node scripts/build-native.mjs && npx cap sync",
+    "vapid": "node scripts/gen-vapid.mjs",
+    "verify": "node www/scripts/verify-config.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/ios": "^8.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0"
+  }
+}

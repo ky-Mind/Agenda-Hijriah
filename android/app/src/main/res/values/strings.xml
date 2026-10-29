@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kisah Lillah</string>
+    <string name="title_activity_main">Kisah Lillah</string>
+    <string name="package_name">com.kisahlillah.app</string>
+    <string name="custom_url_scheme">com.kisahlillah.app</string>
+</resources>

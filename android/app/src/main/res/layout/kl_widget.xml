@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/kl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:background="@drawable/kl_widget_bg">
+
+    <TextView
+        android:id="@+id/kl_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#E6F2EC"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/kl_prayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Chronometer
+        android:id="@+id/kl_countdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#E6F2EC"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/kl_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:maxLines="3"
+        android:ellipsize="end" />
+</LinearLayout>

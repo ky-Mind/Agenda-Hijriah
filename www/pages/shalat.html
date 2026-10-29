@@ -1,0 +1,13 @@
+<div class="wrap">
+  <div class="head"><h1>Jadwal shalat &amp; kiblat</h1><p>Metode Kementerian Agama RI. Satu lokasi dipakai untuk jadwal, kiblat, dan pengingat adzan.</p></div>
+  <div class="card"><div class="row sp"><h2>Lokasi</h2><span class="badge" data-r="geobadge" hidden></span></div>
+    <p class="stat" style="font-size:20px;margin-top:6px" data-r="lname"></p><p class="muted" data-r="lmeta"></p>
+    <div class="row mt"><button class="btn primary" data-r="gps">Gunakan lokasi saya</button><select data-r="city" aria-label="Pilih kota" style="max-width:210px"></select><button class="btn" data-r="mapbtn">Pilih di peta</button></div>
+    <p class="muted mt" data-r="gpshint" hidden style="font-size:13px"></p>
+    <form class="row mt" data-r="sform"><input type="search" data-r="q" placeholder="Cari kota atau tempat…" aria-label="Cari lokasi" style="flex:1;min-width:180px"><button class="btn">Cari</button></form>
+    <div class="res" data-r="res" hidden></div>
+    <div data-r="mapwrap" hidden><div class="map" data-r="map"><span class="pin"></span></div><div class="row sp"><span class="muted" style="font-size:13px" data-r="mapinfo">Geser peta, titik merah menandai lokasi.</span><button class="btn primary sm" data-r="mapuse">Pakai titik ini</button></div></div></div>
+  <div class="card"><div class="row sp"><h2 data-r="judul">Hari ini</h2><div class="row"><span class="badge" data-r="src"></span><button class="btn sm" data-r="prev" aria-label="Hari sebelumnya">‹</button><button class="btn sm" data-r="nextd" aria-label="Hari berikutnya">›</button></div></div>
+    <p class="muted" data-r="countdown" style="margin:8px 0 10px"></p><div class="times" data-r="times"></div></div>
+  <div class="card"><h2>Arah kiblat</h2><div class="stat" data-r="deg">—</div><p class="muted" data-r="jarak"></p><div class="compass"><i data-r="needle"></i><b data-r="hint">Utara di atas</b></div><div class="row mt" style="justify-content:center"><button class="btn" data-r="kompas">Aktifkan kompas</button></div></div>
+</div>
