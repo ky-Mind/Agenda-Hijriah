@@ -8,6 +8,7 @@ import {onboard} from "./lib/onboard.js";
 import {hijriText} from "./lib/hijri.js";
 import {loc} from "./lib/prayer.js";
 import {initKili} from "./lib/kili.js";
+import {initSwipe} from "./lib/swipe.js";
 const view=document.getElementById("view"),LABEL={beranda:"Beranda",absensi:"Absensi",rekap:"Rekap",kalender:"Kalender",shalat:"Shalat",koleksi:"Koleksi",quran:"Al-Qur'an",hadits:"Hadits",doa:"Do'a",dzikir:"Dzikir",mutiara:"Kata Mutiara",pesan:"Pesan",tasbih:"Tasbih",profil:"Profil"};
 const PARENT={rekap:"absensi",quran:"koleksi",hadits:"koleksi",doa:"koleksi",dzikir:"koleksi",mutiara:"koleksi",tasbih:"koleksi"};
 const html={},mods={};let cleanup=null,seq=0,shown=location.hash,skip=false;
@@ -63,7 +64,7 @@ async function render(){
     else if(!err&&m===null&&!NOJS.has(name))view.insertAdjacentHTML("afterbegin",'<div class="wrap"><div class="empty">Skrip halaman ini gagal dimuat. Muat ulang dengan Ctrl+Shift+R.</div></div>')}catch(e){console.error(e);toast("Terjadi kesalahan di halaman ini")}};
   root.dataset.dir=dir;
   /* Konten halaman meluncur dengan animasi #view (lihat css); bilah atas dan navigasi bawah langsung ikut berubah */
-  swap();run();view.dataset.anim=dir;view.classList.remove("in");void view.offsetWidth;view.classList.add("in");
+  swap();run();view.dataset.anim=view.dataset.swipeNext?"swipe":dir;delete view.dataset.swipeNext;view.classList.remove("in");void view.offsetWidth;view.classList.add("in");document.dispatchEvent(new Event("kl-rendered"));
 }
 /* Penjaga navigasi: tahan perpindahan jika ada perubahan belum tersimpan, tanyakan Simpan / Lewati */
 async function onHash(){
@@ -101,6 +102,7 @@ const offp=document.getElementById("offp"),offUp=()=>{offp.hidden=navigator.onLi
 window.__klAuth?.onAuthStateChanged(u=>{chat.init(u);push.refresh(u)});
 document.addEventListener("kl-chat",setBadge);
 initKili();
+initSwipe(view);
 document.addEventListener("kl-profile",()=>chat.register(window.__klAuth?.currentUser));
 
 /* Tampilan seperti aplikasi: tidak ada menu konteks/pilih-teks tekan-lama di layar sentuh (kolom isian tetap normal) */

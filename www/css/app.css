@@ -16,7 +16,7 @@ a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;c
 .side-foot{margin-top:auto;padding:10px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
 .sync{display:flex;align-items:center;gap:8px}.sync i{width:7px;height:7px;border-radius:50%;background:var(--muted)}
 .sync[data-s=ok] i{background:var(--accent)}.sync[data-s=busy] i{background:var(--warn)}.sync[data-s=err] i{background:var(--danger)}
-#view{overflow:auto;height:100%;padding:32px clamp(16px,4vw,48px) 80px;}#view.in{animation:fi .16s ease}#view.busy{opacity:.55;transition:opacity .15s}@keyframes fi{from{opacity:0}to{opacity:1}}
+#view{overflow:auto;height:100%;--vpt:32px;padding:var(--vpt) clamp(16px,4vw,48px) 80px;}#view.in{animation:fi .16s ease}#view.busy{opacity:.55;transition:opacity .15s}@keyframes fi{from{opacity:0}to{opacity:1}}
 .wrap{max-width:820px;margin:0 auto}
 h1{font-size:25px;font-weight:600;letter-spacing:-.01em}h2{font-size:15px;font-weight:600}
 .head{margin-bottom:22px}.head p,.muted{color:var(--muted)}.back{display:inline-flex;gap:6px;align-items:center;color:var(--muted);margin-bottom:10px;font-size:14px}.back:hover{color:var(--text)}
@@ -96,7 +96,7 @@ textarea{resize:vertical}
 .read{color:var(--accent)}.ayah.mark{outline:1px solid var(--accent);border-radius:var(--r)}
 
 /* --- Tambahan v3 --- */
-.savebar{position:sticky;bottom:0;z-index:3;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--raised);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-top:12px;box-shadow:0 -6px 14px -10px rgba(0,0,0,.25)}
+.savebar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--raised);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-top:12px}
 .savebar .muted{font-size:13px}.dirty{color:var(--warn)}
 .d .ev{position:absolute;top:4px;right:5px;width:5px;height:5px;border-radius:50%;background:var(--danger)}
 .chart{display:flex;align-items:flex-end;gap:3px;height:96px}.chart>div{flex:1;min-width:0;text-align:center}.chart .col{height:72px;display:flex;align-items:flex-end}.chart .col i{display:block;width:100%;border-radius:3px 3px 0 0;background:var(--accent);min-height:3px}.chart .col i.z{background:var(--line)}.chart small{display:block;font-size:10px;color:var(--muted);margin-top:2px;overflow:hidden}
@@ -124,7 +124,7 @@ h1{font-size:clamp(22px,4.6vw,28px);letter-spacing:-.02em;line-height:1.2}
 .brand-m{align-items:center;gap:8px;font-weight:600;font-size:16px;flex:1}.brand-m img{width:26px;height:26px;border-radius:var(--r)}
 .icb{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;color:var(--text);flex:none;-webkit-tap-highlight-color:transparent;transition:background .12s}.icb:hover{background:var(--hover)}.icb:active{background:var(--accent-soft)}.icb .ic{width:22px;height:22px}
 .pill-off{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:3px 9px;border-radius:var(--r);background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}.pill-off .ic{width:14px;height:14px}
-#view{background:var(--bg);padding-top:20px}
+#view{background:var(--bg);--vpt:20px;padding-top:var(--vpt)}
 .side{box-shadow:inset -1px 0 0 var(--line)}.nav a{min-height:40px;font-weight:450}.nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
 /* Transisi halaman: slide ala WhatsApp/Instagram (View Transitions) + cadangan CSS */
 /* Token gerak: semua animasi memakai tiga durasi dan satu kurva yang sama */
@@ -183,7 +183,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);
  .app{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"top" "main" "side"}
  .top,.top[data-root="1"]{display:flex;position:relative;z-index:5;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:6px 10px 6px 14px;padding-top:max(6px,env(safe-area-inset-top));min-height:54px}
  .top[data-root="1"] .brand-m{display:flex}.top[data-root="0"]{padding-left:6px}.top .me{display:flex}.top .avatar{width:34px;height:34px}
- #view{padding-top:16px}
+ #view{--vpt:16px;padding-top:var(--vpt)}
  .nav a{font-size:11px;min-height:54px;gap:3px;color:var(--muted)}.nav a svg{box-sizing:content-box;width:20px;height:20px;padding:4px 18px;border-radius:999px;transition:background .2s}.nav a.on{background:transparent;color:var(--accent)}.nav a.on svg{background:var(--accent-soft)}
  .btn{min-height:42px}.btn.sm{min-height:36px}.chip{min-height:36px}.seg button{height:38px;min-width:42px}
  .hero{grid-template-columns:1fr;padding:18px}.tiles{grid-template-columns:1fr 1fr 1fr;gap:8px}.tile{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}.tile b{font-size:16px}
@@ -216,7 +216,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);
   .nav a{font-size:10px}.nav a svg{padding:4px 12px}.top .title{font-size:15px}.metrics{grid-template-columns:1fr 1fr}
 }
 @media(max-width:260px){.nav a{font-size:9px}.nav a svg{padding:4px 8px}.quick{grid-template-columns:1fr}}
-@media(max-height:480px) and (orientation:landscape){.top,.top[data-root="1"]{min-height:44px}.nav a{min-height:44px}#view{padding-top:10px}}
+@media(max-height:480px) and (orientation:landscape){.top,.top[data-root="1"]{min-height:44px}.nav a{min-height:44px}#view{--vpt:10px;padding-top:var(--vpt)}}
 /* v5 · header & navigasi tanggal di layar sempit */
 .brand-m{white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}.brand-m img{flex:none}
 .datenav{flex-wrap:nowrap!important}.datenav>div{flex:1;text-align:center;min-width:0}.datenav .btn{flex:none}
@@ -256,7 +256,10 @@ input[type=date]{background:var(--raised);color:var(--text);border:1px solid var
 .gate{margin-bottom:12px}.gate .field{margin-top:8px}.lockmsg{font-style:italic;opacity:.8}
 
 /* ===== v6 · Tab pengaturan, diagnosa, ruang chat ===== */
-.tabs{position:sticky;top:-1px;z-index:4;background:var(--bg);padding:6px 0 10px;margin-bottom:6px}.tabs .chip{flex:1;justify-content:center;white-space:nowrap}
+.chips.tabs{margin:0 0 6px;padding:6px 0 10px;gap:4px}
+.tabs .chip{flex:1;justify-content:center;white-space:nowrap;padding:8px 12px;font-size:14px;font-weight:500;border-color:transparent;background:var(--surface);transition:background .15s,color .15s,box-shadow .15s}
+.tabs .chip:hover{background:var(--hover);color:var(--text)}
+.tabs .chip.on{background:var(--raised);border-color:var(--line);color:var(--accent);box-shadow:0 1px 2px rgb(0 0 0 / .08)}
 .sub{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
 .diag{list-style:none;display:grid;gap:10px;margin:8px 0}.diag li{padding:8px 10px;border-radius:var(--r);border:1px solid var(--line)}.diag li.bad{border-color:color-mix(in srgb,var(--danger) 45%,var(--line));background:color-mix(in srgb,var(--danger) 7%,var(--raised))}.diag b{display:block}.diag small{display:block;color:var(--muted);margin-top:3px;line-height:1.4}
 .netbar{padding:6px 12px;background:color-mix(in srgb,var(--warn) 20%,var(--raised));font-size:13px;text-align:center;flex:none}
@@ -300,6 +303,12 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .side-toggle{margin-left:auto;flex:none;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;position:relative;transition:background .15s,color .15s}
 .side-toggle:hover{background:var(--hover);color:var(--text)}.side-toggle .ic{width:20px;height:20px}
 .brand{position:relative}.brand-name{white-space:nowrap}
+.side .brand img{transition:opacity .15s}
+.side .brand .side-toggle{transition:opacity .15s,background .15s,color .15s}
+.side .brand .side-toggle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;opacity:0;pointer-events:none}
+html:not(.sidebar-collapsed) .side .brand .side-toggle{left:10px;transform:translateY(-50%)}
+.side .brand:hover img,.side .brand:focus-within img{opacity:0}
+.side .brand:hover .side-toggle,.side .brand:focus-within .side-toggle{opacity:1;pointer-events:auto}
 @media(min-width:761px){
   .app{transition:grid-template-columns .26s cubic-bezier(.2,.8,.2,1)}
   .side{position:relative;z-index:30;overflow:visible}
@@ -507,3 +516,25 @@ body:has(.qplay:not([hidden])) .qact{bottom:calc(136px + env(safe-area-inset-bot
 .quote-card .arab{font-size:24px;line-height:1.9;margin:4px 0 6px}
 .quote-card p:not(.src){font-size:15.5px;line-height:1.7;color:var(--text);margin:0 0 6px}
 .quote-card .src{margin:4px 0 0;font-size:12px}
+
+/* ===== Gerakan halus seragam: sidebar, tombol, chip, kartu, nav ===== */
+:root{--ease-spring:cubic-bezier(.34,1.3,.64,1)}
+.app{transition:grid-template-columns var(--dur-m) var(--ease)}
+.btn,.chip,.icb,.side-toggle,.nav a,.card,a.card,.qa,.tile{transition-property:background-color,color,border-color,box-shadow,transform,opacity;transition-duration:var(--dur-s);transition-timing-function:var(--ease)}
+.btn:active,.chip:active,.icb:active,.side-toggle:active,.qa:active,.tile:active{transform:scale(.97);transition-duration:.08s}
+.nav a:hover{transform:translateX(2px)}
+.nav a{transition-property:background-color,color,transform}
+.tabs .chip.on{transition-timing-function:var(--ease-spring)}
+
+/* Geser antar halaman utama: animasi digerakkan jari di js/lib/swipe.js, jadi CSS keyframe arah tidak dipakai */
+#view.in[data-anim=swipe]{animation:none}
+
+/* Pesan: percakapan meluncur masuk dari kanan, daftar kembali dari kiri (gerakan sama seperti panel Kili) */
+[data-r="conv"]:not([hidden]){animation:room-in var(--dur-l) var(--ease) both}
+[data-r="inbox"]:not([hidden]){animation:inbox-in var(--dur-m) var(--ease) both}
+@keyframes room-in{from{opacity:0;transform:translate3d(28px,0,0) scale(.985)}}
+@keyframes inbox-in{from{opacity:0;transform:translate3d(-14px,0,0)}}
+.ci{transition-property:background-color,transform,box-shadow;transition-duration:var(--dur-s);transition-timing-function:var(--ease)}
+a.ci:active,.ci:active{transform:scale(.985);transition-duration:.08s}
+@media(prefers-reduced-motion:reduce){[data-r="conv"]:not([hidden]),[data-r="inbox"]:not([hidden]){animation:none}.ci,a.ci:active,.ci:active{transition:none!important;transform:none}}
+@media(prefers-reduced-motion:reduce){.app,.btn,.chip,.icb,.side-toggle,.nav a,.card,a.card,.qa,.tile{transition:none!important}.btn:active,.chip:active,.icb:active,.side-toggle:active,.qa:active,.tile:active,.nav a:hover{transform:none}}
