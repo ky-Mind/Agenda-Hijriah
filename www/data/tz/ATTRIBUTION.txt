@@ -1,0 +1,2 @@
+Teks Al-Qur'an (data/tz/*.json, field "text"): Tanzil Project, https://tanzil.net/ — dipakai utuh tanpa perubahan. Syarat: sebutkan sumbernya (Tanzil Project) dan tautkan ke tanzil.net.
+Anotasi tajwid (field "tj"): tarekeldeeb/quran-tajweed-embedded, https://github.com/tarekeldeeb/quran-tajweed-embedded — lisensi Creative Commons Attribution 4.0 International (CC BY 4.0). Indeks start/end mengacu pada teks Tanzil; kode kelas: 1 dengung, 2 qalqalah, 3 mad, 4 tidak dibaca.

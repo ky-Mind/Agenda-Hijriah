@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null && request.auth.token.email_verified == true; }
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+
+    match /users/{uid} {
+      allow read, write: if owner(uid);                       // profil (data lama Agenda)
+      match /absensi_harian/{day} { allow read, write: if owner(uid); }
+      match /data/{doc} {                                      // sinkron antar perangkat
+        allow read: if owner(uid);
+        allow write: if owner(uid) && request.resource.data.keys().size() < 2000;
+      }
+    }
+
+    // Pesan: pencarian persis berdasarkan email (tidak bisa di-list)
+    match /userIndex/{email} {
+      allow get: if signedIn();
+      allow create, update: if signedIn()
+        && request.auth.token.email.lower() == email
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'email', 'updated', 'pub', 'photo'])
+        && (!('photo' in request.resource.data) || (request.resource.data.photo is string && request.resource.data.photo.size() <= 9000))
+        && request.resource.data.name is string && request.resource.data.name.size() <= 60
+        && request.resource.data.pub is string && request.resource.data.pub.size() <= 300;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /chats/{chatId} {
+      // hanya boleh mengubah entri kunci publik milik sendiri
+      function ownPubOnly() {
+        return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['pubs'])
+          || request.resource.data.pubs.diff(resource.data.pubs).affectedKeys().hasOnly([request.auth.uid]);
+      }
+      allow get, list: if signedIn() && request.auth.uid in resource.data.members;
+      allow create: if signedIn()
+        && request.resource.data.members.size() == 2
+        && request.auth.uid in request.resource.data.members
+        && (chatId == request.resource.data.members[0] + '_' + request.resource.data.members[1]
+            || chatId == request.resource.data.members[1] + '_' + request.resource.data.members[0])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requestedBy == request.auth.uid
+        && request.resource.data.pubs[request.auth.uid] is string
+        && request.resource.data.intro.size() <= 400;
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.members
+        && request.resource.data.members == resource.data.members
+        && request.resource.data.requestedBy == resource.data.requestedBy
+        && (
+          // pesan baru / tanda baca / memperbarui kunci publik sendiri
+          (resource.data.status == 'active' && request.resource.data.status == 'active'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMessage', 'lastAt', 'lastFrom', 'lastRead', 'pubs'])
+            && ownPubOnly()
+            && request.resource.data.lastMessage.size() <= 900)
+          // penerima menerima permintaan
+          || (resource.data.status == 'pending' && resource.data.requestedBy != request.auth.uid
+            && request.resource.data.status == 'active'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'lastAt', 'lastRead', 'pubs'])
+            && ownPubOnly())
+          // blokir
+          || (resource.data.status == 'active' && request.resource.data.status == 'blocked'
+            && request.resource.data.blockedBy == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'blockedBy']))
+          // buka blokir (hanya pemblokir)
+          || (resource.data.status == 'blocked' && resource.data.blockedBy == request.auth.uid
+            && request.resource.data.status == 'active'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'blockedBy']))
+        );
+      allow delete: if signedIn() && request.auth.uid in resource.data.members;
+
+      match /messages/{mid} {
+        function chat() { return get(/databases/$(database)/documents/chats/$(chatId)).data; }
+        allow read: if signedIn() && request.auth.uid in chat().members;
+        allow create: if signedIn()
+          && request.auth.uid in chat().members && chat().status == 'active'
+          && request.resource.data.keys().hasOnly(['from', 'text', 'at', 'expireAt'])
+          && (!('expireAt' in request.resource.data) || request.resource.data.expireAt is timestamp)
+          && request.resource.data.from == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 9000
+          && request.resource.data.at == request.time;
+        allow delete: if signedIn() && resource.data.from == request.auth.uid;
+      }
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

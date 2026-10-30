@@ -1,0 +1,25 @@
+<div class="wrap chat">
+  <section data-r="inbox">
+    <div class="head row sp"><div><span class="eyebrow">Obrolan</span><h1>Pesan</h1></div><button class="btn primary" data-r="new" hidden><svg class="ic"><use href="#i-chat" /></svg>Pesan baru</button></div>
+    <div class="card" data-r="gate" hidden><h2>Masuk dulu</h2><p class="muted">Pesan memakai akun Google dan email Anda untuk terhubung dengan pengguna lain.</p><a class="btn primary mt" href="#/profil">Masuk di Profil</a></div>
+    <a class="hint" data-r="notifbar" hidden><span class="qi"><svg class="ic"><use href="#i-bell" /></svg></span><div><b>Aktifkan notifikasi pesan</b><small>Agar tahu ada pesan masuk saat aplikasi di latar belakang.</small></div></a>
+    <div data-r="e2e"></div>
+    <div data-r="idx"></div>
+    <div data-r="req"></div>
+    <div class="chatlist" data-r="list"></div>
+    <p class="muted" style="font-size:12px;margin-top:14px">🔒 Isi pesan dienkripsi ujung-ke-ujung di perangkatmu; server hanya menyimpan data terenkripsi. Siapa mengobrol dengan siapa dan kapan tetap terlihat oleh server.</p>
+  </section>
+  <section data-r="conv" class="room" hidden>
+    <header class="chat-head">
+      <a class="icb cback" href="#/pesan" aria-label="Kembali ke daftar pesan"><svg class="ic"><use href="#i-back" /></svg></a>
+      <span class="avatar" data-r="cav"></span>
+      <div class="who"><b data-r="cname"></b><small data-r="cmail"></small></div>
+      <button class="icb cmenu" data-r="cmenu" aria-label="Menu percakapan" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" /><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none" /></svg></button>
+      <div class="chat-actions" data-r="cact"><button class="btn sm" data-r="ccode">🔒 Kode keamanan</button><button class="btn sm" data-r="cblock">Blokir</button><button class="btn sm danger" data-r="cdel">Hapus percakapan</button></div>
+    </header>
+    <div class="netbar" data-r="net" hidden>Sedang offline. Pesan yang kamu tulis akan terkirim otomatis saat online.</div>
+    <div class="banner" data-r="banner" hidden></div>
+    <div class="msgs" data-r="msgs" aria-live="polite"></div>
+    <form class="composer" data-r="form"><textarea data-r="inp" rows="1" maxlength="1500" placeholder="Tulis pesan…" aria-label="Tulis pesan"></textarea><button class="send" aria-label="Kirim"><svg class="ic"><use href="#i-send" /></svg></button></form>
+  </section>
+</div>

@@ -1,0 +1,6 @@
+{
+  "appId": "com.kisahlillah.app",
+  "appName": "Kisah Lillah",
+  "webDir": "app-www",
+  "server": { "androidScheme": "https" }
+}

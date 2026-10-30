@@ -1,0 +1,18 @@
+{
+  "firestore": {"rules": "firestore.rules"},
+  "hosting": {
+    "public": "www",
+    "ignore": ["api/**", "vercel.json", "package.json", "package-lock.json", "scripts/**", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {"source": "/sw.js", "headers": [{"key": "Cache-Control", "value": "no-cache"}]},
+      {"source": "/firebase-config.js", "headers": [{"key": "Cache-Control", "value": "no-cache"}]},
+      {"source": "**", "headers": [
+        {"key": "X-Frame-Options", "value": "DENY"},
+        {"key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains"},
+        {"key": "X-Content-Type-Options", "value": "nosniff"},
+        {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
+        {"key": "Permissions-Policy", "value": "geolocation=(self), camera=(), microphone=()"}
+      ]}
+    ]
+  }
+}
