@@ -69,11 +69,16 @@
   </section>
   <section data-g="bantuan" role="tabpanel" hidden>
   <div class="card"><h2>Bantuan</h2>
-    <details class="fold"><summary>Laporkan bug</summary>
+    <details class="fold" data-r="bugfold"><summary>Laporkan bug atau kirim saran</summary>
+      <div class="seg mseg mt" role="group" aria-label="Jenis laporan" data-r="btype"><button type="button" data-bt="bug" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9a4 4 0 0 1 8 0v5a4 4 0 0 1-8 0zM12 9v9M8 12H4M20 12h-4M8 16l-3 2M16 16l3 2M8 9 5 7M16 9l3-2M9.5 5.5 8 4M14.5 5.5 16 4"/></svg>Bug</button><button type="button" data-bt="saran" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4zM8 9h8M8 12h5"/></svg>Saran / pesan</button></div>
       <div class="field mt"><label for="b-name">Nama</label><input id="b-name" type="text" data-r="bname" maxlength="80" placeholder="Nama kamu"></div>
-      <div class="field"><label for="b-reason">Alasan / masalah yang terjadi</label><textarea id="b-reason" data-r="breason" rows="4" maxlength="1000" placeholder="Jelaskan bagian yang bermasalah dan langkah yang kamu lakukan…"></textarea></div>
+      <div class="field"><label for="b-reason" data-r="blabel">Apa yang bermasalah?</label><textarea id="b-reason" data-r="breason" rows="4" maxlength="2000" placeholder="Jelaskan bagian yang bermasalah dan langkah yang kamu lakukan…"></textarea></div>
+      <div class="field"><label>Bagian yang bermasalah <small class="muted">(opsional, maks. 3)</small></label>
+        <div class="bshots" data-r="bshots"></div>
+        <button type="button" class="btn bpick" data-r="bpick"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>Tandai bagian di layar</button>
+        <small class="muted" style="display:block;margin-top:6px">Tidak perlu screenshot: buka halamannya, ketuk bagian yang bermasalah, lalu otomatis kembali ke sini.</small></div>
       <p class="muted" data-r="bval" style="font-size:13px;margin-bottom:8px"></p>
-      <button class="btn primary" data-r="bsend" disabled>Kirim laporan ke WhatsApp</button></details>
+      <button class="btn primary block" data-r="bsend" disabled>Kirim laporan</button></details>
     <details class="fold"><summary>Profil pembuat aplikasi</summary>
       <div class="creator mt">
         <p>Aplikasi ini dibuat oleh <b>Muhammad Hilmi Azkia Rahman</b>, seorang santri yang berasal dari Sukabumi, Jawa Barat, dan saat ini menempuh pendidikan di <b>Pondok Pesantren Modern El-Alamia</b> yang berada di wilayah Bogor, Jawa Barat.</p>

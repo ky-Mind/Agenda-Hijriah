@@ -1,6 +1,6 @@
 import {get,set,keys,toast} from "../store.js";
 import {paint,cropPhoto} from "../lib/avatar.js";
-import {normalize,validNumber,waUrl,openUrl,DEV} from "../lib/wa.js";
+import {normalize,validNumber,waUrl,openUrl} from "../lib/wa.js";
 import {settings,save,enable,test,stop} from "../lib/adzan.js";
 import {setTheme} from "../lib/theme.js";
 import {loc} from "../lib/prayer.js";
@@ -11,6 +11,8 @@ import * as push from "../lib/push.js";
 import {quranStatus,downloadQuran,prepareTimes,timesStatus} from "../lib/offline.js";
 import {signIn,signInEmail,signUpEmail,resetPassword,signOut,authErrorMessage} from "../lib/auth.js";
 import {FIRESTORE_RULES} from "../lib/rules.js";
+import {pickPart,loadDraft,saveDraft,clearDraft} from "../lib/bugpick.js";
+import {VERSION} from "../version.js";
 
 /* Menu bagian pengaturan: kunci, ikon, judul, dan keterangan singkat */
 const SECTIONS={
@@ -472,20 +474,45 @@ export default function(root){
     }
   };
 
-  /* Laporan bug (dikirim lewat WhatsApp pengembang) */
-  const bn=$("bname"),br=$("breason"),bs=$("bsend"),bv=$("bval");
-  bn.value=prof().name||"";
+  /* Laporan bug / saran: disimpan ke Firestore (koleksi reports) dan dibaca admin di /admin.html.
+     Draf (jenis, isi, bagian yang ditandai) disimpan di sessionStorage agar tetap ada saat pengguna pindah halaman untuk menandai bagian */
+  const bn=$("bname"),br=$("breason"),bs=$("bsend"),bv=$("bval"),draft=loadDraft();
+  bn.value=draft.name||prof().name||"";br.value=draft.text||"";
+  const keep=()=>{draft.name=bn.value;draft.text=br.value;saveDraft(draft)};
+  const typeUi=()=>{$("btype").querySelectorAll("[data-bt]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.bt===draft.type));
+    $("blabel").textContent=draft.type==="bug"?"Apa yang bermasalah?":"Saran atau pesanmu";
+    br.placeholder=draft.type==="bug"?"Jelaskan bagian yang bermasalah dan langkah yang kamu lakukan…":"Tulis saran, ide fitur, atau pesan untuk pembuat aplikasi…"};
+  const shotsUi=()=>{const sh=draft.shots||[];
+    $("bshots").innerHTML=sh.map((x,i)=>`<div class="bshot">${x.img?`<img src="${x.img}" alt="">`:'<span class="bshot-no">Tanpa gambar</span>'}<div class="bshot-t"><b>${esc(x.title||x.page)}</b><small>${esc(x.text||x.sel||"")}</small></div><button type="button" class="bshot-x" data-bx="${i}" aria-label="Hapus bagian ini">✕</button></div>`).join("");
+    $("bpick").hidden=sh.length>=3};
   const bugUi=()=>{
     const ok=bn.value.trim().length>=2&&br.value.trim().length>=10;
     bs.disabled=!ok;
-    bv.textContent=ok?"Siap dikirim ke WhatsApp pengembang.":"Lengkapi nama dan alasan (minimal 10 karakter) agar laporan dapat dikirim.";
+    bv.textContent=ok?"Siap dikirim. Laporan langsung masuk ke pembuat aplikasi.":"Lengkapi nama dan isi (minimal 10 karakter) agar laporan dapat dikirim.";
   };
-  bn.oninput=br.oninput=bugUi;
-  bugUi();
-  bs.onclick=()=>{
+  bn.oninput=br.oninput=()=>{keep();bugUi()};
+  $("btype").onclick=e=>{const b=e.target.closest("[data-bt]");if(!b)return;draft.type=b.dataset.bt;saveDraft(draft);typeUi()};
+  $("bshots").onclick=e=>{const b=e.target.closest("[data-bx]");if(!b)return;draft.shots.splice(+b.dataset.bx,1);saveDraft(draft);shotsUi()};
+  $("bpick").onclick=()=>{keep();pickPart();toast("Buka halaman yang bermasalah, lalu ketuk bagiannya")};
+  /* Kembali dari menandai bagian: buka lipatan laporan dan tampilkan kartunya */
+  if(draft.shots?.length||draft.text){$("bugfold").open=true;if(readTab()==="bantuan")requestAnimationFrame(()=>$("bugfold").scrollIntoView({block:"start",behavior:"smooth"}))}
+  typeUi();shotsUi();bugUi();
+  bs.onclick=async()=>{
     if(bs.disabled)return;
-    openUrl(waUrl(DEV,`LAPORAN BUG KISAH LILLAH\n\nNama: ${bn.value.trim()}\nAlasan/Masalah:\n${br.value.trim()}\n\nPerangkat: ${navigator.userAgent.slice(0,120)}\n\nMohon dicek.`));
-    toast("WhatsApp dibuka dengan laporan");
+    const u=auth?.currentUser,doc={type:draft.type==="saran"?"saran":"bug",name:bn.value.trim().slice(0,80),text:br.value.trim().slice(0,2000),
+      page:(draft.shots?.[0]?.page)||"",ua:navigator.userAgent.slice(0,200),ver:VERSION,uid:u?.uid||null,email:u?.email||null,
+      at:firebase.firestore.FieldValue.serverTimestamp(),status:"baru",shots:(draft.shots||[]).slice(0,3)};
+    if(JSON.stringify(doc).length>950000)return toast("Gambar terlalu besar, hapus salah satu bagian");
+    bs.disabled=true;bs.textContent="Mengirim…";
+    try{
+      await window.__klDb.collection("reports").add(doc);
+      clearDraft();draft.text="";draft.shots=[];draft.type="bug";br.value="";typeUi();shotsUi();
+      toast("Terima kasih! Laporan terkirim");
+    }catch(e){
+      console.warn("kirim laporan",e);
+      toast(e.code==="permission-denied"?"Laporan ditolak server. Aturan Firestore terbaru belum dipasang.":navigator.onLine?"Gagal mengirim laporan, coba lagi":"Tidak ada koneksi internet");
+    }
+    bs.textContent="Kirim laporan";bugUi();
   };
 
   return()=>{

@@ -686,3 +686,23 @@ body:has(.qact) #view{padding-bottom:190px}
 .calp-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.calp-foot .btn{min-height:44px;border-radius:12px}
 .calp-body.sl-l{animation:pg-l .22s var(--ease)}.calp-body.sl-r{animation:pg-r .22s var(--ease)}
 .cal-title{border:0;background:none;color:var(--text);font:700 15px var(--sans);min-width:170px;text-align:center;padding:6px 8px;border-radius:10px;cursor:pointer}.cal-title::after{content:" ▾";font-size:11px;color:var(--muted)}.cal-title:hover{background:var(--hover)}
+/* Laporan bug: bagian yang ditandai */
+.bshots{display:grid;gap:8px;margin-bottom:8px}.bshots:empty{display:none}
+.bshot{display:flex;gap:10px;align-items:center;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.bshot img,.bshot-no{flex:none;width:64px;height:48px;border-radius:8px;object-fit:cover;object-position:top;background:var(--hover);border:1px solid var(--line)}
+.bshot-no{display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center}
+.bshot-t{flex:1;min-width:0;display:flex;flex-direction:column}.bshot-t b{font-size:13px}.bshot-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bshot-x{flex:none;width:28px;height:28px;border:0;border-radius:50%;background:var(--hover);color:var(--muted);cursor:pointer}
+.btn.bpick{border-style:dashed;width:100%;justify-content:center;min-height:44px;border-radius:12px}
+/* Mode tandai bagian (bugpick.js) */
+.pick-box{position:fixed;z-index:70;pointer-events:none;border:2.5px solid #e2574c;border-radius:10px;background:rgba(226,87,76,.08);box-shadow:0 0 0 4px rgba(226,87,76,.18);transition:all .12s ease}
+.pick-bar{position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:71;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:#2b2a27;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+html[data-nav="1"] .pick-bar{bottom:calc(84px + env(safe-area-inset-bottom))}
+@media(min-width:761px){.pick-bar{left:auto;right:24px;bottom:24px!important;width:420px}}
+.pick-msg{flex:1;min-width:0;display:flex;flex-direction:column;font-size:12.5px}.pick-msg b{font-size:13.5px}.pick-msg span{opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick-acts{display:flex;gap:6px;flex:none}.pick-bar .btn{border-radius:10px}.pick-bar .btn:not(.primary){background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+html.bugpick #view *{cursor:crosshair!important}
+.pick-bar{touch-action:none;cursor:grab;user-select:none}.pick-bar.drag{cursor:grabbing;box-shadow:0 16px 40px rgba(0,0,0,.45);transform:scale(1.02)}
+.pick-grip{flex:none;display:grid;place-items:center;width:20px;height:32px;margin-left:-4px;opacity:.6}.pick-grip svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round}
+.mseg button{display:inline-flex;align-items:center;justify-content:center;gap:7px}.mseg .ic{width:17px;height:17px}
+.btn.bpick .ic{width:18px;height:18px;color:var(--accent)}

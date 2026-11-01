@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin · Kisah Lillah</title>
+  <link rel="icon" href="assets/favicon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Dasbor admin: laporan bug & saran dari menu Profil › Bantuan (koleksi Firestore "reports").
+       Akses dikunci oleh aturan Firestore (fungsi admin() di firestore.rules); pengecekan email di sini hanya untuk tampilan. -->
+  <style>
+    :root{--bg:#f4f3ee;--surface:#faf9f5;--raised:#fff;--line:#e2dfd4;--text:#2b2a27;--muted:#76726a;--accent:#3f6b5a;--accent-soft:#e3ece7;--on-accent:#fff;--hover:#ebeae2;--danger:#a24a3d;--warn:#a57a2c;--ok:#2f8a5f;--shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.05)}
+    @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1c1e1c;--surface:#222523;--raised:#292c2a;--line:#363a37;--text:#e7e5de;--muted:#9a978e;--accent:#79a592;--accent-soft:#2a3a33;--on-accent:#12201a;--hover:#2d312e;--danger:#cf7e70;--warn:#c9a05a;--ok:#6cc59a;--shadow:none}}
+    :root[data-theme=dark]{--bg:#1c1e1c;--surface:#222523;--raised:#292c2a;--line:#363a37;--text:#e7e5de;--muted:#9a978e;--accent:#79a592;--accent-soft:#2a3a33;--on-accent:#12201a;--hover:#2d312e;--danger:#cf7e70;--warn:#c9a05a;--ok:#6cc59a;--shadow:none}
+    *{box-sizing:border-box;margin:0}
+    body{background:var(--bg);color:var(--text);font:15px/1.55 Inter,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+    button,input,select{font:inherit;color:inherit}
+    a{color:var(--accent)}
+    .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:12px max(16px,calc((100vw - 1040px)/2));background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .top img{width:28px;height:28px}.top h1{font-size:16px;flex:1}.top h1 small{display:block;font-size:12px;font-weight:500;color:var(--muted)}
+    .wrap{max-width:1040px;margin:0 auto;padding:20px 16px 60px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:7px 14px;border:1px solid var(--line);border-radius:10px;background:var(--raised);cursor:pointer;font-weight:500;font-size:14px}
+    .btn:hover{background:var(--hover)}.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}.btn.danger{color:var(--danger)}.btn.sm{min-height:32px;padding:4px 10px;font-size:13px}
+    .card{background:var(--raised);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+    .gate{max-width:420px;margin:12vh auto 0;text-align:center}.gate h2{font-size:20px;margin:10px 0 6px}.gate p{color:var(--muted);margin-bottom:16px}
+    .muted{color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+    .stat{padding:12px 14px;border-radius:14px;background:var(--raised);border:1px solid var(--line)}.stat b{display:block;font-size:24px;line-height:1.2}.stat span{font-size:12.5px;color:var(--muted)}
+    .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{border:1px solid var(--line);background:var(--raised);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+    .search{flex:1;min-width:180px;min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:10px;background:var(--raised)}
+    .list{display:grid;gap:12px}
+    .rep{display:grid;gap:10px}
+    .rep-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+    .badge{font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
+    .badge.bug{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger)}.badge.saran{background:var(--accent-soft);color:var(--accent)}
+    .who{font-weight:600}.when{font-size:12.5px;color:var(--muted)}
+    .st{margin-left:auto;min-height:32px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--raised);font-size:13px;font-weight:600}
+    .st[data-s=baru]{color:var(--danger)}.st[data-s=diproses]{color:var(--warn)}.st[data-s=selesai]{color:var(--ok)}
+    .rep.done{opacity:.65}
+    .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+    .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+    .shots{display:flex;gap:10px;flex-wrap:wrap}
+    .shot{width:180px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);cursor:zoom-in;text-align:left;padding:0}
+    .shot img{display:block;width:100%;height:110px;object-fit:cover;object-position:top;background:var(--hover)}
+    .shot div{padding:6px 8px;font-size:12px}.shot b{display:block;font-size:12.5px}.shot small{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .noimg{height:110px;display:grid;place-items:center;font-size:12px;color:var(--muted)}
+    .acts{display:flex;gap:8px;justify-content:flex-end}
+    .empty{text-align:center;color:var(--muted);padding:40px 16px}
+    .err{color:var(--danger);font-size:14px;margin-bottom:12px}
+    .lb{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.75);display:grid;place-items:center;padding:16px}
+    .lb .card{max-width:min(900px,100%);max-height:92vh;overflow:auto;display:grid;gap:10px}.lb img{max-width:100%;border-radius:10px;border:1px solid var(--line)}
+    .lb code{font-size:12px;word-break:break-all;background:var(--hover);padding:6px 8px;border-radius:8px;display:block}
+    @media(max-width:560px){#me{display:none}.top h1{font-size:15px}.stats{grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px}.stat b{font-size:20px}.st{margin-left:0}.shot{width:calc(50% - 5px)}}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+  <header class="top"><img src="assets/logo.png" alt=""><h1>Dasbor Admin<small>Kisah Lillah · Laporan &amp; saran</small></h1><span class="muted" id="me" style="font-size:13px"></span><button class="btn sm" id="out" hidden>Keluar</button></header>
+  <main class="wrap">
+    <section class="card gate" id="gate">
+      <img src="assets/logo.png" alt="" width="56" height="56">
+      <h2 id="gt">Masuk sebagai admin</h2>
+      <p id="gp">Halaman ini hanya untuk pengelola aplikasi.</p>
+      <button class="btn primary" id="login">Masuk dengan Google</button>
+    </section>
+    <section id="dash" hidden>
+      <p class="err" id="err" hidden></p>
+      <div class="stats" id="stats"></div>
+      <div class="tools">
+        <div class="chips" id="fs"></div>
+        <div class="chips" id="ft"></div>
+        <input class="search" id="q" type="search" placeholder="Cari nama, email, atau isi…" aria-label="Cari laporan">
+      </div>
+      <div class="list" id="list"></div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+  (function(){
+    const ADMINS=["hilmykia@gmail.com"],ST=[["baru","Baru"],["diproses","Diproses"],["selesai","Selesai"]];
+    const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+    try{const t=JSON.parse(localStorage.getItem("kl2_theme")||'"auto"');if(t!=="auto")document.documentElement.dataset.theme=t}catch(e){}
+    const auth=window.__klAuth,db=window.__klDb;
+    if(!auth||!db){$("gt").textContent="Firebase tidak termuat";$("gp").textContent="Periksa koneksi internet lalu muat ulang.";$("login").hidden=true;return}
+    let rows=[],fs="semua",ft="semua",unsub=null;
+    const when=ts=>{if(!ts)return"baru saja";const d=ts.toDate(),m=Math.round((Date.now()-d)/60000);
+      const rel=m<1?"baru saja":m<60?m+" menit lalu":m<1440?Math.round(m/60)+" jam lalu":Math.round(m/1440)+" hari lalu";
+      return rel+" · "+d.toLocaleString("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})};
+    const device=ua=>/Android/.test(ua)?"Android":/iPhone|iPad/.test(ua)?"iOS":/Windows/.test(ua)?"Windows":/Mac OS/.test(ua)?"macOS":/Linux/.test(ua)?"Linux":"Perangkat lain";
+    function chips(){
+      const n=k=>rows.filter(r=>k==="semua"||r.status===k).length;
+      $("fs").innerHTML=[["semua","Semua"],...ST].map(([k,l])=>`<button class="chip" data-fs="${k}" aria-pressed="${fs===k}">${l} (${n(k)})</button>`).join("");
+      $("ft").innerHTML=[["semua","Semua jenis"],["bug","Bug"],["saran","Saran"]].map(([k,l])=>`<button class="chip" data-ft="${k}" aria-pressed="${ft===k}">${l}</button>`).join("");
+      const c=k=>rows.filter(r=>r.status===k).length,people=new Set(rows.map(r=>r.email||r.name)).size;
+      $("stats").innerHTML=[[rows.length,"Total laporan"],[c("baru"),"Belum dibaca"],[rows.filter(r=>r.type==="bug").length,"Bug"],[rows.filter(r=>r.type==="saran").length,"Saran / pesan"],[people,"Pelapor"]].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+    }
+    function list(){
+      const q=$("q").value.toLowerCase().trim();
+      const vis=rows.filter(r=>(fs==="semua"||r.status===fs)&&(ft==="semua"||r.type===ft)&&(!q||`${r.name} ${r.email} ${r.text}`.toLowerCase().includes(q)));
+      $("list").innerHTML=vis.length?vis.map(r=>`<article class="card rep${r.status==="selesai"?" done":""}" data-id="${r.id}">
+        <div class="rep-h"><span class="badge ${r.type}">${r.type==="bug"?"Bug":"Saran"}</span><span class="who">${esc(r.name||"Tanpa nama")}</span><span class="when">${esc(r.email||"Tanpa akun")} · ${when(r.at)}</span>
+          <select class="st" data-st data-s="${r.status}" aria-label="Status">${ST.map(([k,l])=>`<option value="${k}"${r.status===k?" selected":""}>${l}</option>`).join("")}</select></div>
+        <p class="txt">${esc(r.text)}</p>
+        ${r.shots?.length?`<div class="shots">${r.shots.map((s,i)=>`<button class="shot" data-shot="${i}">${s.img?`<img src="${s.img}" alt="" loading="lazy">`:'<div class="noimg">Tanpa gambar</div>'}<div><b>${esc(s.title||s.page)}</b><small>${esc(s.text||s.sel)}</small></div></button>`).join("")}</div>`:""}
+        <div class="meta"><span>${device(r.ua||"")}</span><span>Versi ${esc(r.ver||"?")}</span>${r.page?`<span>Halaman <a href="./${esc(r.page)}" target="_blank" rel="noopener">${esc(r.page)}</a></span>`:""}</div>
+        <div class="acts"><button class="btn sm danger" data-del>Hapus</button></div></article>`).join(""):`<div class="card empty">${rows.length?"Tidak ada laporan yang cocok dengan filter.":"Belum ada laporan masuk."}</div>`;
+    }
+    const draw=()=>{chips();list()};
+    function watch(){
+      unsub?.();
+      unsub=db.collection("reports").orderBy("at","desc").limit(300).onSnapshot(s=>{$("err").hidden=true;rows=s.docs.map(d=>({id:d.id,...d.data()}));draw()},
+        e=>{$("err").hidden=false;$("err").textContent=e.code==="permission-denied"?"Ditolak oleh aturan Firestore. Pasang aturan terbaru (aplikasi › Profil › Akun › Salin aturan, lalu Publish di Firebase Console).":"Gagal memuat laporan: "+(e.code||e.message)});
+    }
+    auth.onAuthStateChanged(u=>{
+      const ok=!!u&&ADMINS.includes((u.email||"").toLowerCase());
+      $("me").textContent=u?u.email:"";$("out").hidden=!u;
+      $("gate").hidden=ok;$("dash").hidden=!ok;
+      if(u&&!ok){$("gt").textContent="Akun ini bukan admin";$("gp").textContent=`${u.email} tidak punya akses ke dasbor. Keluar lalu masuk dengan akun admin.`;$("login").hidden=true}
+      if(!u){$("gt").textContent="Masuk sebagai admin";$("gp").textContent="Halaman ini hanya untuk pengelola aplikasi.";$("login").hidden=false}
+      if(ok)watch();else{unsub?.();unsub=null;rows=[]}
+    });
+    $("login").onclick=async()=>{const p=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(p)}catch(e){if(/popup-blocked|cancelled-popup/.test(e.code))await auth.signInWithRedirect(p);else alert("Gagal masuk: "+(e.code||e.message))}};
+    $("out").onclick=()=>auth.signOut();
+    $("q").oninput=list;
+    document.addEventListener("click",async e=>{
+      const t=e.target;
+      if(t.closest("[data-fs]")){fs=t.closest("[data-fs]").dataset.fs;return draw()}
+      if(t.closest("[data-ft]")){ft=t.closest("[data-ft]").dataset.ft;return draw()}
+      if(t.closest(".lb")&&(t.classList.contains("lb")||t.closest("[data-lbx]")))return t.closest(".lb").remove();
+      const card=t.closest("[data-id]");if(!card)return;const r=rows.find(x=>x.id===card.dataset.id);if(!r)return;
+      if(t.closest("[data-del]")){if(confirm(`Hapus laporan dari ${r.name||"tanpa nama"}? Tidak bisa dibatalkan.`))db.collection("reports").doc(r.id).delete().catch(x=>alert("Gagal menghapus: "+(x.code||x.message)));return}
+      const sh=t.closest("[data-shot]");if(sh){const s=r.shots[+sh.dataset.shot],lb=document.createElement("div");lb.className="lb";
+        lb.innerHTML=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>${esc(s.title||s.page)}</b><button class="btn sm" data-lbx>Tutup</button></div>${s.img?`<img src="${s.img}" alt="">`:'<p class="muted">Gambar tidak tersedia untuk bagian ini.</p>'}<p class="muted">${esc(s.text||"")}</p><code>${esc(s.page)} · ${esc(s.sel)} · ${s.w}×${s.h}px</code></div>`;
+        document.body.appendChild(lb)}
+    });
+    document.addEventListener("change",e=>{const s=e.target.closest("[data-st]");if(!s)return;const id=s.closest("[data-id]").dataset.id;s.dataset.s=s.value;
+      db.collection("reports").doc(id).update({status:s.value}).catch(x=>alert("Gagal mengubah status: "+(x.code||x.message)))});
+    addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelector(".lb")?.remove()});
+  })();
+  </script>
+</body>
+</html>

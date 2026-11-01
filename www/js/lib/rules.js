@@ -85,6 +85,26 @@ service cloud.firestore {
       }
     }
 
+    // Laporan bug & saran dari menu Bantuan: siapa pun boleh mengirim (bentuk dan ukuran dibatasi),
+    // hanya admin (lihat /admin.html) yang boleh membaca, mengubah status, atau menghapus
+    function admin() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && request.auth.token.email in ['hilmykia@gmail.com'];
+    }
+    match /reports/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['type', 'name', 'text', 'page', 'ua', 'ver', 'uid', 'email', 'at', 'status', 'shots'])
+        && request.resource.data.type in ['bug', 'saran']
+        && request.resource.data.name is string && request.resource.data.name.size() <= 80
+        && request.resource.data.text is string && request.resource.data.text.size() >= 10 && request.resource.data.text.size() <= 2000
+        && request.resource.data.status == 'baru'
+        && request.resource.data.at == request.time
+        && request.resource.data.shots is list && request.resource.data.shots.size() <= 3
+        && (request.resource.data.uid == null || (request.auth != null && request.resource.data.uid == request.auth.uid))
+        && (request.resource.data.email == null || (request.auth != null && request.resource.data.email == request.auth.token.email));
+      allow read, delete: if admin();
+      allow update: if admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'note']);
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }
