@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kisahlillah.app",
+      "sha256_cert_fingerprints": [
+        "EA:89:02:99:94:01:89:73:A1:65:43:D5:C9:7C:7F:39:7F:E6:5E:02:16:0A:5F:81:D2:E5:96:44:B9:A7:95:FB"
+      ]
+    }
+  }
+]

@@ -1,0 +1,10 @@
+*.keystore
+keystore.properties
+sha256.txt
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+local.properties
+dist/

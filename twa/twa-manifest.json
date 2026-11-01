@@ -1,0 +1,67 @@
+{
+  "packageId": "com.kisahlillah.app",
+  "host": "agenda-hijriah.vercel.app",
+  "name": "Kisah Lillah",
+  "launcherName": "Kisah Lillah",
+  "display": "standalone",
+  "themeColor": "#3F6B5A",
+  "themeColorDark": "#000000",
+  "navigationColor": "#F4F3EE",
+  "navigationColorDark": "#F4F3EE",
+  "navigationDividerColor": "#F4F3EE",
+  "navigationDividerColorDark": "#F4F3EE",
+  "backgroundColor": "#F4F3EE",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://agenda-hijriah.vercel.app/assets/icon-512.png",
+  "maskableIconUrl": "https://agenda-hijriah.vercel.app/assets/icon-maskable-512.png",
+  "monochromeIconUrl": "https://agenda-hijriah.vercel.app/assets/icon-mono-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "/home/kymind/Downloads/#KL/14 Kisah-Lillah/kisah-lillah-update/twa/kisah-lillah.keystore",
+    "alias": "kisahlillah"
+  },
+  "appVersionName": "5.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Isi absensi",
+      "shortName": "Isi absensi",
+      "url": "https://agenda-hijriah.vercel.app/#/absensi",
+      "chosenIconUrl": "https://agenda-hijriah.vercel.app/assets/icon-192.png"
+    },
+    {
+      "name": "Jadwal shalat",
+      "shortName": "Jadwal shala",
+      "url": "https://agenda-hijriah.vercel.app/#/shalat",
+      "chosenIconUrl": "https://agenda-hijriah.vercel.app/assets/icon-192.png"
+    },
+    {
+      "name": "Al-Qur'an",
+      "shortName": "Al-Qur'an",
+      "url": "https://agenda-hijriah.vercel.app/#/quran",
+      "chosenIconUrl": "https://agenda-hijriah.vercel.app/assets/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-core",
+  "webManifestUrl": "https://agenda-hijriah.vercel.app/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://agenda-hijriah.vercel.app/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "5.0.0"
+}
