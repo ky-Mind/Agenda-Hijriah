@@ -1,7 +1,8 @@
 /* Geser horizontal di ponsel untuk pindah antar halaman utama (urutan sama dengan navigasi bawah).
-   Halaman mengikuti jari, lalu meluncur ke halaman tujuan atau kembali jika geserannya belum cukup. */
+   Halaman mengikuti jari. Jika cukup jauh, halaman lama memudar sebentar lalu halaman baru masuk dengan geser
+   pendek + memudar, sama seperti saat ikon navigasi diketuk. Jika belum cukup, halaman kembali ke tempatnya. */
 const SEQ=["beranda","absensi","kalender","shalat","koleksi","profil"];
-const LIMIT=.22,FLICK=.5,DUR=360;
+const LIMIT=.22,FLICK=.5,DUR=280,OUT=140,IN=240,SHIFT=.12;
 const mobile=()=>matchMedia("(max-width:760px)").matches;
 
 function current(){
@@ -29,23 +30,23 @@ function blocked(el,view){
 export function initSwipe(view){
   let sx=null,sy=0,t0=0,dx=0,lock=null,target=null,dir=0,busy=false,timer=0,enterDir=0;
 
-  const reset=()=>{view.style.transition="";view.style.transform="";};
-  const move=px=>{view.style.transition="none";view.style.transform=`translate3d(${px}px,0,0)`;};
-  const settle=(px,then)=>{
-    view.style.transition=`transform ${DUR}ms var(--ease)`;
-    view.style.transform=`translate3d(${px}px,0,0)`;
+  const reset=()=>{view.style.transition="";view.style.transform="";view.style.opacity=""};
+  const move=(px,op=1)=>{view.style.transition="none";view.style.transform=`translate3d(${px}px,0,0)`;view.style.opacity=op};
+  const settle=(px,then,{ms=DUR,op=1,ease="var(--ease)"}={})=>{
+    view.style.transition=`transform ${ms}ms ${ease},opacity ${ms}ms ${ease}`;
+    view.style.transform=`translate3d(${px}px,0,0)`;view.style.opacity=op;
     const done=()=>{view.removeEventListener("transitionend",done);clearTimeout(timer);then?.()};
     view.addEventListener("transitionend",done);
-    timer=setTimeout(done,DUR+80);
+    timer=setTimeout(done,ms+80);
   };
 
   /* Dipanggil dari app.js setelah halaman baru dipasang: masuk dari sisi asal geseran */
   document.addEventListener("kl-rendered",()=>{
     if(!enterDir)return;
     const d=enterDir;enterDir=0;busy=false;
-    move(d*view.clientWidth);
+    move(d*view.clientWidth*SHIFT,0);
     void view.offsetWidth;
-    settle(0,reset);
+    settle(0,reset,{ms:IN});
   });
 
   view.addEventListener("touchstart",e=>{
@@ -65,8 +66,9 @@ export function initSwipe(view){
     if(lock!=="h")return;
     if(e.cancelable)e.preventDefault();
     dx=x;
-    const resist=target?1:.25;
-    move(dx*resist);
+    const resist=target?1:.25,w=view.clientWidth;
+    /* Sedikit memudar saat makin jauh digeser, supaya pergantian ke halaman baru tidak terasa patah */
+    move(dx*resist,target?1-Math.min(.35,Math.abs(dx)/w*.5):1);
   },{passive:false});
 
   const end=()=>{
@@ -78,13 +80,13 @@ export function initSwipe(view){
     const flick=Math.abs(v)>FLICK&&Math.sign(v)===-dir;
     if(target&&(Math.abs(dx)>w*LIMIT||flick)){
       busy=true;
-      settle(-dir*w,()=>{
+      settle(dx-dir*w*.1,()=>{
         view.dataset.swipeNext="1";
         enterDir=dir;
         location.hash="#/"+target;
         /* Jika halaman tidak berpindah (misal ditahan penjaga perubahan), kembalikan posisi */
         setTimeout(()=>{if(enterDir){enterDir=0;delete view.dataset.swipeNext;busy=false;settle(0,reset)}},1500);
-      });
+      },{ms:OUT,op:0,ease:"ease-in"});
     }else{
       settle(0,reset);
     }

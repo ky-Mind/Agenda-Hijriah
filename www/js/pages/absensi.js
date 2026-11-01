@@ -17,6 +17,7 @@ export default function(root,args){
   function draw(){
     const d=fromKey(k),p=calc(rec),list=agenda();
     $("hijri").textContent=hijriText(d);$("masehi").textContent=masehiText(d)+(k===today()?" · hari ini":"");$("pick").value=k;
+    const td=today();document.dispatchEvent(new CustomEvent("kl-today",{detail:k===td?0:k>td?-1:1}));$("today").disabled=k===td;
     $("ringkas").textContent=`${p.done} terlaksana · ${p.miss} terlewat · ${p.total-p.done-p.miss} belum diisi${p.rest?` · ${p.rest} 🌑`:""}`;$("pct").textContent=p.pct+"%";$("bar").style.width=p.pct+"%";
     const B=(i,v,c,t,l)=>`<button class="${c} ${rec[i.id]===v?"on":""}" data-v="${v}" aria-label="${l}: ${esc(i.nama)}" aria-pressed="${rec[i.id]===v}">${t}</button>`;
     $("list").innerHTML=list.length?list.map(i=>`<div class="ibadah" data-id="${esc(i.id)}"><span><span class="ico" aria-hidden="true">${esc(i.ic||"•")}</span>${esc(i.nama)}</span>${edit?'<button class="btn sm danger" data-del>Hapus</button>':`<div class="seg">${B(i,1,"ok","✓","Terlaksana")}${B(i,0,"no","✕","Terlewat")}${B(i,2,"pr","🌑","Datang bulan")}${/tadarus/i.test(i.id+i.nama)?B(i,3,"kh","📖💯","Khatam"):""}</div>`}</div>`).join(""):'<div class="empty">Belum ada ibadah. Pilih "Ubah daftar" untuk menambah.</div>';

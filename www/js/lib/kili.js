@@ -58,7 +58,18 @@ function setSt(s){
   if(s==="open"||s==="min")clampPos();
   if(s!==prev)document.dispatchEvent(new CustomEvent("kl-ai",{detail:{on:s!=="off"}}));
 }
-const open=()=>setSt("open"),minimize=()=>setSt("min"),maximize=()=>setSt(st==="max"?"open":"max");
+/* Kartu ⇄ layar penuh tanpa lompatan (FLIP): ukur posisi lama, pindah keadaan, lalu animasikan dari posisi lama.
+   Membesar: isi langsung tampil penuh dan terbuka dari kotak kartu lama (clip-path). Mengecil: kartu kecil meluncur dari ukuran penuh */
+const EASE="cubic-bezier(.22,.8,.24,1)";
+function morph(next){
+  const a=card.getBoundingClientRect();
+  setSt(next);
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  const b=card.getBoundingClientRect();
+  if(next==="max")card.animate({clipPath:[`inset(${a.top-b.top}px ${b.right-a.right}px ${b.bottom-a.bottom}px ${a.left-b.left}px round 12px)`,"inset(0px 0px 0px 0px round 0px)"]},{duration:320,easing:EASE});
+  else card.animate({transform:[`translate(${a.left-b.left}px,${a.top-b.top}px) scale(${a.width/b.width},${a.height/b.height})`,"none"],transformOrigin:["0 0","0 0"],opacity:[.6,1]},{duration:260,easing:EASE});
+}
+const open=()=>setSt("open"),minimize=()=>setSt("min"),maximize=()=>morph(st==="max"?"open":"max");
 const close=()=>{setSt("off");toast("Kili AI disembunyikan")};
 const toggle=()=>st==="off"?open():close();
 /* Geser dengan pointer (mouse dan sentuh). Tanpa geseran, ketukan dianggap tap */

@@ -418,10 +418,13 @@ html[data-vt=theme]::view-transition-old(root),html[data-vt=theme]::view-transit
 #kili[data-s=off]{pointer-events:none}
 #kili .kili-bub{position:absolute;right:0;bottom:0;width:50px;height:50px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent);font-size:22px;box-shadow:0 4px 15px rgba(0,0,0,.3);cursor:grab;touch-action:none;display:grid;place-items:center;opacity:0;transform:scale(.4);visibility:hidden;transition:opacity var(--dur-s) ease,transform .3s cubic-bezier(.34,1.3,.64,1),visibility 0s .3s}
 #kili[data-s=min] .kili-bub{opacity:1;transform:none;visibility:visible;transition:opacity var(--dur-s) ease,transform .34s cubic-bezier(.34,1.3,.64,1),visibility 0s}
-#kili .kili-card{position:absolute;right:0;bottom:0;width:min(340px,92vw);height:min(440px,70vh);display:flex;flex-direction:column;background:var(--raised);border:1px solid var(--line);border-radius:var(--r2,12px);box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden;color:var(--text);transform-origin:100% 100%;opacity:0;transform:translateY(16px) scale(.85);visibility:hidden;transition:opacity .2s ease,transform var(--dur-m) var(--ease),visibility 0s .3s,width var(--dur-l) var(--ease),height var(--dur-l) var(--ease),border-radius .38s ease}
-#kili[data-s=open] .kili-card,#kili[data-s=max] .kili-card{opacity:1;transform:none;visibility:visible;transition:opacity var(--dur-s) ease,transform var(--dur-m) var(--ease),visibility 0s,width var(--dur-l) var(--ease),height var(--dur-l) var(--ease),border-radius .38s ease}
+#kili .kili-card{position:absolute;right:0;bottom:0;width:min(340px,92vw);height:min(440px,70vh);display:flex;flex-direction:column;background:var(--raised);border:1px solid var(--line);border-radius:var(--r2,12px);box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden;color:var(--text);transform-origin:100% 100%;opacity:0;transform:scale(.9);visibility:hidden;transition:opacity .18s ease,transform .22s var(--ease),visibility 0s .22s}
+/* Ukuran kartu sengaja tanpa transisi: perpindahan kartu ⇄ layar penuh dianimasikan di kili.js (FLIP), dan saat keyboard
+   ponsel muncul tinggi kartu harus langsung menyesuaikan agar kolom ketik tidak tertinggal di balik keyboard */
+#kili[data-s=open] .kili-card,#kili[data-s=max] .kili-card{opacity:1;transform:none;visibility:visible;transition:opacity .16s ease,transform .26s cubic-bezier(.34,1.25,.64,1),visibility 0s}
 #kili[data-s=max]{width:100vw!important;height:100dvh!important;left:0!important;top:0!important;right:0!important;bottom:0!important}
-#kili[data-s=max] .kili-card{width:100vw;height:100dvh;border-radius:0;border:0}
+#kili[data-s=max] .kili-card{width:100vw;height:100dvh;border-radius:0;border:0;transition:none}
+#kili[data-s=max] .kili-form{padding-bottom:max(10px,env(safe-area-inset-bottom))}
 .kili-msg.err{color:var(--danger)}
 .dots{display:inline-flex;gap:4px;padding:2px 0}.dots i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:kdot 1s infinite ease-in-out}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
 @keyframes kdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
@@ -623,3 +626,21 @@ html.ptr-drag #view{user-select:none}
 /* Dialog foto profil: pratinjau besar di tengah, tombol bertumpuk penuh */
 .box:has(.dlg-av){text-align:center;width:min(340px,100%)}.box:has(.dlg-av) .dlg-actions{flex-direction:column;align-items:stretch}.box:has(.dlg-av) .dlg-actions .btn{min-height:44px;border-radius:12px}
 .dlg-av .ic{width:44px;height:44px}
+/* Ikon "ke hari ini": kalender berisi tanggal hari ini + panah arah saat sedang melihat tanggal lain */
+.tdy-b{position:relative}.tdy{position:relative;display:grid;place-items:center;width:24px;height:24px}.tdy .ic{width:24px;height:24px}
+.tdy b{position:absolute;left:0;right:0;top:11.5px;font:700 9px/1 var(--sans);text-align:center;letter-spacing:-.02em}
+.tdy-dir{position:absolute;top:5px;width:15px;height:15px;border-radius:50%;background:var(--accent);color:var(--on-accent);font:700 11px/15px var(--sans);font-style:normal;text-align:center;opacity:0;transform:scale(.4);transition:opacity .2s,transform .2s var(--ease);box-shadow:0 0 0 2px var(--surface)}
+.tdy-b[data-dir="-1"] .tdy-dir{left:3px;opacity:1;transform:none}.tdy-b[data-dir="-1"] .tdy-dir::before{content:"‹"}
+.tdy-b[data-dir="1"] .tdy-dir{right:3px;opacity:1;transform:none}.tdy-b[data-dir="1"] .tdy-dir::before{content:"›"}
+.tdy-b[data-dir="0"]{color:var(--accent)}
+.btn.is-today{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.d.pulse{animation:dpulse .6s var(--ease)}@keyframes dpulse{40%{transform:scale(1.08);box-shadow:inset 0 0 0 2px var(--accent),0 0 0 4px var(--accent-soft)}}
+/* Acara bulan ini */
+.mevs{display:grid;gap:8px;margin-top:10px}
+.mev{display:flex;align-items:center;gap:12px;width:100%;padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:12px;background:var(--raised);color:var(--text);text-align:left;cursor:pointer;transition:background .15s,border-color .15s}
+.mev:hover{background:var(--hover)}.mev.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mev-d{flex:none;width:44px;height:44px;border-radius:10px;background:color-mix(in srgb,var(--danger) 10%,var(--raised));color:var(--danger);display:grid;place-content:center;text-align:center;line-height:1.1}
+.mev-d b{font-size:17px}.mev-d small{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+.mev-t{flex:1;min-width:0;display:flex;flex-direction:column}.mev-t b{font-size:14px;font-weight:600}.mev-t small{font-size:12px;color:var(--muted)}
+.mev em{flex:none;font-style:normal;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent);color:var(--on-accent)}
+.mev-d b{white-space:nowrap}.mev-d{width:auto;min-width:44px;padding:0 6px}
