@@ -34,7 +34,7 @@ export async function test(){const u=__klAuth.currentUser,t=await u.getIdToken()
 export async function diagnose(){
   const L=[],add=(ok,label,hint)=>L.push({ok:!!ok,label,hint:ok?"":hint}),u=window.__klAuth&&__klAuth.currentUser;
   add(supported()&&window.isSecureContext,"Browser mendukung notifikasi latar belakang","Pakai Chrome/Edge/Firefox terbaru lewat HTTPS. iPhone: pasang aplikasi ke layar utama (iOS 16.4+).");
-  add(!!u,"Sudah masuk dengan Google","Masuk di Profil › Profil › Akun Google.");
+  add(!!u,"Sudah masuk ke akun","Masuk di Profil › Profil › Akun.");
   const perm="Notification"in window?Notification.permission:"denied";
   add(perm==="granted","Izin notifikasi diberikan",perm==="denied"?"Izin diblokir. Buka pengaturan situs/aplikasi di ponsel › Notifikasi › Izinkan, lalu coba lagi.":"Tekan Aktifkan agar browser meminta izin.");
   let reg=null;try{reg=await navigator.serviceWorker.getRegistration()}catch(e){}

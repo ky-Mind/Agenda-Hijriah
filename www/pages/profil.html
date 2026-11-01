@@ -3,14 +3,40 @@
   <div class="chips nowrap tabs" role="tablist" aria-label="Pengaturan" data-r="tabs"><button class="chip" role="tab" data-tab="profil">Profil</button><button class="chip" role="tab" data-tab="notif">Notifikasi</button><button class="chip" role="tab" data-tab="tampilan">Tampilan</button><button class="chip" role="tab" data-tab="data">Data</button><button class="chip" role="tab" data-tab="bantuan">Bantuan</button></div>
   <div class="sect-title" data-r="sect"></div>
   <section data-g="profil" role="tabpanel" hidden>
-  <div class="card"><h2>Identitas</h2>
-    <div class="row" style="gap:16px;margin-top:8px"><div class="avatar lg" data-r="avatar"></div><div class="row"><button class="btn sm" data-r="pick">Ganti foto</button><button class="btn sm danger" data-r="rmphoto" hidden>Hapus foto</button></div><input type="file" accept="image/*" data-r="photo" hidden></div>
-    <div class="field mt"><label for="p-name">Nama lengkap</label><input id="p-name" type="text" data-r="name" maxlength="50" placeholder="Nama lengkap" autocomplete="name"></div>
-    <div class="field"><label for="p-wa">Nomor WhatsApp</label><input id="p-wa" type="tel" inputmode="numeric" data-r="wa" maxlength="20" placeholder="0812-3456-7890" autocomplete="tel"><small class="muted">Rekap ibadah dikirim ke nomor ini. Kosongkan jika ingin memilih kontak sendiri di WhatsApp.</small></div>
-    <div class="row"><button class="btn primary" data-r="save">Simpan</button><button class="btn" data-r="watest">Kirim tes ke WhatsApp</button></div></div>
-  <div class="card"><h2>Akun Google</h2><p class="muted" data-r="who">Belum masuk. Masuk agar data tersimpan di cloud dan sama di desktop dan ponsel.</p><p class="muted" data-r="status"></p><p data-r="autherr" class="dirty" hidden style="font-size:13px;margin-top:6px"></p>
+  <div class="card acct" data-r="acct">
+    <div class="acct-top">
+      <button class="acct-av-btn" type="button" data-r="pick" aria-label="Ubah foto profil"><span class="avatar acct-av" data-r="avatar"></span><span class="acct-cam" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></span></button>
+      <input type="file" accept="image/*" data-r="photo" hidden>
+      <div class="acct-id">
+        <input class="acct-name" id="p-name" type="text" data-r="name" maxlength="50" placeholder="Nama lengkap" autocomplete="name" aria-label="Nama lengkap">
+        <p class="muted" data-r="who">Belum masuk. Masuk agar data tersimpan di cloud dan sama di desktop dan ponsel.</p>
+        <div class="acct-via" data-r="via"></div>
+        <div class="acct-sync"><i class="sdot" data-r="syncdot"></i><span data-r="status"></span></div>
+      </div>
+    </div>
+    <div class="wa-row">
+      <label class="wa-in" for="p-wa"><svg class="ic" aria-hidden="true"><use href="#i-wa" /></svg><input id="p-wa" type="tel" inputmode="numeric" data-r="wa" maxlength="20" placeholder="Nomor WhatsApp, mis. 0812-3456-7890" autocomplete="tel" aria-label="Nomor WhatsApp"></label>
+      <button class="btn sm primary" type="button" data-r="save">Simpan</button>
+      <button class="btn sm" type="button" data-r="watest" aria-label="Kirim tes ke WhatsApp">Tes</button>
+    </div>
+    <small class="muted wa-help">Rekap ibadah dikirim ke nomor ini. Kosongkan jika ingin memilih kontak sendiri di WhatsApp.</small>
+    <p data-r="autherr" class="acct-err" role="alert" hidden></p>
     <div class="fixbox" data-r="fix" hidden><b>Perbaiki sekali saja (± 1 menit)</b><ol><li>Tekan <i>Salin aturan</i>.</li><li>Buka <i>Firebase Console</i> › Firestore Database › tab <b>Rules</b>.</li><li>Hapus isi lama, tempel, lalu tekan <b>Publish</b>.</li><li>Kembali ke sini. Data otomatis terkirim, tanpa perlu masuk ulang.</li></ol><div class="row"><button class="btn primary sm" data-r="copyrules">Salin aturan</button><a class="btn sm" data-r="console" target="_blank" rel="noopener">Buka Firebase Console</a></div></div>
-    <div class="row mt"><button class="btn primary" data-r="login">Masuk dengan Google</button><button class="btn" data-r="syncnow" hidden>Sinkron sekarang</button><button class="btn" data-r="logout" hidden>Keluar</button></div></div>
+    <div class="logins" data-r="logins">
+      <button class="lbtn" type="button" data-r="login"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.8 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg><span>Lanjutkan dengan Google</span></button>
+      <button class="lbtn fb" type="button" data-r="loginfb"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.9v8.4A12 12 0 0 0 24 12z"/></svg><span>Lanjutkan dengan Facebook</span></button>
+      <div class="or"><span>atau</span></div>
+      <button class="lbtn" type="button" data-r="loginmail"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg><span>Masuk dengan email</span></button>
+    </div>
+    <form class="mailform" data-r="mailform" hidden novalidate>
+      <div class="seg mseg" role="group" aria-label="Masuk atau daftar"><button type="button" data-m="in" aria-pressed="true">Masuk</button><button type="button" data-m="up" aria-pressed="false">Daftar baru</button></div>
+      <div class="field"><label for="p-mail">Email</label><input id="p-mail" type="email" data-r="mail" autocomplete="email" placeholder="nama@email.com" required></div>
+      <div class="field"><label for="p-pass">Kata sandi</label><div class="pw"><input id="p-pass" type="password" data-r="pass" autocomplete="current-password" minlength="6" placeholder="Minimal 6 karakter" required><button type="button" class="pw-eye" data-r="peek" aria-label="Tampilkan kata sandi">Lihat</button></div></div>
+      <button class="btn primary block" type="submit" data-r="mailin">Masuk</button>
+      <div class="row sp mform-foot"><button class="linkbtn" type="button" data-r="mailclose">‹ Pilihan lain</button><button class="linkbtn" type="button" data-r="mailreset">Lupa kata sandi?</button></div>
+    </form>
+    <div class="acct-acts" data-r="acctacts" hidden><button class="btn" type="button" data-r="syncnow">Sinkron sekarang</button><button class="btn out-danger" type="button" data-r="logout">Keluar</button></div>
+  </div>
   </section>
   <section data-g="notif" role="tabpanel" hidden>
   <div class="card"><h2>Pengingat adzan</h2>

@@ -7,7 +7,7 @@ const hm=t=>new Date(t).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-dig
 const when=t=>{const d=new Date(t);return d.toDateString()===new Date().toDateString()?hm(t):d.toLocaleDateString("id-ID",{day:"numeric",month:"short"})};
 const day=t=>{const d=new Date(t),n=new Date(),y=new Date(n-864e5);return d.toDateString()===n.toDateString()?"Hari ini":d.toDateString()===y.toDateString()?"Kemarin":d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})};
 const init=n=>esc((n||"?").trim().charAt(0).toUpperCase()||"?");
-const errMsg=e=>{const c=e&&(e.code||e.message);return c==="permission-denied"?"Aturan Firestore belum diperbarui. Publikasikan firestore.rules terbaru (Profil › Akun Google › Salin aturan).":c==="unavailable"?"Tidak ada koneksi internet.":c==="locked"?"Buka kunci pesan terlebih dahulu.":c==="nopub"?"Lawan bicara belum mengaktifkan pesan terenkripsi.":"Terjadi kesalahan. Coba lagi."};
+const errMsg=e=>{const c=e&&(e.code||e.message);return c==="permission-denied"?"Aturan Firestore belum diperbarui. Publikasikan firestore.rules terbaru (Profil › Akun › Salin aturan).":c==="unavailable"?"Tidak ada koneksi internet.":c==="locked"?"Buka kunci pesan terlebih dahulu.":c==="nopub"?"Lawan bicara belum mengaktifkan pesan terenkripsi.":"Terjadi kesalahan. Coba lagi."};
 let resetting=false;
 const avInner=(n,p)=>{const v=C.safeImg(p);return v?`<img src="${esc(v)}" alt="">`:init(n)};
 const hydrate=el=>{el.querySelectorAll("[data-av]").forEach(async n=>{const p=await C.avatar(n.dataset.av);if(p&&n.isConnected)n.innerHTML=`<img src="${esc(p)}" alt="">`})};
@@ -36,7 +36,7 @@ export default function(root,args){const $=n=>root.querySelector(`[data-r="${n}"
 function inbox($,root){
   $("inbox").hidden=false;$("conv").hidden=true;let idxFor="";
   const checkIdx=async()=>{const u=window.__klAuth?.currentUser;if(!u||!E.state.ready){$("idx").innerHTML="";return}
-    const r=await C.checkIndex(u);$("idx").innerHTML=["missing","stale","error"].includes(r)?`<div class="banner">⚠️ Kunci pesanmu <b>belum terdaftar di server</b>, jadi orang lain belum bisa memulai chat denganmu. Penyebab umum: <code>firestore.rules</code> terbaru belum dipublikasikan (Profil › Akun Google › Salin aturan).<div class="row mt"><button class="btn sm primary" data-fix>Coba daftarkan ulang</button></div></div>`:""};
+    const r=await C.checkIndex(u);$("idx").innerHTML=["missing","stale","error"].includes(r)?`<div class="banner">⚠️ Kunci pesanmu <b>belum terdaftar di server</b>, jadi orang lain belum bisa memulai chat denganmu. Penyebab umum: <code>firestore.rules</code> terbaru belum dipublikasikan (Profil › Akun › Salin aturan).<div class="row mt"><button class="btn sm primary" data-fix>Coba daftarkan ulang</button></div></div>`:""};
   const item=c=>{const me=C.state.uid,un=c.status==="active"&&c.lastFrom&&c.lastFrom!==me&&C.ms(c.lastAt)>C.readAt(c,me);
     const pv=c.status==="pending"?"Menunggu persetujuan…":c.status==="blocked"?"Percakapan dibatasi":c.lastMessage?(c.lastFrom===me?"Anda: ":"")+(c.preview||"🔒 Pesan terenkripsi"):"Belum ada pesan";
     return `<a class="ci ${un?"un":""}" href="#/pesan/${esc(c.id)}"><span class="avatar" data-av="${esc(C.emailOf(c))}">${init(C.nameOf(c))}</span><div><b>${esc(C.nameOf(c))}</b><small>${esc(pv)}</small></div><div class="meta"><time>${c.lastMessage?when(C.ms(c.lastAt)):""}</time>${un?'<span class="nbadge">•</span>':""}</div></a>`};

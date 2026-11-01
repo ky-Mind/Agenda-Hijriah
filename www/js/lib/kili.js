@@ -35,7 +35,7 @@ async function send(text){
   const wait=add("ai muted",'<span class="dots"><i></i><i></i><i></i></span>');
   try{
     const user=window.__klAuth?.currentUser;
-    if(!user)throw new Error("Masuk dengan Google dulu untuk memakai Kili AI");
+    if(!user)throw new Error("Masuk ke akun dulu (Profil › Akun) untuk memakai Kili AI");
     const token=await user.getIdToken();
     const ctx=await context().catch(()=>"");
     const r=await fetch("api/ai",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`},body:JSON.stringify({messages:hist.slice(-10),context:ctx})});

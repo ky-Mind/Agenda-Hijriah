@@ -9,6 +9,7 @@ import {hijriText} from "./lib/hijri.js";
 import {loc} from "./lib/prayer.js";
 import {initKili} from "./lib/kili.js";
 import {initSwipe} from "./lib/swipe.js";
+import {initPullRefresh} from "./lib/ptr.js";
 const view=document.getElementById("view"),LABEL={beranda:"Beranda",absensi:"Absensi",rekap:"Rekap",kalender:"Kalender",shalat:"Shalat",koleksi:"Koleksi",quran:"Al-Qur'an",hadits:"Hadits",doa:"Do'a",dzikir:"Dzikir",mutiara:"Kata Mutiara",pesan:"Pesan",tasbih:"Tasbih",profil:"Profil"};
 const PARENT={rekap:"absensi",quran:"koleksi",hadits:"koleksi",doa:"koleksi",dzikir:"koleksi",mutiara:"koleksi",tasbih:"koleksi"};
 const html={},mods={};let cleanup=null,seq=0,shown=location.hash,skip=false;
@@ -103,6 +104,8 @@ window.__klAuth?.onAuthStateChanged(u=>{chat.init(u);push.refresh(u)});
 document.addEventListener("kl-chat",setBadge);
 initKili();
 initSwipe(view);
+/* Tarik untuk muat ulang: tarik data cloud terbaru lalu pasang ulang halaman yang sedang dibuka (tanpa animasi pindah halaman) */
+initPullRefresh(view,()=>{window.KLSync?.now?.();prev=null;return render()});
 document.addEventListener("kl-profile",()=>chat.register(window.__klAuth?.currentUser));
 
 /* Tampilan seperti aplikasi: tidak ada menu konteks/pilih-teks tekan-lama di layar sentuh (kolom isian tetap normal) */

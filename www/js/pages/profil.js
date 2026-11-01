@@ -5,16 +5,16 @@ import {settings,save,enable,test,stop} from "../lib/adzan.js";
 import {setTheme} from "../lib/theme.js";
 import {loc} from "../lib/prayer.js";
 import {geoState,notifState,useMyLocation,geoMsg,GEO_TXT,NOTIF_TXT} from "../lib/perm.js";
-import {ask,copy,dialog} from "../lib/ui.js";
+import {ask,copy,dialog,esc} from "../lib/ui.js";
 import * as chat from "../lib/chat.js";
 import * as push from "../lib/push.js";
 import {quranStatus,downloadQuran,prepareTimes,timesStatus} from "../lib/offline.js";
-import {signIn,signOut,authErrorMessage} from "../lib/auth.js";
+import {signIn,signInEmail,signUpEmail,resetPassword,signOut,authErrorMessage} from "../lib/auth.js";
 import {FIRESTORE_RULES} from "../lib/rules.js";
 
 /* Menu bagian pengaturan: kunci, ikon, judul, dan keterangan singkat */
 const SECTIONS={
-  profil:["user","Profil","Identitas dan akun Google"],
+  profil:["user","Profil","Identitas dan akun"],
   notif:["bell","Notifikasi","Adzan, lokasi, dan pesan"],
   tampilan:["sun","Tampilan","Tema, tanggal Hijriah, tasbih melayang"],
   data:["down","Data","Mode offline dan cadangan"],
@@ -23,11 +23,12 @@ const SECTIONS={
 
 const PUSH_ERR={
   unsupported:"Browser ini tidak mendukung notifikasi latar belakang",
-  login:"Masuk dengan Google dulu",
+  login:"Masuk ke akun dulu (Profil › Akun)",
   denied:"Izin notifikasi ditolak (ubah di pengaturan situs)",
   server:"Server notifikasi belum diatur (lihat README)",
 };
 
+const PROV={"google.com":"Google","facebook.com":"Facebook",password:"email"};
 const SYNC_TXT={off:"Data tersimpan di perangkat ini.",busy:"Menyimpan ke cloud…"};
 
 export default function(root){
@@ -104,29 +105,53 @@ export default function(root){
 
   /* Identitas: nama, WhatsApp, dan foto */
   const ident=()=>{
-    const p=prof(),u=auth?.currentUser;
-    paint($("avatar"),p.name||u?.displayName,p.photo||u?.photoURL);
-    $("rmphoto").hidden=!p.photo;
+    const p=prof(),u=auth?.currentUser,n=p.name||u?.displayName,ph=p.photo||u?.photoURL;
+    if(n||ph)paint($("avatar"),n,ph);else $("avatar").innerHTML='<svg class="ic"><use href="#i-user" /></svg>';
   };
-  $("name").value=prof().name||"";
-  $("wa").value=prof().whatsapp||"";
-  ident();
-
-  $("save").onclick=()=>{
-    const w=$("wa").value.trim();
-    if(w&&!validNumber(w))return toast("Nomor WhatsApp tidak valid");
-    upd({name:$("name").value.trim(),whatsapp:w});
+  /* Isian diisi ulang dari penyimpanan, kecuali yang sedang diketik. Dipanggil juga saat data cloud masuk */
+  const fill=()=>{
+    const p=prof();
+    if(document.activeElement!==$("name"))$("name").value=p.name||"";
+    if(document.activeElement!==$("wa"))$("wa").value=p.whatsapp||"";
     ident();
-    toast("Tersimpan");
   };
+  fill();
+
+  /* Nama dan nomor tersimpan otomatis sesaat setelah berhenti mengetik, lalu ikut tersinkron ke akun (sync.js).
+     Nomor yang belum valid tidak disimpan agar nomor lama tidak tertimpa */
+  let autoT=0;
+  const commit=quiet=>{
+    clearTimeout(autoT);
+    const name=$("name").value.trim(),w=$("wa").value.trim(),p=prof(),okW=!w||validNumber(w);
+    if(!okW&&!quiet)toast("Nomor WhatsApp tidak valid");
+    /* Nama tetap tersimpan walau nomor yang sedang diketik belum valid */
+    const patch={};
+    if(name!==(p.name||""))patch.name=name;
+    if(okW&&w!==(p.whatsapp||""))patch.whatsapp=w;
+    if(!Object.keys(patch).length)return okW;
+    upd(patch);
+    ident();
+    if(quiet)toast("Tersimpan otomatis");
+    return okW;
+  };
+  $("name").oninput=$("wa").oninput=()=>{clearTimeout(autoT);autoT=setTimeout(()=>commit(true),900)};
+  $("name").onchange=$("wa").onchange=()=>commit(true);
+  $("save").onclick=()=>{if(commit(false))toast("Tersimpan")};
+  document.addEventListener("kl-data-changed",fill);
   $("watest").onclick=()=>{
     const w=$("wa").value.trim();
     if(!validNumber(w))return toast("Isi nomor WhatsApp yang valid dulu");
     openUrl(waUrl(normalize(w),"Tes Kisah Lillah: WhatsApp terhubung ✓"));
   };
 
-  /* Foto profil */
-  $("pick").onclick=()=>$("photo").click();
+  /* Foto profil: ketuk avatar untuk memilih ganti, hapus, atau batal */
+  $("pick").onclick=async()=>{
+    const p=prof(),ph=p.photo||auth?.currentUser?.photoURL;
+    const a=await dialog({title:"Foto profil",html:`<div class="avatar dlg-av">${ph?`<img src="${esc(ph)}" alt="">`:p.name?.trim()?esc(p.name.trim().charAt(0).toUpperCase()):'<svg class="ic"><use href="#i-user" /></svg>'}</div>`,
+      actions:[{label:"Ganti foto",value:"pick",cls:"primary"},...(p.photo?[{label:"Hapus foto",value:"rm",cls:"danger"}]:[]),{label:"Batal",value:null}]});
+    if(a==="pick")$("photo").click();
+    else if(a==="rm"){upd({photo:""});ident();toast("Foto profil dihapus")}
+  };
   $("photo").onchange=async e=>{
     const f=e.target.files[0];
     e.target.value="";
@@ -137,39 +162,87 @@ export default function(root){
     if(url===null)toast("Foto tidak dapat diproses, coba foto lain");
     else if(url){upd({photo:url});ident();toast("Foto profil disimpan")}
   };
-  $("rmphoto").onclick=()=>{upd({photo:""});ident()};
 
-  /* Akun Google */
+  /* Akun: Google, Facebook, atau email */
   const showAuthErr=m=>{
     $("autherr").hidden=false;
     $("autherr").textContent=m;
     toast(m.length>60?"Gagal masuk. Lihat keterangan di kartu akun.":m);
   };
   const who=u=>{
+    const via=[...new Set(u?.providerData?.map(x=>PROV[x.providerId]).filter(Boolean))];
+    $("acct").classList.toggle("in",!!u);
     $("who").textContent=u
-      ?`${u.displayName||"Pengguna"} · ${u.email}`
+      ?u.email||"Masuk tanpa email"
       :"Belum masuk. Masuk agar data tersimpan di cloud dan sama di desktop dan ponsel.";
-    $("login").hidden=!!u;
-    $("logout").hidden=!u;
-    $("syncnow").hidden=!u;
+    $("via").innerHTML=via.map(v=>`<span class="via">${v}</span>`).join("");
+    $("logins").hidden=!!u||!$("mailform").hidden;
+    if(u)$("mailform").hidden=true;
+    $("acctacts").hidden=!u;
     if(u)$("autherr").hidden=true;
-    if(u&&!prof().name&&u.displayName){upd({name:u.displayName});$("name").value=u.displayName}
+    /* Nama Google hanya jadi contoh di isian, tidak disimpan. Kalau disimpan, nama itu bisa lebih baru dari nama
+       yang sudah diganti di cloud dan menimpanya saat masuk di perangkat baru */
+    $("name").placeholder=u?.displayName||"Nama lengkap";
     ident();
   };
   const offAuth=auth?auth.onAuthStateChanged(who):()=>{};
   if(!auth){
     $("who").textContent="Firebase tidak termuat (periksa koneksi internet lalu muat ulang). Data tersimpan di perangkat ini saja.";
-    $("login").disabled=true;
+    $("logins").querySelectorAll("button").forEach(b=>b.disabled=true);
   }
-  $("login").onclick=async()=>{
+  const social=kind=>async()=>{
     try{
-      await signIn(()=>toast("Popup diblokir, mengalihkan ke halaman login…"));
+      await signIn(()=>toast("Popup diblokir, mengalihkan ke halaman login…"),kind);
     }catch(e){
       console.warn(e);
       showAuthErr(authErrorMessage(e));
     }
   };
-  $("logout").onclick=()=>signOut();
+  $("login").onclick=social("google");
+  $("loginfb").onclick=social("facebook");
+
+  /* Email + kata sandi: satu formulir untuk masuk, daftar, dan atur ulang kata sandi */
+  const mailBusy=on=>$("mailform").querySelectorAll("button").forEach(b=>b.disabled=on);
+  const mailCreds=()=>{
+    const email=$("mail").value.trim(),pass=$("pass").value;
+    if(!/^\S+@\S+\.\S+$/.test(email)){showAuthErr("Format email tidak valid.");$("mail").focus();return null}
+    if(pass.length<6){showAuthErr("Kata sandi minimal 6 karakter.");$("pass").focus();return null}
+    return[email,pass];
+  };
+  const mailDo=async fn=>{
+    const c=mailCreds();if(!c)return;
+    mailBusy(true);
+    try{await fn(...c);$("pass").value=""}catch(e){console.warn(e);showAuthErr(authErrorMessage(e))}
+    finally{mailBusy(false)}
+  };
+  /* Formulir menggantikan tombol pilihan masuk; tab Masuk/Daftar baru hanya mengganti tujuan tombol kirim */
+  let mailMode="in";
+  const setMode=m=>{
+    mailMode=m;
+    $("mailform").querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m));
+    $("mailin").textContent=m==="up"?"Buat akun":"Masuk";
+    $("pass").autocomplete=m==="up"?"new-password":"current-password";
+    $("mailreset").hidden=m==="up";
+  };
+  $("mailform").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+  $("peek").onclick=()=>{const show=$("pass").type==="password";$("pass").type=show?"text":"password";$("peek").textContent=show?"Sembunyikan":"Lihat";$("peek").setAttribute("aria-label",show?"Sembunyikan kata sandi":"Tampilkan kata sandi")};
+  $("loginmail").onclick=()=>{$("logins").hidden=true;$("mailform").hidden=false;$("autherr").hidden=true;$("mail").focus()};
+  $("mailclose").onclick=()=>{$("mailform").hidden=true;$("logins").hidden=false;$("autherr").hidden=true;$("pass").value=""};
+  $("mailform").onsubmit=e=>{
+    e.preventDefault();
+    if(mailMode==="in")return mailDo(signInEmail);
+    mailDo(signUpEmail).then(()=>{if(auth?.currentUser)toast("Akun dibuat. Cek email untuk verifikasi (dibutuhkan fitur Pesan)")});
+  };
+  $("mailreset").onclick=async()=>{
+    const email=$("mail").value.trim();
+    if(!/^\S+@\S+\.\S+$/.test(email)){showAuthErr("Isi email dulu, lalu tekan Lupa kata sandi.");return $("mail").focus()}
+    try{await resetPassword(email);$("autherr").hidden=true;toast("Jika email terdaftar, tautan atur ulang sudah dikirim")}
+    catch(e){showAuthErr(authErrorMessage(e))}
+  };
+  $("logout").onclick=async()=>{
+    const ok=await dialog({title:"Keluar dari akun?",text:"Data tetap aman di perangkat ini dan di cloud. Masuk lagi kapan saja untuk melanjutkan sinkron.",actions:[{label:"Keluar",value:true,cls:"danger"},{label:"Batal",value:false}]});
+    if(ok===true){await signOut();toast("Kamu sudah keluar")}
+  };
 
   /* Sinkron cloud */
   const syncMsg=x=>{
@@ -185,6 +258,7 @@ export default function(root){
   const syncUi=e=>{
     const x=e&&e.detail?e.detail:{s:KLSync.state,code:KLSync.code,t:KLSync.t};
     $("status").textContent=syncMsg(x);
+    $("syncdot").dataset.s=x.s;
     $("fix").hidden=!(x.s==="err"&&x.code==="permission-denied");
   };
   document.addEventListener("kl-sync",syncUi);
@@ -416,6 +490,8 @@ export default function(root){
 
   return()=>{
     offAuth();
+    commit(true);
+    document.removeEventListener("kl-data-changed",fill);
     document.removeEventListener("kl-sync",syncUi);
     document.removeEventListener("kl-action",onAct);
     document.removeEventListener("kl-ftasbih",floatTasbihUi);

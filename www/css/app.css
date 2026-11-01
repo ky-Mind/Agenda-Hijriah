@@ -1,8 +1,5 @@
 :root{--bg:#f4f3ee;--surface:#faf9f5;--raised:#fff;--line:#e2dfd4;--text:#2b2a27;--muted:#76726a;--accent:#3f6b5a;--accent-soft:#e3ece7;--on-accent:#fff;--hover:#ebeae2;--danger:#a24a3d;--warn:#a57a2c;--r:6px;--side:248px;--sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;--arab:"Amiri","Noto Naskh Arabic","Scheherazade New",serif}
 :root[data-theme=dark]{--bg:#1c1e1c;--surface:#222523;--raised:#292c2a;--line:#363a37;--text:#e7e5de;--muted:#9a978e;--accent:#79a592;--accent-soft:#2a3a33;--on-accent:#12201a;--hover:#2d312e;--danger:#cf7e70;--warn:#c9a05a}
-:root[data-vt=theme] *{animation:none!important;transition:none!important}
-:root[data-vt=theme] #bar,:root[data-vt=theme] #nav,:root[data-vt=theme] #view,:root[data-vt=theme] #kili{view-transition-name:none!important}
-:root[data-vt=theme]::view-transition-old(root),:root[data-vt=theme]::view-transition-new(root){animation:none}
 *{box-sizing:border-box;margin:0}html,body{height:100%}
 body{background:var(--bg);color:var(--text);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden}
 a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;color:inherit}
@@ -54,7 +51,7 @@ input[type=text],input[type=search],input[type=number],select,textarea{backgroun
 [hidden]{display:none!important}
 .playing{background:var(--accent-soft);border-radius:var(--r)}
 /* --- Profil, avatar, WhatsApp, modal, ibadah (tambahan) --- */
-input[type=tel]{background:var(--raised);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;width:100%}
+input[type=tel],input[type=email],input[type=password]{background:var(--raised);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;width:100%}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:600;overflow:hidden;flex:none}.avatar img{width:100%;height:100%;object-fit:cover}.avatar.lg{width:72px;height:72px;font-size:28px}
 .me{display:flex;align-items:center;gap:10px;padding:6px 4px 10px;border-radius:var(--r);color:var(--text);min-width:0}.me:hover{background:var(--hover)}.me span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
 .ico{display:inline-block;width:1.7em}
@@ -150,7 +147,7 @@ html[data-dir=prev]::view-transition-new(page){animation-name:tab-in-l}html[data
 .btn:disabled,.btn[aria-disabled=true]{opacity:.5;cursor:not-allowed;transform:none}
 .chip{min-height:32px;display:inline-flex;align-items:center;transition:background .12s,border-color .12s}.chip:hover{background:var(--hover)}.chip.on{font-weight:600}
 .chips.nowrap{scrollbar-width:none;-webkit-overflow-scrolling:touch}.chips.nowrap::-webkit-scrollbar{display:none}
-input[type=text],input[type=search],input[type=number],input[type=tel],input[type=date],select,textarea{min-height:40px;transition:border-color .12s,box-shadow .12s}
+input[type=text],input[type=search],input[type=number],input[type=tel],input[type=email],input[type=password],input[type=date],select,textarea{min-height:40px;transition:border-color .12s,box-shadow .12s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .seg button{min-width:40px;height:36px;padding:0 12px;transition:background .12s}.seg button:active{background:var(--hover)}
 /* Kartu & komponen */
@@ -393,7 +390,8 @@ html:not(.sidebar-collapsed) .side .brand .side-toggle{left:10px;transform:trans
 .qr-gelap .ayah.mark,.qr-gelap .ayah.playing,.qr-gelap .fl.mark,.qr-gelap .fl.playing{background:rgba(120,190,160,.18);color:inherit}
 .qr-sepia .ayah.mark,.qr-sepia .ayah.playing,.qr-sepia .fl.mark,.qr-sepia .fl.playing{background:rgba(120,90,40,.15);color:inherit}
 .qr-gelap .anum,.qr-sepia .anum{color:inherit;opacity:.7}
-.fln{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:2.1em;height:2.1em;margin:0 .15em;border:1px solid currentColor;border-radius:50%;box-shadow:inset 0 0 0 2px var(--surface,transparent),inset 0 0 0 3px currentColor;font-size:.42em;line-height:1;padding-top:.22em;vertical-align:middle;opacity:.85}
+/* Tanda nomor ayat: cukup besar agar angka 3 digit tetap terbaca; melebar jadi lonjong untuk 3 digit */
+.fln{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:2.3em;height:2.3em;padding:.2em .35em 0;margin:0 .2em;border:1px solid currentColor;border-radius:999px;box-shadow:inset 0 0 0 2px var(--surface,transparent),inset 0 0 0 3px currentColor;font-size:.55em;line-height:1;vertical-align:middle;opacity:.9}
 .fl.saved{box-shadow:inset 0 -2px 0 var(--accent)}
 .tjlegend{display:flex;gap:12px;font-size:13px;flex-wrap:wrap}
 .tj-gh{color:#1f8a5b}.tj-ql{color:#c0392b}.tj-md{color:#2563eb}.tj-sl{color:#8a8a8a}
@@ -405,6 +403,11 @@ html:not(.sidebar-collapsed) .side .brand .side-toggle{left:10px;transform:trans
 @media(max-width:760px){html[data-nav="0"] #nav{display:none}html[data-nav="0"] .qplay{bottom:calc(16px + env(safe-area-inset-bottom))}}
 /* Animasi ganti tema: seluruh tampilan, termasuk header dan navigasi, terbuka bersama dari logo. */
 /* Transisi antarhalaman: geser halus ke kanan (maju) atau ke kiri (kembali); ganti tema memakai animasi lingkaran (js/lib/theme.js) */
+/* Ganti tema: lingkaran tema baru menyebar dari logo (theme.js). Hanya transisi CSS yang dimatikan selama animasi.
+   Animasi CSS sengaja tidak dimatikan: saat dinyalakan lagi, animasi masuk halaman (#view.in, kartu, dll.) ikut
+   terulang dari awal sehingga halaman tampak seperti dimuat ulang */
+:root[data-vt=theme] *{transition:none!important}
+:root[data-vt=theme] #bar,:root[data-vt=theme] #nav,:root[data-vt=theme] #view,:root[data-vt=theme] #kili{view-transition-name:none!important}
 html[data-vt=theme]::view-transition-old(root),html[data-vt=theme]::view-transition-new(root){animation:none;mix-blend-mode:normal}
 ::view-transition-old(root){z-index:1}::view-transition-new(root){z-index:2}
 
@@ -478,11 +481,12 @@ html[data-vt=theme]::view-transition-old(root),html[data-vt=theme]::view-transit
 .item.ayah{cursor:pointer;transition:background var(--dur-s) var(--ease)}
 .flowtext .qact{text-align:left;direction:ltr}
 /* Baca Al-Qur'an: tampilan diatur lewat kelas, tanpa render ulang. Ayat di luar layar dilewati saat menggulir */
-.qr{animation:qr-in var(--dur-m) var(--ease)}@keyframes qr-in{from{opacity:0;transform:translateY(6px)}}
+.qr.pg-in{animation:qr-in var(--dur-m) var(--ease)}@keyframes qr-in{from{opacity:0;transform:translateY(6px)}}
+.qr.pg-l{animation:pg-l .26s var(--ease)}.qr.pg-r{animation:pg-r .26s var(--ease)}@keyframes pg-l{from{opacity:0;transform:translateX(48px)}}@keyframes pg-r{from{opacity:0;transform:translateX(-48px)}}
 .qr.no-latin .latin{display:none}.qr.no-arti .tr{display:none}.qr.no-tj [class^="tj-"]{color:inherit}
 .item.ayah{content-visibility:auto;contain-intrinsic-size:auto 140px}
 .item.ayah:active{background:var(--hover)}
-@media(prefers-reduced-motion:reduce){.qr{animation:none}}
+@media(prefers-reduced-motion:reduce){.qr.pg-in,.qr.pg-l,.qr.pg-r{animation:none}}
 /* Kehalusan seluruh halaman: koleksi, sub halaman, dan umpan balik sentuh */
 @keyframes rise{from{opacity:0;transform:translateY(8px)}}
 .list-cards>.lc{animation:rise var(--dur-m) var(--ease) both}
@@ -538,3 +542,84 @@ body:has(.qplay:not([hidden])) .qact{bottom:calc(136px + env(safe-area-inset-bot
 a.ci:active,.ci:active{transform:scale(.985);transition-duration:.08s}
 @media(prefers-reduced-motion:reduce){[data-r="conv"]:not([hidden]),[data-r="inbox"]:not([hidden]){animation:none}.ci,a.ci:active,.ci:active{transition:none!important;transform:none}}
 @media(prefers-reduced-motion:reduce){.app,.btn,.chip,.icb,.side-toggle,.nav a,.card,a.card,.qa,.tile{transition:none!important}.btn:active,.chip:active,.icb:active,.side-toggle:active,.qa:active,.tile:active,.nav a:hover{transform:none}}
+
+/* Al-Qur'an: halaman bergaris pada mode mengalir, nomor halaman, penggeser halaman, dan navigasi surah */
+.qr{scroll-margin-top:72px;touch-action:pan-y}
+.qr.flow .flowtext{background-image:linear-gradient(to bottom,transparent calc(100% - 1px),color-mix(in srgb,currentColor 13%,transparent) 0);background-size:100% 2.5em;padding-bottom:1px}
+.qpgno{margin:14px auto 0;width:max-content;min-width:2.4em;padding:2px 12px;border-top:1px solid color-mix(in srgb,currentColor 25%,transparent);font-family:var(--arab);font-size:16px;text-align:center;opacity:.7}
+.qpager{display:flex;align-items:center;gap:10px;margin:2px 0 14px}
+.qpg{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--raised);color:var(--text);font-size:22px;line-height:1;cursor:pointer;box-shadow:var(--shadow);transition:background .12s,opacity .12s}
+.qpg:hover:not(:disabled){background:var(--hover)}.qpg:disabled{opacity:.35;cursor:default;box-shadow:none}
+.qpg-mid{flex:1;text-align:center;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.qpg-bar{height:4px;border-radius:99px;background:var(--hover);margin-top:6px;overflow:hidden}.qpg-bar i{display:block;height:100%;background:var(--accent);border-radius:inherit;transition:width .25s var(--ease)}
+.qnav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
+.qnav-a{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--raised);box-shadow:var(--shadow);transition:background .12s,border-color .12s;min-width:0}
+.qnav-a:hover{background:var(--hover)}.qnav-a small{font-size:12px;color:var(--muted)}.qnav-a b{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qnav-a.next{text-align:right;background:var(--accent);border-color:var(--accent);color:var(--on-accent)}.qnav-a.next small{color:inherit;opacity:.8}.qnav-a.next:hover{filter:brightness(1.08);background:var(--accent)}
+.qnav-list{align-self:center;padding:8px 12px;border-radius:999px;font-size:13px;color:var(--muted);border:1px solid var(--line);background:var(--raised);white-space:nowrap}.qnav-list:hover{background:var(--hover)}
+@media(max-width:480px){.qnav{grid-template-columns:1fr 1fr}.qnav-list{grid-column:1/-1;grid-row:2;justify-self:center}}
+.qprev{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface,var(--raised));line-height:2;text-align:center;max-height:180px;overflow:auto;transition:font-size .15s}
+.num{width:36px;height:36px}.ayah{grid-template-columns:40px 1fr}.anum{font-size:16px;line-height:1}
+/* Kartu akun: identitas di atas, status sinkron, lalu pilihan masuk atau aksi akun */
+.acct{padding:20px}
+.acct-top{display:flex;gap:16px;align-items:flex-start}
+.acct-av{width:68px;height:68px;font-size:26px}.acct-av .ic{width:28px;height:28px}
+.acct.in .acct-av{box-shadow:0 0 0 3px var(--raised),0 0 0 5px var(--accent-soft)}
+.acct-id{min-width:0;flex:1}.acct-id p{font-size:13px;line-height:1.45;overflow-wrap:anywhere;margin-top:2px}
+/* Nama diketik langsung di judul kartu: tampil seperti teks, garis bawah muncul saat disentuh/diketik */
+.acct .acct-name{display:block;width:100%;min-height:0;padding:2px 0 3px;margin:0;border:0;border-bottom:1.5px dashed transparent;border-radius:0;background:transparent;box-shadow:none;font:700 19px/1.3 var(--sans);color:var(--text)}
+.acct .acct-name::placeholder{color:var(--muted);font-weight:600}
+.acct .acct-name:hover{border-bottom-color:var(--line)}.acct .acct-name:focus{outline:none;box-shadow:none;border-bottom:1.5px solid var(--accent)}
+.acct-av-btn{position:relative;flex:none;padding:0;border:0;background:none;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s}
+.acct-av-btn:active{transform:scale(.96)}.acct-av-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.acct-cam{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;box-shadow:0 0 0 3px var(--raised)}
+.acct-cam svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+.wa-row{display:flex;align-items:center;gap:6px;margin-top:16px;padding:5px 5px 5px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);transition:border-color .15s,box-shadow .15s}
+.wa-row:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.wa-in{flex:1;min-width:0;display:flex;align-items:center;gap:8px;color:#25a35a;cursor:text}.wa-in .ic{width:18px;height:18px}
+.acct .wa-in input{flex:1;min-width:0;min-height:34px;padding:4px 0;border:0;background:transparent;box-shadow:none;font-size:14.5px;color:var(--text)}.acct .wa-in input:focus{outline:none;box-shadow:none}
+.wa-row .btn.sm{min-height:34px;border-radius:9px;padding:4px 12px;flex:none}
+.wa-help{display:block;margin:6px 2px 0;font-size:12px}
+.dlg-av{width:112px;height:112px;font-size:44px;margin:14px auto 4px}
+.acct-via{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.acct-via:empty{display:none}
+.via{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.acct-sync{display:inline-flex;align-items:center;gap:7px;margin-top:8px;padding:4px 10px;border-radius:999px;background:var(--hover);font-size:12px;color:var(--muted);max-width:100%}
+.sdot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--muted)}.sdot[data-s=ok]{background:#3aa676}.sdot[data-s=busy]{background:var(--warn);animation:sdot 1s ease-in-out infinite}.sdot[data-s=err]{background:var(--danger)}
+@keyframes sdot{50%{opacity:.35}}
+.acct-err{margin-top:10px;padding:9px 12px;border-radius:12px;font-size:13px;color:var(--danger);background:color-mix(in srgb,var(--danger) 9%,var(--raised));border:1px solid color-mix(in srgb,var(--danger) 25%,var(--line))}
+.logins{display:grid;gap:10px;margin-top:16px}
+.lbtn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;padding:10px 16px;border:1px solid var(--line);border-radius:12px;background:var(--raised);color:var(--text);font:600 14.5px/1.2 var(--sans);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,border-color .15s,transform .08s}
+.lbtn svg{position:absolute;left:16px;width:20px;height:20px;flex:none}.lbtn:hover{background:var(--hover)}.lbtn:active{transform:scale(.985)}.lbtn:disabled{opacity:.5;cursor:default}
+.lbtn.fb{background:#1877f2;border-color:#1877f2;color:#fff}.lbtn.fb:hover{background:#166fe0}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.mailform{display:grid;gap:12px;margin-top:16px}.mailform .field{margin:0}
+.mseg{display:grid;grid-template-columns:1fr 1fr;border-radius:12px;padding:3px;background:var(--hover);border:0;gap:3px}
+.mseg button{border-radius:9px;font-weight:600;font-size:14px;color:var(--muted)}.mseg button[aria-pressed=true]{background:var(--raised);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.pw{position:relative}.pw input{padding-right:96px}
+.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--accent);font:600 13px var(--sans);padding:6px 8px;cursor:pointer;border-radius:8px}.pw-eye:hover{background:var(--hover)}
+.mailform .btn.primary{min-height:46px;border-radius:12px;font-size:15px}
+.linkbtn{border:0;background:none;padding:4px 2px;color:var(--accent);font:500 13.5px var(--sans);cursor:pointer}.linkbtn:hover{text-decoration:underline}.mform-foot{margin-top:-2px}
+.acct-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.acct-acts .btn{border-radius:12px;min-height:44px}
+.btn.out-danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 35%,var(--line))}.btn.out-danger:hover{background:color-mix(in srgb,var(--danger) 8%,var(--raised))}
+.acct .fixbox{margin-top:12px}
+
+/* Navigasi bawah (ponsel): efek hover/geser dari sidebar desktop tidak dipakai, karena di layar sentuh
+   efek hover menempel di ikon yang terakhir diketuk walau halaman sudah berpindah */
+@media(max-width:760px){
+  .nav a,.nav a:hover{background:transparent;transform:none;-webkit-tap-highlight-color:transparent}
+  .nav a:hover:not(.on){color:var(--muted)}
+  .nav a:focus:not(:focus-visible){outline:none}
+  .nav a:focus-visible{outline:none}.nav a:focus-visible svg{outline:2px solid var(--accent);outline-offset:1px}
+  .nav a:active svg{transform:scale(.92)}.nav a svg{transition:background .2s,transform .12s}
+}
+
+/* Tarik untuk muat ulang: indikator bulat di bawah bilah atas, mengikuti tarikan lalu berputar saat memuat */
+#view{overscroll-behavior-y:contain}
+.ptr{position:fixed;left:50%;top:0;z-index:30;width:40px;height:40px;margin-left:-20px;border-radius:50%;background:var(--raised);box-shadow:0 2px 10px rgba(0,0,0,.16);display:grid;place-items:center;color:var(--accent);opacity:0;pointer-events:none;transform:translateY(-48px)}
+.ptr svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.ptr.go{transition:transform .25s var(--ease),opacity .2s}
+.ptr.spin svg{animation:ptr-spin .8s linear infinite}@keyframes ptr-spin{to{transform:rotate(360deg)}}
+html.ptr-drag #view{user-select:none}
+/* Dialog foto profil: pratinjau besar di tengah, tombol bertumpuk penuh */
+.box:has(.dlg-av){text-align:center;width:min(340px,100%)}.box:has(.dlg-av) .dlg-actions{flex-direction:column;align-items:stretch}.box:has(.dlg-av) .dlg-actions .btn{min-height:44px;border-radius:12px}
+.dlg-av .ic{width:44px;height:44px}
