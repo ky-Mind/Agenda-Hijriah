@@ -3,6 +3,7 @@ import {hijri,hijriText,masehiText,key,fromKey,events,hijriMonth,addDays,nextEve
 import {progress} from "../lib/ibadah.js";
 import {loc,timings,NAMES} from "../lib/prayer.js";
 import {get,set} from "../store.js";
+import {calPick} from "../lib/calpick.js";
 let view=get("cal_view","hijri"),anchor=new Date(),sel=key(new Date());
 const big=e=>e.filter(x=>!/^Puasa sunnah (Senin|Kamis)/.test(x)&&x!=="Hari Jumat");
 export default function(root){
@@ -51,5 +52,13 @@ export default function(root){
   $("today").onclick=()=>{
     if(sel===todayK&&$("grid").querySelector(".d.today")){const c=$("grid").querySelector(".d.today");c.classList.remove("pulse");void c.offsetWidth;c.classList.add("pulse");return}
     anchor=new Date();sel=todayK;draw()};
+  /* Ikon kalender di bilah atas dan judul bulan: buka pilihan 12 bulan dalam setahun, bisa ganti tahun */
+  const onPick=async()=>{const d=await calPick({mode:"month",value:fromKey(sel),cal:view});if(!d)return;anchor=d;
+    /* Bulan yang memuat hari ini langsung memilih hari ini; bulan lain memilih tanggal 1 */
+    const now=new Date(),same=view==="hijri"?hijri(d).m===hijri(now).m&&hijri(d).y===hijri(now).y:d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    sel=same?todayK:key(d);draw()};
+  $("title").onclick=onPick;
+  document.addEventListener("kl-calpick",onPick);
   draw();
+  return()=>document.removeEventListener("kl-calpick",onPick);
 }

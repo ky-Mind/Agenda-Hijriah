@@ -117,7 +117,7 @@ export default async function(root,args){
   box.innerHTML=`<div class="head"><h1>${s.id}. ${esc(s.transliteration)} <span class="arab" style="font-size:26px;display:inline">${esc(s.name)}</span></h1><p>${esc(s.translation)} · ${s.verses.length} ayat · ${tipe(s.type)}</p></div>
   <div class="card" data-v></div>
   <div class="qpager" data-pager hidden><button class="qpg" type="button" data-pg="-1" aria-label="Halaman sebelumnya">‹</button><div class="qpg-mid"><span data-pg-t></span><div class="qpg-bar"><i data-pg-i></i></div></div><button class="qpg" type="button" data-pg="1" aria-label="Halaman berikutnya">›</button></div>
-  <nav class="qnav" aria-label="Pindah surah">${n>1?`<a class="qnav-a" href="#/quran/${n-1}"><small>‹ Surah sebelumnya</small><b data-nm="${n-1}">Surah ${n-1}</b></a>`:"<span></span>"}<a class="qnav-list" href="#/quran">Daftar surah</a>${n<114?`<a class="qnav-a next" href="#/quran/${n+1}"><small>Surah berikutnya ›</small><b data-nm="${n+1}">Surah ${n+1}</b></a>`:"<span></span>"}</nav><p class="src" style="text-align:center;margin-top:10px">Sumber teks: ${esc(s.src)}</p>`;
+  <nav class="qnav" aria-label="Pindah surah">${n>1?`<a class="qnav-a" href="#/quran/${n-1}"><small>‹ Surah sebelumnya</small><b data-nm="${n-1}">Surah ${n-1}</b></a>`:"<span></span>"}<a class="qnav-list" href="#/quran">Daftar surah</a>${n<114?`<a class="qnav-a next" href="#/quran/${n+1}"><small>Surah berikutnya ›</small><b data-nm="${n+1}">Surah ${n+1}</b></a>`:"<span></span>"}</nav>`;
   listSurah().then(r=>box.querySelectorAll("[data-nm]").forEach(b=>{const x=r.list.find(i=>i.id===+b.dataset.nm);if(x)b.textContent=`${x.id}. ${x.transliteration}`})).catch(()=>{});
   const v=box.querySelector("[data-v]"),last=()=>get("quran_last");
   /* Pemutar audio melayang: tampil saat audio berjalan, berisi ayat aktif dan kontrol sebelumnya/jeda/berikutnya */
@@ -127,16 +127,18 @@ export default async function(root,args){
   let cur=0,chainOn=false,sel=0,pages=paginate(s.verses,pref.mode),pg=0,slide="pg-in";
   const pageOf=id=>Math.max(0,pages.findIndex(([a,b])=>id-1>=a&&id-1<b));
   /* Alat aksi untuk ayat yang dipilih: muncul saat ayat diketuk, ketuk lagi untuk menutup */
-  const actBar=(id,saved)=>`<div class="qact" aria-label="Aksi ayat ${id}"><button class="btn sm" type="button" data-p="${id}">▶ Putar</button><button class="btn sm" type="button" data-m="${id}">Tandai terakhir dibaca</button><button class="btn sm${saved?" primary":""}" type="button" data-bm="${id}" aria-pressed="${saved}">${saved?"★ Tersimpan":"☆ Bookmark"}</button><button class="btn sm" type="button" data-cp="${id}">Salin</button></div>`;
+  const actBar=(id,saved)=>`<div class="qact" aria-label="Aksi ayat ${id}"><div class="qact-h"><b>QS ${esc(s.transliteration)} : ${id}</b><button type="button" class="qact-x" data-qx aria-label="Tutup">✕</button></div><div class="qact-g"><button type="button" data-p="${id}"><i>▶</i>Putar</button><button type="button" data-m="${id}"><i>⚑</i>Tandai baca</button><button type="button" data-bm="${id}" aria-pressed="${saved}"${saved?' class="on"':""}><i>${saved?"★":"☆"}</i>${saved?"Tersimpan":"Bookmark"}</button><button type="button" data-cp="${id}"><i>⧉</i>Salin</button></div></div>`;
   /* Isi ayat hanya dibangun ulang saat mode baca berganti. Ketukan, tema, ukuran, dan bookmark cukup mengubah kelas dan bagian kecil, sehingga tidak ada render ulang yang bikin tersendat. Transliterasi, terjemahan, dan tajwid selalu ada di DOM dan disembunyikan lewat kelas */
   const html=()=>{const head=pg===0&&n!==1&&n!==9?`<div class="arab" style="text-align:center">${BISMILLAH}</div>`:"",vs=s.verses.slice(...pages[pg]);
     return pref.mode==="alir"
       ?head+`<div class="arab flowtext">${vs.map(a=>`<span class="fl" id="a${a.id}">${tj(a,true)} <span class="fln">${ar(a.id)}</span></span>`).join(" ")}</div>${pages.length>1?`<div class="qpgno">${ar(pg+1)}</div>`:""}`
       :head+vs.map(a=>`<div class="item ayah" id="a${a.id}"><div class="num"><span class="anum">${ar(a.id)}</span></div><div><div class="arab">${tj(a,true)}</div>${a.transliteration?`<p class="latin">${esc(a.transliteration)}</p>`:""}${a.translation?`<p class="tr">${esc(a.translation)}</p>`:""}</div></div>`).join("")};
   /* Kelas ayah yang ditandai dan bookmark diperbarui di tempat */
-  const marks=()=>{const lt=last(),bm=bmData().items;v.querySelectorAll("[id^=a]").forEach(el=>{const id=+el.id.slice(1);el.classList.toggle("mark",lt?.surah===n&&lt?.ayat===id);el.classList.toggle("saved",bm.some(i=>i.surah===n&&i.ayat===id))})};
+  const marks=()=>{const lt=last(),bm=bmData().items;v.querySelectorAll("[id^=a]").forEach(el=>{const id=+el.id.slice(1);el.classList.toggle("mark",lt?.surah===n&&lt?.ayat===id);el.classList.toggle("sel",sel===id);el.classList.toggle("saved",bm.some(i=>i.surah===n&&i.ayat===id))})};
   /* Bilah aksi hanya dipasang ulang untuk ayat yang dipilih */
-  const actsFor=()=>{v.querySelector(".qact")?.remove();const el=sel&&v.querySelector("#a"+sel);if(!el)return;const host=v;host.insertAdjacentHTML("beforeend",actBar(sel,bmData().items.some(i=>i.surah===n&&i.ayat===sel)))};
+  /* Bilah aksi melayang di bawah; ayat terpilih digeser naik bila tertutup bilah itu */
+  const actsFor=()=>{v.querySelector(".qact")?.remove();const el=sel&&v.querySelector("#a"+sel);if(!el)return;v.insertAdjacentHTML("beforeend",actBar(sel,bmData().items.some(i=>i.surah===n&&i.ayat===sel)));
+    requestAnimationFrame(()=>{const bar=v.querySelector(".qact")?.getBoundingClientRect(),r=el.getBoundingClientRect(),sc=document.getElementById("view");if(bar&&r.bottom>bar.top-12)sc.scrollBy({top:Math.min(r.bottom-bar.top+24,r.top-90),behavior:"smooth"})})};
   const paint=()=>{
     root.style.setProperty("--af",pref.size+"px");
     v.className=`card qr ${slide} qr-${pref.theme}${pref.mode==="alir"?" flow":""}${pref.latin?"":" no-latin"}${pref.arti?"":" no-arti"}${pref.tajwid?"":" no-tj"}`;
@@ -197,6 +199,7 @@ export default async function(root,args){
     if(d.p)return play(+d.p,false);
     if(d.all!==undefined){closeSheet();return play(1,true)}
     if(d.stop!==undefined)return stop();
+    if(b.hasAttribute("data-qx")){sel=0;return draw()}
     if(d.cp){const a=s.verses[+d.cp-1];if(a)copy(`${a.text}\n${a.translation||""}\n(QS ${s.transliteration} : ${a.id})`.trim())}
     if(d.m){markRead(n,s.transliteration,+d.m);draw();toast("Ditandai: "+s.transliteration+" ayat "+d.m)}
     if(d.bm)return toggleBm(+d.bm)};
@@ -211,7 +214,13 @@ export default async function(root,args){
   v.addEventListener("pointermove",e=>{if(gx==null)return;const dx=e.clientX-gx,dy=e.clientY-gy;
     if(glock==null&&Math.hypot(dx,dy)>10){glock=Math.abs(dx)>Math.abs(dy)*1.3;if(glock)v.setPointerCapture(e.pointerId)}
     if(!glock)return;gdx=dx;v.style.transition="none";v.style.transform=`translateX(${dx*.5}px)`;v.style.opacity=1-Math.min(.4,Math.abs(dx)/700)});
-  const gEnd=()=>{if(gx==null)return;gx=null;v.style.transition=v.style.transform=v.style.opacity="";if(!glock)return;dragged=true;setTimeout(()=>dragged=false,50);if(Math.abs(gdx)>60)flip(gdx<0?1:-1)};
+  /* Lepas geseran: kartu lama memudar sebentar ke arah geseran, lalu halaman baru masuk geser pendek + memudar (sama seperti pindah halaman utama) */
+  const gEnd=()=>{if(gx==null)return;gx=null;if(!glock){v.style.transition=v.style.transform=v.style.opacity="";return}dragged=true;setTimeout(()=>dragged=false,50);
+    const d=gdx<0?1:-1,can=Math.abs(gdx)>60&&(pg+d>=0&&pg+d<pages.length||d>0&&n<114||d<0&&n>1);
+    if(!can){v.style.transition="transform .22s var(--ease),opacity .22s";v.style.transform="";v.style.opacity="";setTimeout(()=>v.style.transition="",240);return}
+    v.style.transition="transform .14s ease-in,opacity .14s ease-in";v.style.transform=`translateX(${gdx*.5-d*36}px)`;v.style.opacity="0";
+    /* Pindah surah: kartu dibiarkan tak terlihat sampai halaman surah baru tampil, supaya tidak berkedip */
+    setTimeout(()=>{if(pg+d>=0&&pg+d<pages.length){v.style.transition="none";v.style.transform="";v.style.opacity=""}flip(d)},140)};
   v.addEventListener("pointerup",gEnd);v.addEventListener("pointercancel",gEnd);
   bar.innerHTML=`<button class="icb" type="button" data-qset aria-label="Pengaturan baca"><svg class="ic"><use href="#i-gear" /></svg></button>`;
   bar.addEventListener("click",barClick);document.addEventListener("keydown",onKey);

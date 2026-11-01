@@ -27,7 +27,7 @@ const ACT={chat:()=>`<a class="icb chatb" href="#/pesan" aria-label="Pesan">${ic
   tasbih:()=>`<button class="icb" type="button" data-act="tasbih" aria-label="Tasbih melayang">${ico("beads")}</button>`,
   rekap:()=>`<a class="icb" href="#/rekap" aria-label="Rekap ibadah">${ico("chart")}</a>`,
   /* Ikon "ke hari ini" memuat tanggal hari ini; panah kecil menunjukkan arah hari ini dari tanggal yang sedang dilihat (lihat kl-today) */
-  today:()=>`<button class="icb tdy-b" type="button" data-act="today" aria-label="Ke hari ini" data-dir="0"><span class="tdy">${ico("cal")}<b>${new Date().getDate()}</b></span><i class="tdy-dir" aria-hidden="true"></i></button>`,
+  today:()=>`<button class="icb tdy-b" type="button" data-act="today" aria-label="Pilih tanggal" data-dir="0"><span class="tdy">${ico("cal")}<b>${new Date().getDate()}</b></span><i class="tdy-dir" aria-hidden="true"></i></button>`,
   gps:()=>`<button class="icb" type="button" data-act="gps" aria-label="Gunakan lokasi saya">${ico("gps")}</button>`,
   resume:()=>`<a class="icb" href="${get("quran_last")?`#/quran/${get("quran_last").surah}/${get("quran_last").ayat}`:"#/quran"}" aria-label="Lanjut membaca Al-Qur'an">${ico("bookmark")}</a>`,
   ai:()=>`<button class="icb" type="button" data-act="ai" aria-label="Asisten AI">${ico("sparkles")}</button>`,
@@ -40,12 +40,14 @@ barActs.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!
   if(k==="tasbih")document.dispatchEvent(new CustomEvent("kl-ftasbih-toggle"));
   else if(k==="ai")document.dispatchEvent(new CustomEvent("kl-ai-toggle"));
   else if(k==="menu")document.dispatchEvent(new CustomEvent("kl-action",{detail:{name:"menu"}}));
+  /* Ikon kalender membuka pemilih tanggal/bulan milik halaman (Absensi, Kalender) */
+  else if(k==="today")document.dispatchEvent(new CustomEvent("kl-calpick"));
   else view.querySelector(`[data-r="${k}"]`)?.click()});
 view.addEventListener("scroll",()=>bar.classList.toggle("scrolled",view.scrollTop>6),{passive:true});
 function paintBar(n,a){root.dataset.chat=n==="pesan"&&a.length?"1":"0";const r=ROOTS.includes(n)&&n!=="pesan";bar.dataset.root=r?"1":"0";root.dataset.nav=r?"1":"0";backBtn.hidden=r;backBtn.dataset.to=backTarget(n,a)||"#/beranda";ttl.textContent=LABEL[n];bar.dataset.page=r?n:"child";bar.classList.remove("scrolled");ttlsub.textContent=r&&SUB[n]?SUB[n]():"";barActs.innerHTML=r?(PAGE_ACTS[n]||[]).map(k=>ACT[k]()).join(""):"";setBadge()}
 backBtn.addEventListener("click",()=>{location.hash=backBtn.dataset.to||"#/beranda"});
 /* Halaman Absensi/Kalender mengirim arah hari ini: -1 = hari ini ada di belakang, 1 = di depan, 0 = sedang dilihat */
-document.addEventListener("kl-today",e=>{const b=barActs.querySelector(".tdy-b");if(!b)return;const d=e.detail|0;b.dataset.dir=d;b.setAttribute("aria-label",d?`Kembali ke hari ini (${d<0?"sebelumnya":"berikutnya"})`:"Sudah di hari ini")});
+document.addEventListener("kl-today",e=>{const b=barActs.querySelector(".tdy-b");if(!b)return;const d=e.detail|0;b.dataset.dir=d;b.setAttribute("aria-label",d?`Pilih tanggal (hari ini ada ${d<0?"sebelumnya":"berikutnya"})`:"Pilih tanggal")});
 document.addEventListener("kl-title",e=>{if(bar.dataset.root==="0")ttl.textContent=e.detail});document.addEventListener("kl-loc",()=>{if(bar.dataset.page==="shalat")ttlsub.textContent=loc().name});
 async function render(){
   const my=++seq,[name0,...args]=(location.hash.replace(/^#\/?/,"")||"beranda").split("/"),name=LABEL[name0]?name0:"beranda";

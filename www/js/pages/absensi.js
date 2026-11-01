@@ -3,6 +3,7 @@ import {hijriText,masehiText,key,fromKey,HARI,addDays} from "../lib/hijri.js";
 import {agenda,saveAgenda,resetAgenda,day,saveDay,calc,savedAt,progress} from "../lib/ibadah.js";
 import {rekap,waNumber,waUrl,openUrl} from "../lib/wa.js";
 import {get,set,del,toast} from "../store.js";
+import {calPick} from "../lib/calpick.js";
 const OK=/^\d{4}-\d\d-\d\d$/;
 export default function(root,args){
   const $=n=>root.querySelector(`[data-r="${n}"]`),today=()=>key(new Date());
@@ -45,6 +46,9 @@ export default function(root,args){
     if(!n){const a=await dialog({title:"Nomor WhatsApp belum diisi",text:"Isi nomor di Profil agar rekap langsung terkirim ke nomor itu, atau pilih kontak langsung di WhatsApp.",actions:[{label:"Isi di Profil",value:"profil",cls:"primary"},{label:"Pilih kontak di WhatsApp",value:"pick"},{label:"Batal",value:null,cls:"ghost"}]});
       if(a==="profil"){location.hash="#/profil";return}if(a!=="pick")return}
     openUrl(waUrl(n,rekap(k,rec)))};
+  /* Ikon kalender di bilah atas: pilih tanggal dari kalender, titik menunjukkan hari yang sudah diisi */
+  const onPick=async()=>{const d=await calPick({value:fromKey(k),dot:x=>{const q=progress(x);return q.done?(q.done<q.total?1:2):0}});if(d)go(key(d))};
+  document.addEventListener("kl-calpick",onPick);
   load(k);
-  return()=>{window.KLGuard=null};
+  return()=>{window.KLGuard=null;document.removeEventListener("kl-calpick",onPick)};
 }

@@ -485,7 +485,7 @@ html[data-vt=theme]::view-transition-old(root),html[data-vt=theme]::view-transit
 .flowtext .qact{text-align:left;direction:ltr}
 /* Baca Al-Qur'an: tampilan diatur lewat kelas, tanpa render ulang. Ayat di luar layar dilewati saat menggulir */
 .qr.pg-in{animation:qr-in var(--dur-m) var(--ease)}@keyframes qr-in{from{opacity:0;transform:translateY(6px)}}
-.qr.pg-l{animation:pg-l .26s var(--ease)}.qr.pg-r{animation:pg-r .26s var(--ease)}@keyframes pg-l{from{opacity:0;transform:translateX(48px)}}@keyframes pg-r{from{opacity:0;transform:translateX(-48px)}}
+.qr.pg-l{animation:pg-l .24s var(--ease)}.qr.pg-r{animation:pg-r .24s var(--ease)}@keyframes pg-l{from{opacity:0;transform:translateX(12%)}}@keyframes pg-r{from{opacity:0;transform:translateX(-12%)}}
 .qr.no-latin .latin{display:none}.qr.no-arti .tr{display:none}.qr.no-tj [class^="tj-"]{color:inherit}
 .item.ayah{content-visibility:auto;contain-intrinsic-size:auto 140px}
 .item.ayah:active{background:var(--hover)}
@@ -644,3 +644,45 @@ html.ptr-drag #view{user-select:none}
 .mev-t{flex:1;min-width:0;display:flex;flex-direction:column}.mev-t b{font-size:14px;font-weight:600}.mev-t small{font-size:12px;color:var(--muted)}
 .mev em{flex:none;font-style:normal;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent);color:var(--on-accent)}
 .mev-d b{white-space:nowrap}.mev-d{width:auto;min-width:44px;padding:0 6px}
+
+/* Ayat per ayat: jarak dan garis pemisah seragam; sorotan melebar ke padding kartu sehingga isi tidak bergeser */
+.qr .item.ayah{padding:14px 10px;margin:0 -10px;border-top:1px solid color-mix(in srgb,currentColor 11%,transparent);border-radius:0;transition:background .18s,box-shadow .18s,border-radius .18s}
+.qr .item.ayah:first-of-type,.qr>.arab+.item.ayah{border-top-color:transparent}
+.qr .item.ayah:active{background:color-mix(in srgb,currentColor 5%,transparent)}
+.qr .ayah.mark,.qr .ayah.playing,.qr .ayah.sel{padding-left:10px;padding-right:10px;border-radius:12px;border-top-color:transparent}
+.qr .ayah.mark+.ayah,.qr .ayah.playing+.ayah,.qr .ayah.sel+.ayah{border-top-color:transparent}
+/* Ayat yang diketuk: warna kuning keemasan, beda dari hijau "terakhir dibaca" */
+.qr .ayah.sel{background:color-mix(in srgb,#d4a017 14%,transparent);box-shadow:inset 3px 0 0 #c8962a}
+.qr .fl.sel{background:color-mix(in srgb,#d4a017 20%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,#d4a017 20%,transparent);border-radius:8px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.qr-gelap .ayah.sel,.qr-gelap .fl.sel{background:rgba(230,180,60,.16)}.qr-gelap .ayah.sel{box-shadow:inset 3px 0 0 #e0b04a}
+.qr .ayah.sel .num{background:#c8962a}.qr .ayah.sel .anum{color:#fff;opacity:1}
+/* Bilah aksi ayat: satu baris ringkas di atas navigasi bawah; halaman diberi ruang agar ayat terakhir tetap bisa dibaca */
+.qact{display:block;padding:10px 10px 8px;border-radius:18px;background:var(--raised);color:var(--text);box-shadow:0 8px 28px rgba(0,0,0,.18);border:1px solid var(--line)}
+.qact-h{display:flex;align-items:center;justify-content:space-between;padding:0 4px 6px;font-size:12.5px;color:var(--muted)}.qact-h b{font-weight:600}
+.qact-x{border:0;background:var(--hover);color:var(--muted);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px}
+.qact-g{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.qact-g button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;border-radius:12px;background:transparent;color:var(--text);font:500 11.5px/1.2 var(--sans);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s}
+.qact-g button:hover{background:var(--hover)}.qact-g button:active{background:var(--accent-soft)}
+.qact-g i{font-style:normal;font-size:17px;line-height:1.1;color:var(--accent)}.qact-g button.on i{color:#c8962a}
+.flowtext .qact{text-align:left;direction:ltr;font-family:var(--sans)}
+body:has(.qact) #view{padding-bottom:190px}
+/* Pemilih tanggal / bulan (calpick.js) */
+.calp .box{width:min(360px,100%);padding:16px 16px 14px}
+.calp.out .box{opacity:0;transform:translateY(12px);transition:opacity .15s,transform .15s}
+.calp-head{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;margin-bottom:10px}
+.calp-nav{width:40px;height:40px;border-radius:50%;border:0;background:var(--hover);color:var(--text);font-size:20px;cursor:pointer}.calp-nav:active{background:var(--accent-soft)}
+.calp-title{border:0;background:none;color:var(--text);font:700 16px var(--sans);padding:8px;border-radius:10px;cursor:pointer}.calp-title::after{content:" ▾";font-size:11px;color:var(--muted)}.calp-title:hover{background:var(--hover)}
+.calp-body{min-height:270px}
+.calp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;align-content:start}
+.calp-wd{text-align:center;font-size:11px;color:var(--muted);padding:4px 0}
+.calp-d{position:relative;aspect-ratio:1;border:0;border-radius:12px;background:transparent;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.calp-d b{font-size:14.5px;font-weight:600;line-height:1}.calp-d small{font-size:9.5px;color:var(--muted);line-height:1}
+.calp-d:hover{background:var(--hover)}.calp-d.today{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.calp-d.on{background:var(--accent);color:var(--on-accent)}.calp-d.on small{color:inherit;opacity:.8}
+.calp-d i{position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:#3aa676}.calp-d i.p{background:var(--warn)}.calp-d.on i{background:var(--on-accent)}
+.calp-months{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-content:start}
+.calp-m{min-height:58px;border:1px solid var(--line);border-radius:14px;background:var(--raised);color:var(--text);font:600 13.5px var(--sans);cursor:pointer;padding:6px}
+.calp-m:hover{background:var(--hover)}.calp-m.today{border-color:var(--accent);color:var(--accent)}.calp-m.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.calp-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.calp-foot .btn{min-height:44px;border-radius:12px}
+.calp-body.sl-l{animation:pg-l .22s var(--ease)}.calp-body.sl-r{animation:pg-r .22s var(--ease)}
+.cal-title{border:0;background:none;color:var(--text);font:700 15px var(--sans);min-width:170px;text-align:center;padding:6px 8px;border-radius:10px;cursor:pointer}.cal-title::after{content:" ▾";font-size:11px;color:var(--muted)}.cal-title:hover{background:var(--hover)}
