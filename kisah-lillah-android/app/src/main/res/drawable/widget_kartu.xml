@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Latar widget Jadwal: hijau Kisah Lillah (hero-bg) bergradasi -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:angle="300" android:startColor="#FF2D5547" android:centerColor="#FF3F6B5A" android:endColor="#FF4F7E6A" />
+    <corners android:radius="24dp" />
+</shape>

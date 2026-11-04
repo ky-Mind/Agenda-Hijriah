@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kotak waktu shalat yang sedang berjalan (krem keemasan seperti pita logo) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:angle="270" android:startColor="#FFFBF5E6" android:endColor="#FFEED9AE" />
+    <stroke android:width="1.5dp" android:color="#FFD9B877" />
+    <corners android:radius="12dp" />
+</shape>

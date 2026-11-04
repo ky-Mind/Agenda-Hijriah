@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kisah Lillah</string>
+    <string name="widget_jadwal_nama">Jadwal Shalat Kisah Lillah</string>
+    <string name="widget_jadwal_info_ket">Jadwal shalat hari ini, hitung mundur, tanggal Hijriah, dan kalimat pengingat</string>
+    <string name="widget_pengingat_nama">Pengingat Shalat</string>
+    <string name="widget_pengingat_info_ket">Shalat berikutnya dengan warna sesuai waktu; bisa diperbesar</string>
+    <string name="p_absensi">Isi absensi</string>
+    <string name="p_shalat">Jadwal shalat</string>
+    <string name="p_quran">Al-Qur\'an</string>
+</resources>

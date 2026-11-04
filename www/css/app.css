@@ -618,10 +618,22 @@ a.ci:active,.ci:active{transform:scale(.985);transition-duration:.08s}
 
 /* Tarik untuk muat ulang: indikator bulat di bawah bilah atas, mengikuti tarikan lalu berputar saat memuat */
 #view{overscroll-behavior-y:contain}
-.ptr{position:fixed;left:50%;top:0;z-index:30;width:40px;height:40px;margin-left:-20px;border-radius:50%;background:var(--raised);box-shadow:0 2px 10px rgba(0,0,0,.16);display:grid;place-items:center;color:var(--accent);opacity:0;pointer-events:none;transform:translateY(-48px)}
-.ptr svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
-.ptr.go{transition:transform .25s var(--ease),opacity .2s}
-.ptr.spin svg{animation:ptr-spin .8s linear infinite}@keyframes ptr-spin{to{transform:rotate(360deg)}}
+.ptr{--k:0;position:fixed;left:50%;top:0;z-index:4;display:flex;flex-direction:column;align-items:center;gap:5px;opacity:0;pointer-events:none;transform:translate(-50%,-90px)}
+.ptr small{font-size:10.5px;color:var(--muted);letter-spacing:.01em;white-space:nowrap}
+.ptr.siap small,.ptr.spin small{color:var(--accent);font-weight:600}
+/* Logo terbelah dua (segitiga kiri-atas & kanan-bawah) yang berputar mendekat lalu menyatu sesuai --k (0..1) */
+.ptr-logo{position:relative;width:38px;height:38px;display:block;border-radius:50%;background:var(--raised);box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.ptr-logo svg{position:absolute;left:-5px;top:-5px;width:48px;height:48px;transform:rotate(-90deg);fill:none;stroke-width:2.2}
+.ptr-logo svg circle{stroke:var(--line)}.ptr-logo svg .ptr-jejak{stroke:var(--accent);stroke-dasharray:100;stroke-dashoffset:100;stroke-linecap:round}
+.ptr-logo i{position:absolute;inset:5px;background:url(../assets/logo.png) center/contain no-repeat;will-change:transform}
+.ptr-a{clip-path:polygon(0 0,100% 0,0 100%);transform:translate(calc((1 - var(--k))*-10px),calc((1 - var(--k))*-10px)) rotate(calc((1 - var(--k))*-140deg));opacity:calc(.35 + var(--k)*.65)}
+.ptr-b{clip-path:polygon(100% 0,100% 100%,0 100%);transform:translate(calc((1 - var(--k))*10px),calc((1 - var(--k))*10px)) rotate(calc((1 - var(--k))*140deg));opacity:calc(.35 + var(--k)*.65)}
+.ptr.siap .ptr-logo{animation:ptr-pas .3s var(--ease-spring,ease)}@keyframes ptr-pas{50%{transform:scale(1.12)}}
+.ptr.spin .ptr-logo i{animation:ptr-putar 1.1s cubic-bezier(.6,.1,.4,.9) infinite}
+.ptr.spin .ptr-logo svg .ptr-jejak{stroke-dasharray:28 72;animation:ptr-cincin .9s linear infinite}
+@keyframes ptr-putar{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(.88)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes ptr-cincin{to{stroke-dashoffset:-100}}
+@media (prefers-reduced-motion:reduce){.ptr.spin .ptr-logo i{animation-duration:2.4s}}
 html.ptr-drag #view{user-select:none}
 /* Dialog foto profil: pratinjau besar di tengah, tombol bertumpuk penuh */
 .box:has(.dlg-av){text-align:center;width:min(340px,100%)}.box:has(.dlg-av) .dlg-actions{flex-direction:column;align-items:stretch}.box:has(.dlg-av) .dlg-actions .btn{min-height:44px;border-radius:12px}

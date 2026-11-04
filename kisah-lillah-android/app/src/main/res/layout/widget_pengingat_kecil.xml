@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget Pengingat ukuran kecil (2×1): jam shalat berikutnya, nama & sisa waktu, pesan pendek,
+     dan logo Kisah Lillah (bergaris stiker putih) menyembul di kanan bawah. Layout besar dipakai bila diperbesar. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/pakar" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/widget_duo_umum" android:clipToOutline="true">
+    <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" android:src="@drawable/widget_pola" android:alpha="0.14" android:contentDescription="@null" />
+    <ImageView android:layout_width="56dp" android:layout_height="56dp" android:layout_gravity="bottom|end" android:layout_marginEnd="-6dp" android:layout_marginBottom="-14dp" android:src="@drawable/widget_maskot" android:scaleType="fitCenter" android:contentDescription="Kisah Lillah" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center_vertical" android:paddingStart="12dp" android:paddingEnd="8dp" android:paddingTop="6dp" android:paddingBottom="6dp">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="14dp" android:src="@drawable/widget_masjid" android:contentDescription="@null" />
+            <TextView android:id="@+id/pwaktu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5dp" android:text="--:--" android:textColor="#FFFFFFFF" android:textSize="24sp" android:textStyle="bold" android:includeFontPadding="false" android:shadowColor="#33000000" android:shadowDy="2" android:shadowRadius="3" />
+        </LinearLayout>
+        <TextView android:id="@+id/psisa" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:layout_marginEnd="40dp" android:text="Jadwal shalat" android:textColor="#FFFFFFFF" android:textSize="11sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" />
+        <TextView android:id="@+id/ppesan" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginEnd="40dp" android:text="Buka aplikasi dulu" android:textColor="#E6FFFFFF" android:textSize="10sp" android:maxLines="1" android:ellipsize="end" />
+    </LinearLayout>
+</FrameLayout>

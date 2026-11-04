@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Warna utama Kisah Lillah (www/css/app.css: accent, bg) -->
+    <color name="aksen">#3F6B5A</color>
+    <color name="latar">#F4F3EE</color>
+    <color name="ikon_latar">#3F6B5A</color>
+</resources>

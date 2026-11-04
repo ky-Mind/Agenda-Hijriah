@@ -1,0 +1,54 @@
+/* Aplikasi Android Kisah Lillah (native): WebView milik aplikasi sendiri yang membuka https://agenda-hijriah.vercel.app.
+   Izin (lokasi, notifikasi, alarm, kamera, mikrofon) adalah izin aplikasi ini dan tampil di Pengaturan HP.
+   Isi tetap dari situs, jadi pembaruan web langsung ikut; fitur Android asli lewat jembatan KLAndroid (MainActivity). */
+plugins { id 'com.android.application' }
+
+def ks = new Properties()
+def ksFile = rootProject.file('keystore.properties')
+if (ksFile.exists()) ks.load(new FileInputStream(ksFile))
+
+android {
+    namespace 'com.kisahlillah.app'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'com.kisahlillah.app'
+        minSdk 24
+        targetSdk 36
+        versionCode 2
+        versionName '5.1.0'
+        manifestPlaceholders = [host: 'agenda-hijriah.vercel.app']
+    }
+    signingConfigs {
+        rilis {
+            if (ksFile.exists()) {
+                storeFile rootProject.file(ks['storeFile'])
+                storePassword ks['storePassword']
+                keyAlias ks['keyAlias']
+                keyPassword ks['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release { minifyEnabled false; signingConfig signingConfigs.rilis }
+        debug { signingConfig signingConfigs.rilis }
+    }
+    /* Seluruh aplikasi web (../../www) ikut dikemas di APK (assets/www) */
+    sourceSets { main { assets.srcDirs += [layout.buildDirectory.dir('generated/klassets').get().asFile] } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+
+def salinWww = tasks.register('salinWww', Sync) {
+    from(rootProject.file('../www')) {
+        exclude 'api/**', 'node_modules/**', 'scripts/**', '.well-known/**', 'vercel.json', 'package.json', 'package-lock.json', 'admin.html'
+    }
+    into layout.buildDirectory.dir('generated/klassets/www')
+}
+preBuild.dependsOn salinWww
+
+dependencies {
+    implementation 'androidx.core:core:1.13.0'          // FileProvider untuk foto kamera
+    // Masuk dengan Google langsung di aplikasi (lembar akun Google bawaan Android)
+    implementation 'androidx.credentials:credentials:1.3.0'
+    implementation 'androidx.credentials:credentials-play-services-auth:1.3.0'
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
+}

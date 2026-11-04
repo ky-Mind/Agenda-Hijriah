@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Layar pembuka: latar krem dengan logo Kisah Lillah di tengah, lalu halaman aplikasi -->
+    <style name="Tema" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/latar_buka</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:colorAccent">@color/aksen</item>
+    </style>
+</resources>

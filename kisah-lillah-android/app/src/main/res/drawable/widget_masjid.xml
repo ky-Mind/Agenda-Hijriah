@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ikon masjid kecil -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="30dp" android:height="20dp" android:viewportWidth="32" android:viewportHeight="22">
+    <path android:fillColor="#FFF1DDB0" android:pathData="M16 1.5c.6 1.6 2 2.4 2 4.2 3.6 1.2 6 4.2 6 7.8V20H8v-6.5c0-3.6 2.4-6.6 6-7.8 0-1.8 1.4-2.6 2-4.2zM4 9.5l1.2 2V20H2.8v-8.5zm24 0l1.2 2V20h-2.4v-8.5zM1 20.5h30V22H1z" />
+</vector>

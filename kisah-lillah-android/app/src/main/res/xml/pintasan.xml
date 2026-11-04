@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="absensi" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/p_absensi">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="com.kisahlillah.app" android:targetClass="com.kisahlillah.app.MainActivity" android:data="https://agenda-hijriah.vercel.app/#/absensi" />
+    </shortcut>
+    <shortcut android:shortcutId="shalat" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/p_shalat">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="com.kisahlillah.app" android:targetClass="com.kisahlillah.app.MainActivity" android:data="https://agenda-hijriah.vercel.app/#/shalat" />
+    </shortcut>
+    <shortcut android:shortcutId="quran" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/p_quran">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="com.kisahlillah.app" android:targetClass="com.kisahlillah.app.MainActivity" android:data="https://agenda-hijriah.vercel.app/#/quran" />
+    </shortcut>
+</shortcuts>

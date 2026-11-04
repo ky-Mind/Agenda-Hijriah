@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Latar widget Pengingat saat waktu ashar -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:angle="315" android:startColor="#FFA8742A" android:endColor="#FFCF9B4C" />
+    <corners android:radius="24dp" />
+</shape>
