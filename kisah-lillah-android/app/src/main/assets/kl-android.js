@@ -4,6 +4,12 @@
   var A = window.KLAndroid;
   if (!A) return;
   window.KL_ANDROID = true;
+  /* Jarak status bar/navigasi sudah diatur Android: kolom aman CSS (env safe-area) dinolkan agar header tidak turun dobel */
+  try {
+    var gaya = document.createElement("style");
+    gaya.textContent = ".top,.top[data-root=\"1\"],.chat-head{padding-top:6px!important}@media(max-width:760px){.side{padding-bottom:4px!important}}";
+    (document.head || document.documentElement).appendChild(gaya);
+  } catch (e) {}
 
   /* Pemasangan pertama: pengingat adzan (notifikasi + suara adzan) langsung aktif */
   try { if (!localStorage.getItem("kl2_adzan")) localStorage.setItem("kl2_adzan", JSON.stringify({ notif: true, sound: true })); } catch (e) {}

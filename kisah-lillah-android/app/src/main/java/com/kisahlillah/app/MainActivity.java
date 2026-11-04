@@ -124,8 +124,11 @@ public class MainActivity extends Activity {
                 v.setPadding(s.left, 0, s.right, 0);
             } else { atas = in.getSystemWindowInsetTop(); bawah = in.getSystemWindowInsetBottom(); }
             setTinggi(stripAtas, atas); setTinggi(stripBawah, bawah);
-            return in;
+            /* Jarak status bar & navigasi sudah diberi strip di atas/bawah: jangan diteruskan ke WebView,
+               kalau tidak CSS env(safe-area-inset-*) ikut menambah jarak dan header turun terlalu jauh */
+            return Build.VERSION.SDK_INT >= 30 ? WindowInsets.CONSUMED : in.consumeSystemWindowInsets();
         });
+        web.setOnApplyWindowInsetsListener((v, in) -> Build.VERSION.SDK_INT >= 30 ? WindowInsets.CONSUMED : in.consumeSystemWindowInsets());
         terapkanWarna();
 
         WebSettings s = web.getSettings();

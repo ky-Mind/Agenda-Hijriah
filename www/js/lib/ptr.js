@@ -22,8 +22,11 @@ export function initPullRefresh(view,refresh){
   /* y = jarak tarikan; anim = meluncur halus (lepas/selesai) */
   const set=(y,anim)=>{
     const tr=anim?"transform .34s cubic-bezier(.22,.8,.3,1),opacity .3s":"none";
-    view.style.transition=el.style.transition=tr;
-    view.style.transform=y?`translateY(${y}px)`:"";
+    /* Isi didorong turun lewat jarak atas #view (bukan menggeser #view): isi tetap terpotong rapi di dalam
+       area gulir sehingga tidak menimpa navigasi bawah, dan tetap berlaku walau halaman digambar ulang */
+    el.style.transition=tr;
+    view.style.transition=anim?"padding-top .34s cubic-bezier(.22,.8,.3,1)":"none";
+    view.style.paddingTop=y?`calc(var(--vpt) + ${y}px)`:"";
     el.style.top=top()+"px";
     el.style.transform=`translate(-50%,${Math.min(y-TINGGI,0)+8}px)`;
     el.style.opacity=Math.min(1,Math.max(0,(y-16)/40));
