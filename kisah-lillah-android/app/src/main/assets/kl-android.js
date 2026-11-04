@@ -115,6 +115,8 @@
     t.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", keyCode: 27, bubbles: true, cancelable: true }));
     if (jumlah() !== a) return "ok";
     /* Dialog yang tidak menanggapi Escape: ketuk latarnya (sama seperti mengetuk di luar kotak) */
+    var q = document.querySelector(".qact-latar");
+    if (q) { q.click(); return "ok"; }
     var m = document.querySelectorAll(".modal");
     if (m.length) { m[m.length - 1].click(); return "ok"; }
     var b = document.getElementById("back");

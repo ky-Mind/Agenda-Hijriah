@@ -137,8 +137,11 @@ export default async function(root,args){
   const marks=()=>{const lt=last(),bm=bmData().items;v.querySelectorAll("[id^=a]").forEach(el=>{const id=+el.id.slice(1);el.classList.toggle("mark",lt?.surah===n&&lt?.ayat===id);el.classList.toggle("sel",sel===id);el.classList.toggle("saved",bm.some(i=>i.surah===n&&i.ayat===id))})};
   /* Bilah aksi hanya dipasang ulang untuk ayat yang dipilih */
   /* Bilah aksi melayang di bawah; ayat terpilih digeser naik bila tertutup bilah itu */
-  const actsFor=()=>{v.querySelector(".qact")?.remove();const el=sel&&v.querySelector("#a"+sel);if(!el)return;v.insertAdjacentHTML("beforeend",actBar(sel,bmData().items.some(i=>i.surah===n&&i.ayat===sel)));
-    requestAnimationFrame(()=>{const bar=v.querySelector(".qact")?.getBoundingClientRect(),r=el.getBoundingClientRect(),sc=document.getElementById("view");if(bar&&r.bottom>bar.top-12)sc.scrollBy({top:Math.min(r.bottom-bar.top+24,r.top-90),behavior:"smooth"})})};
+  /* Aksi ayat muncul di tengah layar dengan latar buram; ketuk latar = tutup */
+  const actsFor=()=>{document.querySelectorAll(".qact,.qact-latar").forEach(x=>x.remove());const el=sel&&v.querySelector("#a"+sel);if(!el)return;
+    /* Dipasang di <body> (bukan di dalam kartu yang bertransformasi) agar benar-benar di tengah layar & latar buram penuh */
+    document.body.insertAdjacentHTML("beforeend",`<button type="button" class="qact-latar" data-qx aria-label="Tutup"></button>`+actBar(sel,bmData().items.some(i=>i.surah===n&&i.ayat===sel)));
+    document.querySelectorAll(".qact,.qact-latar").forEach(x=>x.onclick=onAct)};
   const paint=()=>{
     root.style.setProperty("--af",pref.size+"px");
     v.className=`card qr ${slide} qr-${pref.theme}${pref.mode==="alir"?" flow":""}${pref.latin?"":" no-latin"}${pref.arti?"":" no-arti"}${pref.tajwid?"":" no-tj"}`;
@@ -226,5 +229,5 @@ export default async function(root,args){
   bar.addEventListener("click",barClick);document.addEventListener("keydown",onKey);
   box.onclick=e=>{if(!dragged)onAct(e)};
   sheet.onclick=e=>{if(e.target===sheet||e.target.closest("[data-close]"))return closeSheet();onAct(e)};
-  return()=>{alive=false;clearTimeout(pre);stop();pl.remove();sheet.remove();bar.removeEventListener("click",barClick);document.removeEventListener("keydown",onKey);bar.innerHTML="";root.style.removeProperty("--af")};
+  return()=>{alive=false;clearTimeout(pre);stop();pl.remove();sheet.remove();document.querySelectorAll(".qact,.qact-latar").forEach(x=>x.remove());bar.removeEventListener("click",barClick);document.removeEventListener("keydown",onKey);bar.innerHTML="";root.style.removeProperty("--af")};
 }

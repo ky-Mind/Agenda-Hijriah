@@ -718,3 +718,11 @@ html.bugpick #view *{cursor:crosshair!important}
 .pick-grip{flex:none;display:grid;place-items:center;width:20px;height:32px;margin-left:-4px;opacity:.6}.pick-grip svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round}
 .mseg button{display:inline-flex;align-items:center;justify-content:center;gap:7px}.mseg .ic{width:17px;height:17px}
 .btn.bpick .ic{width:18px;height:18px;color:var(--accent)}
+
+/* Popup di tengah layar dengan latar buram: dialog, menu Pengaturan, Pengaturan baca, aksi ayat Al-Qur'an */
+.modal{background:rgba(0,0,0,.36);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+@media(max-width:560px){.modal{place-items:center;padding:16px}.modal .box{width:min(420px,100%);max-width:100%;border-radius:20px;padding-bottom:18px;max-height:calc(100dvh - 32px);animation:pop var(--dur-m) var(--ease)}}
+.qact-latar{position:fixed;inset:0;z-index:19;border:0;padding:0;margin:0;background:rgba(0,0,0,.36);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);cursor:default;animation:qlatar var(--dur-s) ease}
+@keyframes qlatar{from{opacity:0}}
+.qact,html[data-nav="0"] .qact,body:has(.qplay:not([hidden])) .qact{position:fixed;left:50%;right:auto;top:50%;bottom:auto;width:min(380px,calc(100% - 32px));transform:translate(-50%,-50%);z-index:19;margin:0;animation:qact-tengah var(--dur-m) var(--ease)}
+@keyframes qact-tengah{from{opacity:0;transform:translate(-50%,-50%) scale(.94)}}
