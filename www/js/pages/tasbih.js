@@ -14,7 +14,7 @@ export default function(root){
     $("info").textContent=`Putaran selesai: ${r.laps} · Total ${r.laps*s.target+r.count}`;$("vib").setAttribute("aria-pressed",vibOf(s.cur));$("vib").textContent=vibOf(s.cur)?"Getar: aktif":"Getar: mati";$("snd").setAttribute("aria-pressed",s.snd)};
   const beep=f=>{try{ctx??=new AudioContext();const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.06)}catch(e){}};
   $("tap").onclick=()=>{const r=rec();r.count++;let lap=false;if(r.count>=s.target){r.count=0;r.laps++;lap=true}
-    if(vibOf(s.cur))navigator.vibrate?.(lap?[60,40,60]:15);if(s.snd)beep(lap?880:520);save();draw()};
+    if(vibOf(s.cur))navigator.vibrate?.(lap?[60,40,60]:28);if(s.snd)beep(lap?880:520);save();draw()};
   $("undo").onclick=()=>{const r=rec();if(r.count>0)r.count--;else if(r.laps>0){r.laps--;r.count=s.target-1}save();draw()};
   $("reset").onclick=async()=>{if(await ask("Atur ulang hitungan?","Hitungan untuk bacaan ini kembali ke 0.","Atur ulang")){s.by[s.cur]={count:0,laps:0};save();draw()}};
   $("target").onchange=e=>{s.target=+e.target.value;Object.values(s.by).forEach(r=>{if(r.count>=s.target)r.count=0});save();draw()};

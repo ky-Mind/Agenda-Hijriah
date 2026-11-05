@@ -3,6 +3,10 @@ import {key,addDays,fromKey} from "./hijri.js";
 /* Status: 1 terlaksana, 0 terlewat, 2 datang bulan (tidak dihitung), 3 khatam (tadarus, dihitung terlaksana) */
 export const STATUS={1:["✅","Terlaksana"],0:["❌","Tidak terlaksana"],2:["🌑","Datang bulan"],3:["📖💯","Khatam"]};
 export const DEFAULT=[["puasa","Puasa Sunnah","🌙"],["sahur","Sahur","🍽️"],["tahajjud","Tahajjud","🌌"],["sedekah","Sedekah","🤲"],["dzikir_pagi","Dzikir Pagi","🌅"],["ar_rahman","Ar-Rahman","📖"],["dhuha","Dhuha","☀️"],["al_mulk","Al-Mulk","📖"],["al_waqiah","Al-Waqi'ah","📖"],["dzikir_petang","Dzikir Petang","🌇"],["tadarus","Tadarus","📚"],["witir","Witir","✨"]].map(([id,nama,ic])=>({id,nama,ic}));
+/* Ikon garis untuk ibadah bawaan; ibadah buatan sendiri tetap memakai emoji pilihan pengguna */
+export const ICO={puasa:"moon",sahur:"bowl",tahajjud:"stars",sedekah:"hands",dzikir_pagi:"sunrise",ar_rahman:"quran",dhuha:"sun",al_mulk:"quran",al_waqiah:"quran",dzikir_petang:"sunset",tadarus:"books",witir:"sparkles"};
+const escI=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+export const icoOf=i=>ICO[i.id]?`<svg class="ic" aria-hidden="true"><use href="#i-${ICO[i.id]}"/></svg>`:escI(i.ic||"•");
 export const agenda=()=>get("agenda",DEFAULT);
 export const saveAgenda=a=>set("agenda",a);
 export const resetAgenda=()=>set("agenda",DEFAULT);

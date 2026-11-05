@@ -19,7 +19,7 @@ function place(){const w=el.offsetWidth,h=el.offsetHeight;if(!w)return;el.style.
 function render(){el.hidden=S.mode==="off";el.dataset.mode=S.mode;q("[data-c]").textContent=S.count;q("[data-s]").textContent=`${S.count}/${S.target}`;
   const l=q("[data-l]");l.hidden=!S.laps;l.textContent="×"+S.laps;q("[data-t]").textContent="Target "+S.target;q("[data-z]").textContent=S.mode==="mini"?"Perbesar":"Kecilkan";q("[data-v]").textContent=vibOn()?"Getar: aktif":"Getar: mati";lit();if(!el.hidden)place();
   body.setAttribute("aria-label",`Tasbih melayang, hitungan ${S.count} dari ${S.target}. Ketuk untuk menambah, seret untuk memindahkan`)}
-function tap(){S.count++;vib(10);if(S.count>=S.target){S.laps++;S.count=0;vib([40,30,40,30,90]);el.classList.add("done");setTimeout(()=>el.classList.remove("done"),900)}save();render();el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}
+function tap(){S.count++;vib(28);if(S.count>=S.target){S.laps++;S.count=0;vib([40,30,40,30,90]);el.classList.add("done");setTimeout(()=>el.classList.remove("done"),900)}save();render();el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}
 function openPanel(o){panel.hidden=!o;more.setAttribute("aria-expanded",String(o));if(!o)return;const r=el.getBoundingClientRect();panel.className="ft-panel "+(r.top+r.height/2>innerHeight/2?"up":"down")+" "+(r.left+r.width/2>innerWidth/2?"r":"l")}
 let d=null;
 body.addEventListener("pointerdown",e=>{if(e.button>0)return;try{body.setPointerCapture(e.pointerId)}catch(x){}d={id:e.pointerId,x:e.clientX,y:e.clientY,l:el.offsetLeft,t:el.offsetTop,moved:false,long:false,lp:setTimeout(()=>{if(d&&!d.moved){d.long=true;openPanel(true);vib(12)}},550)}});

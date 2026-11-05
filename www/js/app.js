@@ -12,7 +12,7 @@ import {initSwipe} from "./lib/swipe.js";
 import {initPullRefresh} from "./lib/ptr.js";
 const view=document.getElementById("view"),LABEL={beranda:"Beranda",absensi:"Absensi",rekap:"Rekap",kalender:"Kalender",shalat:"Shalat",koleksi:"Koleksi",quran:"Al-Qur'an",hadits:"Hadits",doa:"Do'a",dzikir:"Dzikir",mutiara:"Kata Mutiara",pesan:"Pesan",tasbih:"Tasbih",profil:"Profil"};
 const PARENT={rekap:"absensi",quran:"koleksi",hadits:"koleksi",doa:"koleksi",dzikir:"koleksi",mutiara:"koleksi",tasbih:"koleksi"};
-const html={},mods={};let cleanup=null,seq=0,shown=location.hash,skip=false;
+const html={},mods={};let cleanup=null,seq=0,shown=location.hash,skip=false,quiet=false;
 window.KLGuard=null; /* halaman dapat mengisi {dirty(),save(),discard()} untuk menahan perpindahan saat ada perubahan belum tersimpan */
 const loadHtml=n=>html[n]??=fetch(`pages/${n}.html`,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(`pages/${n}.html (HTTP ${r.status})`);return r.text()}).catch(e=>{delete html[n];throw e});
 const NOJS=new Set(["koleksi"]);
@@ -50,6 +50,8 @@ backBtn.addEventListener("click",()=>{location.hash=backBtn.dataset.to||"#/beran
 document.addEventListener("kl-today",e=>{const b=barActs.querySelector(".tdy-b");if(!b)return;const d=e.detail|0;b.dataset.dir=d;b.setAttribute("aria-label",d?`Pilih tanggal (hari ini ada ${d<0?"sebelumnya":"berikutnya"})`:"Pilih tanggal")});
 document.addEventListener("kl-title",e=>{if(bar.dataset.root==="0")ttl.textContent=e.detail});document.addEventListener("kl-loc",()=>{if(bar.dataset.page==="shalat")ttlsub.textContent=loc().name});
 async function render(){
+  /* quiet = gambar ulang karena data berubah (sinkron cloud, tarik-muat-ulang): tanpa animasi, posisi gulir tetap */
+  const q=quiet;quiet=false;
   const my=++seq,[name0,...args]=(location.hash.replace(/^#\/?/,"")||"beranda").split("/"),name=LABEL[name0]?name0:"beranda";
   document.querySelectorAll("[data-nav]").forEach(a=>{const on=a.dataset.nav===(document.querySelector(`[data-nav="${name}"]`)?name:(PARENT[name]||name));a.classList.toggle("on",on);on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
   document.title=LABEL[name]+" · Kisah Lillah";
@@ -59,7 +61,7 @@ async function render(){
   clearTimeout(slow);if(my!==seq)return;
   const swap=()=>{
     if(cleanup){try{cleanup()}catch(e){}cleanup=null}
-    window.KLGuard=null;view.onclick=null;view.oninput=null;view.innerHTML=h;view.scrollTop=0;view.classList.remove("busy");
+    window.KLGuard=null;view.onclick=null;view.oninput=null;const st=q?view.scrollTop:0;view.innerHTML=h;view.scrollTop=st;view.classList.remove("busy");
     paintBar(name,args);
     const heading=view.querySelector("h1");
     if(heading&&ROOTS.includes(name)&&name!=="beranda")ttl.textContent=heading.textContent.trim();
@@ -70,7 +72,7 @@ async function render(){
     else if(!err&&m===null&&!NOJS.has(name))view.insertAdjacentHTML("afterbegin",'<div class="wrap"><div class="empty">Skrip halaman ini gagal dimuat. Muat ulang dengan Ctrl+Shift+R.</div></div>')}catch(e){console.error(e);toast("Terjadi kesalahan di halaman ini")}};
   root.dataset.dir=dir;
   /* Konten halaman meluncur dengan animasi #view (lihat css); bilah atas dan navigasi bawah langsung ikut berubah */
-  swap();run();view.dataset.anim=view.dataset.swipeNext?"swipe":dir;delete view.dataset.swipeNext;view.classList.remove("in");void view.offsetWidth;view.classList.add("in");document.dispatchEvent(new Event("kl-rendered"));
+  swap();run();view.dataset.anim=q||view.dataset.swipeNext?"swipe":dir;delete view.dataset.swipeNext;view.classList.remove("in");void view.offsetWidth;view.classList.add("in");document.dispatchEvent(new Event("kl-rendered"));
 }
 /* Penjaga navigasi: tahan perpindahan jika ada perubahan belum tersimpan, tanyakan Simpan / Lewati */
 async function onHash(){
@@ -84,7 +86,9 @@ async function onHash(){
 addEventListener("hashchange",onHash);
 view.addEventListener("click",e=>{if(e.target.closest("[data-retry]"))render()});
 addEventListener("beforeunload",e=>{if(window.KLGuard?.dirty?.()){e.preventDefault();e.returnValue=""}});
-document.addEventListener("kl-data-changed",()=>{if(window.KLGuard?.dirty?.())return;if(!view.contains(document.activeElement)||document.activeElement===view)render()});
+document.addEventListener("kl-data-changed",()=>{if(window.KLGuard?.dirty?.())return;if(Date.now()-lastTap<2500)return;if(!view.contains(document.activeElement)||document.activeElement===view){quiet=true;render()}});
+/* Baru saja mengetuk sesuatu di halaman: jangan gambar ulang halaman di bawah jari (membuat tampilan "melompat") */
+let lastTap=0;view.addEventListener("pointerdown",()=>{lastTap=Date.now()},{passive:true});
 document.getElementById("nav").addEventListener("pointerover",e=>{const a=e.target.closest("[data-nav]");if(a){const n=a.dataset.nav;loadHtml(n).catch(()=>{});loadMod(n)}});
 const sy=document.getElementById("sync"),L={off:"Belum masuk",busy:"Menyimpan…",ok:"Tersimpan di cloud",err:"Gagal sinkron"};
 document.addEventListener("kl-sync",e=>{sy.dataset.s=e.detail.s;sy.lastChild.textContent=e.detail.s==="err"&&e.detail.code==="permission-denied"?"Rules Firestore menolak":L[e.detail.s]});document.addEventListener("kl-legacy",e=>toast(`Data lama Agenda diimpor${e.detail.days?` (${e.detail.days} hari)`:""}`));
@@ -110,7 +114,7 @@ document.addEventListener("kl-chat",setBadge);
 initKili();
 initSwipe(view);
 /* Tarik untuk muat ulang: tarik data cloud terbaru lalu pasang ulang halaman yang sedang dibuka (tanpa animasi pindah halaman) */
-initPullRefresh(view,()=>{window.KLSync?.now?.();prev=null;return render()});
+initPullRefresh(view,()=>{window.KLSync?.now?.();return Promise.resolve()});
 document.addEventListener("kl-profile",()=>chat.register(window.__klAuth?.currentUser));
 
 /* Tampilan seperti aplikasi: tidak ada menu konteks/pilih-teks tekan-lama di layar sentuh (kolom isian tetap normal) */

@@ -83,9 +83,9 @@ function dragger(handle){
 }
 export function initKili(){
   el=document.createElement("div");el.id="kili";el.dataset.s="off";
-  el.innerHTML=`<button class="kili-bub" type="button" aria-label="Buka Kili AI" title="Kili AI">✨</button>
+  el.innerHTML=`<button class="kili-bub" type="button" aria-label="Buka Kili AI" title="Kili AI"><svg class="ic" aria-hidden="true"><use href="#i-sparkles"/></svg></button>
   <div class="kili-card" role="dialog" aria-label="Kili AI">
-    <div class="kili-head" data-drag><span>✨ Kili AI</span><span class="kili-acts"><button type="button" data-max aria-label="Perbesar">⤢</button><button type="button" data-min aria-label="Kecilkan">–</button><button type="button" data-x aria-label="Tutup">✕</button></span></div>
+    <div class="kili-head" data-drag><span class="ih"><svg class="ic" aria-hidden="true"><use href="#i-sparkles"/></svg>Kili AI</span><span class="kili-acts"><button type="button" data-max aria-label="Perbesar">⤢</button><button type="button" data-min aria-label="Kecilkan">–</button><button type="button" data-x aria-label="Tutup"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></span></div>
     <div class="kili-msgs" data-m><div class="kili-msg ai">Assalamu'alaikum! Saya Kili, asisten Kisah Lillah. Tanyakan tentang ibadah, doa, atau cara memakai aplikasi.</div></div>
     <form class="kili-form" data-f><input data-in maxlength="1000" placeholder="Tulis pertanyaanmu…" autocomplete="off" aria-label="Pertanyaan"><button class="btn primary sm" type="submit">Kirim</button></form>
   </div>`;

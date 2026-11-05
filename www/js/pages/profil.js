@@ -399,7 +399,7 @@ export default function(root){
     b.disabled=false;
     b.textContent="Periksa";
     const bad=list.find(x=>!x.ok);
-    const items=list.map(x=>`<li class="${x.ok?"ok":"bad"}"><b>${x.ok?"✅":"❌"} ${x.label.replace(/</g,"&lt;")}</b>${x.hint?`<small>${x.hint.replace(/</g,"&lt;")}</small>`:""}</li>`).join("");
+    const items=list.map(x=>`<li class="${x.ok?"ok":"bad"}"><b class="ih">${x.ok?'<svg class="ic" aria-hidden="true"><use href="#i-ok"/></svg>':'<svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>'}${x.label.replace(/</g,"&lt;")}</b>${x.hint?`<small>${x.hint.replace(/</g,"&lt;")}</small>`:""}</li>`).join("");
     const done=bad?"":"<p>Semua langkah beres. Jika tetap tidak ada notifikasi, pastikan penerima juga mengaktifkannya di perangkatnya.</p>";
     await dialog({
       title:"Periksa notifikasi",

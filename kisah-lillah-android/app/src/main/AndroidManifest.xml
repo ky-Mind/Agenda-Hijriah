@@ -29,6 +29,7 @@
     <queries>
         <intent><action android:name="android.media.action.IMAGE_CAPTURE" /></intent>
         <intent><action android:name="android.intent.action.VIEW" /><data android:scheme="https" /></intent>
+        <intent><action android:name="android.support.customtabs.action.CustomTabsService" /></intent>
     </queries>
 
     <application
@@ -58,6 +59,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="${host}" />
+            </intent-filter>
+            <!-- Kembali dari halaman masuk Google/Facebook di tab Chrome (masuk-app.html) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kisahlillah" android:host="masuk" />
             </intent-filter>
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/pintasan" />
         </activity>

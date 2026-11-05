@@ -29,7 +29,7 @@ const emit=()=>{const u=state.uid;state.unread=state.chats.filter(c=>c.status===
 let unsub=null,first=true,tok=0;const seen=new Map();
 async function decorate(list){await Promise.all(list.map(async c=>{c.preview="";c.introText="";const op=otherPub(c);if(!E.state.ready||!op)return;
   if(c.status==="pending"&&c.intro)c.introText=(await E.decrypt(op,c.intro))||"";
-  if(c.status==="active"&&c.lastMessage)c.preview=(await E.decrypt(op,c.lastMessage))||"🔒 Pesan terenkripsi"}));return list}
+  if(c.status==="active"&&c.lastMessage)c.preview=(await E.decrypt(op,c.lastMessage))||"Pesan terenkripsi"}));return list}
 document.addEventListener("kl-e2e",()=>{if(state.uid){decorate(state.chats).then(emit);register(window.__klAuth&&__klAuth.currentUser)}});
 async function notify(c,req){const n=nameOf(c),title=req?"Permintaan chat baru":n,body=req?`${n} ingin terhubung denganmu`:String(c.preview||"Pesan baru").slice(0,90);
   if(!document.hidden){if(state.open!==c.id)toast(`${title}: ${body}`);return}

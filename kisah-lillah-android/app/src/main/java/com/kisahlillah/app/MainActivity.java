@@ -303,6 +303,11 @@ public class MainActivity extends Activity {
     /* Tautan https://agenda-hijriah.vercel.app/#/... dari widget, pintasan, notifikasi, atau aplikasi lain */
     private void bukaIntent(Intent i, boolean awal) {
         Uri d = i != null ? i.getData() : null;
+        if (d != null && "kisahlillah".equals(d.getScheme()) && "masuk".equals(d.getHost())) {
+            selesaiMasuk(d);
+            if (awal) web.loadUrl(AWAL + "#/profil");
+            return;
+        }
         if (d != null && HOST.equals(d.getHost())) {
             String hash = d.getFragment();
             String kini = web.getUrl();
@@ -447,14 +452,46 @@ public class MainActivity extends Activity {
                             else hasilGoogle(null, "jenis akun tidak dikenal");
                         }
                         @Override public void onError(GetCredentialException e) {
-                            hasilGoogle(null, e instanceof GetCredentialCancellationException ? "batal" : String.valueOf(e.getMessage()));
+                            /* Batal = tetap di aplikasi. Galat lain (mis. tidak ada akun Google di HP, sidik jari belum
+                               didaftarkan di Firebase): pakai cara cadangan lewat tab Chrome */
+                            if (e instanceof GetCredentialCancellationException) hasilGoogle(null, "batal");
+                            else mulaiMasuk("g");
                         }
                     });
-        } catch (Exception e) { hasilGoogle(null, String.valueOf(e.getMessage())); }
+        } catch (Exception e) { mulaiMasuk("g"); }
     }
 
-    private void hasilGoogle(String token, String galat) {
-        js("window.__klGoogle&&__klGoogle(" + (token == null ? "null" : JSONObject.quote(token)) + "," + (galat == null ? "null" : JSONObject.quote(galat)) + ")");
+    private void hasilGoogle(String token, String galat) { kirimMasuk("g", token, null, galat); }
+
+    private void kirimMasuk(String p, String id, String at, String galat) {
+        String kode = "(function m(n){if(window.__klMasuk)__klMasuk(" + JSONObject.quote(p) + "," + (id == null ? "null" : JSONObject.quote(id)) + ","
+                + (at == null ? "null" : JSONObject.quote(at)) + "," + (galat == null ? "null" : JSONObject.quote(galat)) + ");else if(n<40)setTimeout(function(){m(n+1)},250)})(0)";
+        js(kode);
+    }
+
+    /** Cara cadangan: halaman masuk-app.html di tab Chrome yang aman; hasilnya kembali lewat kisahlillah://masuk */
+    private void mulaiMasuk(String p) {
+        byte[] acak = new byte[16];
+        new java.security.SecureRandom().nextBytes(acak);
+        StringBuilder sb = new StringBuilder();
+        for (byte x : acak) sb.append(String.format(java.util.Locale.ROOT, "%02x", x));
+        pref.edit().putString("state_masuk", sb.toString()).apply();
+        Uri u = Uri.parse(AWAL + "masuk-app.html?state=" + sb + "&p=" + p);
+        try { new androidx.browser.customtabs.CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(this, u); }
+        catch (Exception e) {
+            try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception e2) { kirimMasuk(p, null, null, "Tidak ada browser untuk masuk"); }
+        }
+    }
+
+    private void selesaiMasuk(Uri d) {
+        String st = d.getQueryParameter("state"), harap = pref.getString("state_masuk", null);
+        pref.edit().remove("state_masuk").apply();
+        String p = "fb".equals(d.getQueryParameter("p")) ? "fb" : "g";
+        if (harap == null || !harap.equals(st)) { toast("Masuk dibatalkan (kode tidak cocok). Coba lagi."); kirimMasuk(p, null, null, "kode tidak cocok"); return; }
+        String galat = d.getQueryParameter("galat");
+        if (galat != null) { kirimMasuk(p, null, null, galat); return; }
+        String id = d.getQueryParameter("id"), at = d.getQueryParameter("at");
+        web.postDelayed(() -> kirimMasuk(p, id == null || id.isEmpty() ? null : id, at == null || at.isEmpty() ? null : at, null), 300);
     }
 
     /* ===== Pembantu ===== */
@@ -475,7 +512,7 @@ public class MainActivity extends Activity {
         public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
             Uri u = r.getUrl();
             String sk = u.getScheme() == null ? "" : u.getScheme(), h = u.getHost() == null ? "" : u.getHost();
-            if (("https".equals(sk) || "http".equals(sk)) && (HOST.equals(h) || h.endsWith(".firebaseapp.com") || h.endsWith("facebook.com"))) return false;
+            if (("https".equals(sk) || "http".equals(sk)) && (HOST.equals(h) || h.endsWith(".firebaseapp.com"))) return false;
             if ("intent".equals(sk)) {
                 try {
                     Intent i = Intent.parseUri(u.toString(), Intent.URI_INTENT_SCHEME);
@@ -596,7 +633,9 @@ public class MainActivity extends Activity {
                         ? ((android.os.VibratorManager) getSystemService(Context.VIBRATOR_MANAGER_SERVICE)).getDefaultVibrator()
                         : (android.os.Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 if (v == null || !v.hasVibrator() || (w.length == 2 && w[1] == 0)) { if (v != null) v.cancel(); return; }
-                if (Build.VERSION.SDK_INT >= 26) v.vibrate(w.length == 2 ? android.os.VibrationEffect.createOneShot(Math.max(1, w[1]), android.os.VibrationEffect.DEFAULT_AMPLITUDE) : android.os.VibrationEffect.createWaveform(w, -1));
+                /* Getar ketukan pendek (tasbih): efek "klik" bawaan HP, terasa jelas di semua HP; getar biasa minimal 35 ms */
+                if (w.length == 2 && w[1] <= 40 && Build.VERSION.SDK_INT >= 29) v.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_HEAVY_CLICK));
+                else if (Build.VERSION.SDK_INT >= 26) v.vibrate(w.length == 2 ? android.os.VibrationEffect.createOneShot(Math.max(35, w[1]), android.os.VibrationEffect.DEFAULT_AMPLITUDE) : android.os.VibrationEffect.createWaveform(w, -1));
                 else v.vibrate(w, -1);
             } catch (Exception ignored) {}
         }
@@ -606,5 +645,7 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface public void masukGoogle() { runOnUiThread(MainActivity.this::mulaiMasukGoogle); }
+
+        @JavascriptInterface public void masukChrome(String p) { runOnUiThread(() -> mulaiMasuk("fb".equals(p) ? "fb" : "g")); }
     }
 }

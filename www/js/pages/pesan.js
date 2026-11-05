@@ -1,4 +1,4 @@
-import {esc,ask,skeleton,fail,dialog,copy} from "../lib/ui.js";
+import {esc,ask,skeleton,fail,dialog,copy,ico} from "../lib/ui.js";
 import {toast} from "../store.js";
 import {waUrl,openUrl} from "../lib/wa.js";
 import * as C from "../lib/chat.js";
@@ -17,7 +17,7 @@ function gate(box){
   if(s.exists===undefined){box.innerHTML=skeleton(1);return true}
   if(s.exists===null){box.innerHTML=`<div class="card"><h2>Tidak bisa memeriksa kunci</h2><p class="muted">${esc(errMsg({code:s.err}))}</p></div>`;return true}
   const mk=s.exists&&!resetting;
-  box.innerHTML=`<div class="card gate"><h2>🔒 ${mk?"Buka kunci pesan":"Aktifkan pesan terenkripsi"}</h2>
+  box.innerHTML=`<div class="card gate"><h2 class="ih">${ico(mk?"unlock":"lock")}${mk?"Buka kunci pesan":"Aktifkan pesan terenkripsi"}</h2>
     <p class="muted">${mk?"Masukkan PIN pesan untuk membuka kunci di perangkat ini. Sekali saja per perangkat.":"Pesan dienkripsi ujung-ke-ujung. Buat PIN pesan (minimal 6 karakter) untuk melindungi kuncimu; PIN dibutuhkan saat membuka Kisah Lillah di perangkat baru. Jika PIN lupa, kunci harus dibuat ulang dan pesan lama tidak bisa dibuka."}</p>
     <div class="field"><input type="password" data-pin placeholder="PIN pesan" autocomplete="${mk?"current-password":"new-password"}"></div>
     ${mk?"":'<div class="field"><input type="password" data-pin2 placeholder="Ulangi PIN" autocomplete="new-password"></div>'}
@@ -36,9 +36,9 @@ export default function(root,args){const $=n=>root.querySelector(`[data-r="${n}"
 function inbox($,root){
   $("inbox").hidden=false;$("conv").hidden=true;let idxFor="";
   const checkIdx=async()=>{const u=window.__klAuth?.currentUser;if(!u||!E.state.ready){$("idx").innerHTML="";return}
-    const r=await C.checkIndex(u);$("idx").innerHTML=["missing","stale","error"].includes(r)?`<div class="banner">⚠️ Kunci pesanmu <b>belum terdaftar di server</b>, jadi orang lain belum bisa memulai chat denganmu. Penyebab umum: <code>firestore.rules</code> terbaru belum dipublikasikan (Profil › Akun › Salin aturan).<div class="row mt"><button class="btn sm primary" data-fix>Coba daftarkan ulang</button></div></div>`:""};
+    const r=await C.checkIndex(u);$("idx").innerHTML=["missing","stale","error"].includes(r)?`<div class="banner">${ico("warn")} Kunci pesanmu <b>belum terdaftar di server</b>, jadi orang lain belum bisa memulai chat denganmu. Penyebab umum: <code>firestore.rules</code> terbaru belum dipublikasikan (Profil › Akun › Salin aturan).<div class="row mt"><button class="btn sm primary" data-fix>Coba daftarkan ulang</button></div></div>`:""};
   const item=c=>{const me=C.state.uid,un=c.status==="active"&&c.lastFrom&&c.lastFrom!==me&&C.ms(c.lastAt)>C.readAt(c,me);
-    const pv=c.status==="pending"?"Menunggu persetujuan…":c.status==="blocked"?"Percakapan dibatasi":c.lastMessage?(c.lastFrom===me?"Anda: ":"")+(c.preview||"🔒 Pesan terenkripsi"):"Belum ada pesan";
+    const pv=c.status==="pending"?"Menunggu persetujuan…":c.status==="blocked"?"Percakapan dibatasi":c.lastMessage?(c.lastFrom===me?"Anda: ":"")+(c.preview||"Pesan terenkripsi"):"Belum ada pesan";
     return `<a class="ci ${un?"un":""}" href="#/pesan/${esc(c.id)}"><span class="avatar" data-av="${esc(C.emailOf(c))}">${init(C.nameOf(c))}</span><div><b>${esc(C.nameOf(c))}</b><small>${esc(pv)}</small></div><div class="meta"><time>${c.lastMessage?when(C.ms(c.lastAt)):""}</time>${un?'<span class="nbadge">•</span>':""}</div></a>`};
   const draw=()=>{const u=window.__klAuth?.currentUser;$("gate").hidden=!!u;
     $("notifbar").hidden=!(u&&"Notification"in window&&Notification.permission==="default");
@@ -89,7 +89,7 @@ function conv($,root,id){
     if(C.state.err||!c){b.hidden=false;b.innerHTML=C.state.err?esc(errMsg({code:C.state.err})):'Percakapan tidak ditemukan. <a href="#/pesan">Kembali ke Pesan</a>';$("form").hidden=true;$("cblock").hidden=true;$("cdel").hidden=true;$("ccode").hidden=true;return false}
     $("cdel").hidden=false;const n=C.nameOf(c);const cav=$("cav");if(cav.dataset.av!==C.emailOf(c)){cav.dataset.av=C.emailOf(c);cav.textContent=n.trim().charAt(0).toUpperCase();hydrate($("conv"))}$("cname").textContent=n;$("cmail").textContent=C.emailOf(c);
     document.dispatchEvent(new CustomEvent("kl-title",{detail:n}));
-    if(!E.state.ready){b.hidden=false;b.innerHTML='🔒 Buka kunci pesan dulu. <a href="#/pesan">Buka di halaman Pesan</a>';$("form").hidden=true;$("ccode").hidden=true;return false}
+    if(!E.state.ready){b.hidden=false;b.innerHTML=ico("lock")+' Buka kunci pesan dulu. <a href="#/pesan">Buka di halaman Pesan</a>';$("form").hidden=true;$("ccode").hidden=true;return false}
     $("ccode").hidden=!C.otherPub(c);
     const mine=c.requestedBy===me(),act=c.status==="active",it=c.introText?`<br><small class="muted">"${esc(c.introText)}"</small>`:"";
     b.hidden=act;$("form").hidden=!act;
@@ -98,7 +98,7 @@ function conv($,root,id){
     $("cblock").hidden=c.status!=="active";return true}
   function draw(){const c=chat();if(!c)return;const old=seen;seen=new Set(msgs.map(m=>m.id));texts.clear();msgs.forEach(x=>texts.set(x.id,x.text));const ob=C.otherOf(c),rd=C.readAt(c,ob);let last="",h=more?'<button class="btn sm" data-more style="align-self:center">Muat pesan sebelumnya</button>':"";
     h+=msgs.map(m=>{const t=C.ms(m.at),dk=new Date(t).toDateString(),sep=dk!==last?`<div class="day"><span>${esc(day(t))}</span></div>`:"";last=dk;const own=m.from===me();
-      const tick=own?(m.pending?"🕓":rd>=t?'<span class="rd">✓✓</span>':"✓"):"",tx=m.text===null?'<span class="lockmsg">🔒 Pesan tidak bisa dibuka (kunci berubah)</span>':esc(m.text);
+      const tick=own?(m.pending?ico("clock","ic tk"):rd>=t?'<span class="rd">'+ico("checks","ic tk")+'</span>':ico("ok","ic tk")):"",tx=m.text===null?'<span class="lockmsg">'+ico("lock")+' Pesan tidak bisa dibuka (kunci berubah)</span>':esc(m.text);
       return sep+`<div class="b ${own?"me":"ot"}${subbed&&!old.has(m.id)?" in":""}" data-id="${esc(m.id)}" ${own?`data-m="${esc(m.id)}"`:""}><span class="tx">${tx}</span><span class="tm">${hm(t)} ${tick}</span></div>`}).join("");
     const stick=bottom()||!subbed;if(h!==lastH){lastH=h;$("msgs").innerHTML=h||'<div class="empty muted">Belum ada pesan. Mulai dengan salam.</div>'}if(stick)sc.scrollTop=sc.scrollHeight}
   function sub(){if(unsubM)unsubM();unsubM=C.watch(id,limit,(l,mo)=>{msgs=l;more=mo;draw();subbed=true;const c=chat();if(c&&c.lastFrom&&c.lastFrom!==me()&&C.ms(c.lastAt)>C.readAt(c,me())&&!document.hidden)C.markRead(id)},e=>{$("msgs").innerHTML=fail(errMsg(e))})}

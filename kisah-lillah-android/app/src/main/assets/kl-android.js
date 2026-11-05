@@ -77,14 +77,19 @@
 
   /* Masuk dengan Google: Google melarang masuk di WebView, jadi memakai lembar akun Google bawaan Android lalu
      tokennya dipakai Firebase (signInWithCredential). Facebook memakai cara pengalihan halaman (redirect). */
-  function masukGoogle() {
+  /* p = "g" (lembar akun Google bawaan, cadangan tab Chrome) atau "fb" (tab Chrome). Hasil datang lewat __klMasuk */
+  function masuk(p) {
     return new Promise(function (res, rej) {
-      window.__klGoogle = function (token, galat) {
-        window.__klGoogle = null;
-        if (!token) return rej({ code: galat === "batal" ? "auth/popup-closed-by-user" : "Google: " + (galat || "gagal"), message: galat || "gagal" });
-        window.__klAuth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(token)).then(res, rej);
+      window.__klMasuk = function (jenis, id, at, galat) {
+        window.__klMasuk = null;
+        if (galat || (!id && !at)) {
+          var batal = galat === "batal" || galat === "dibatalkan";
+          return rej({ code: batal ? "auth/popup-closed-by-user" : "Masuk: " + (galat || "token tidak diterima"), message: galat || "gagal" });
+        }
+        var cred = jenis === "fb" ? firebase.auth.FacebookAuthProvider.credential(at) : firebase.auth.GoogleAuthProvider.credential(id || null, at || null);
+        window.__klAuth.signInWithCredential(cred).then(res, rej);
       };
-      A.masukGoogle();
+      if (p === "fb") A.masukChrome("fb"); else A.masukGoogle();
     });
   }
   function pasangAuth() {
@@ -92,8 +97,9 @@
     if (!au || au.__klAndroid) return;
     au.__klAndroid = true;
     var popup = au.signInWithPopup.bind(au), redirect = au.signInWithRedirect.bind(au);
-    au.signInWithPopup = function (p) { if (p && p.providerId === "google.com") return masukGoogle(); return redirect(p); };
-    au.signInWithRedirect = function (p) { if (p && p.providerId === "google.com") return masukGoogle(); return redirect(p); };
+    var lewat = function (p) { return p && p.providerId === "google.com" ? masuk("g") : p && p.providerId === "facebook.com" ? masuk("fb") : redirect(p); };
+    au.signInWithPopup = lewat;
+    au.signInWithRedirect = lewat;
     void popup;
   }
 

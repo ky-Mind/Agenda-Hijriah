@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Masuk ke Kisah Lillah</title>
+<!-- masuk-app.html: masuk dengan Google/Facebook untuk aplikasi Android Kisah Lillah.
+     Google & Facebook tidak mengizinkan masuk di dalam WebView aplikasi, jadi aplikasi membuka halaman ini di tab Chrome
+     yang aman. Setelah berhasil, token dikirim kembali ke aplikasi lewat kisahlillah://masuk bersama kode "state"
+     sekali pakai dari aplikasi; aplikasi lalu masuk ke Firebase dengan token itu. -->
+<style>
+:root{--g:#3f6b5a;--ink:#2b2a27;--mut:#76726a;--bg:#f4f3ee;--fill:#ebeae2}
+@media (prefers-color-scheme:dark){:root{--g:#79a592;--ink:#e7e5de;--mut:#9a978e;--bg:#1c1e1c;--fill:#2d312e}}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--ink);font:16px/1.5 "Inter","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;text-align:center}
+.k{max-width:340px;padding:24px}
+img{width:76px;height:76px}
+h1{font-size:20px;margin:14px 0 6px}
+p{color:var(--mut);margin:0 0 18px}
+button,a.b{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;height:48px;border:0;border-radius:24px;background:var(--g);color:#fff;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+@media (prefers-color-scheme:dark){button,a.b{color:#12201a}}
+button.s{background:var(--fill);color:var(--ink);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="k" id="k">
+ <img src="assets/logo.png" alt="">
+ <h1>Masuk ke Kisah Lillah</h1>
+ <p id="ket">Masuk agar absensi, catatan, dan pesanmu tersimpan di cloud.</p>
+ <button id="g">Lanjutkan dengan Google</button>
+ <button class="s" id="x">Batal, kembali ke aplikasi</button>
+</div>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const q=new URLSearchParams(location.search),state=q.get('state')||sessionStorage.getItem('klstate')||'';
+if(q.get('state'))sessionStorage.setItem('klstate',q.get('state'));
+if(q.get('p'))sessionStorage.setItem('klp',q.get('p'));
+const FB=(q.get('p')||sessionStorage.getItem('klp'))==='fb',NM=FB?'Facebook':'Google';
+const $=s=>document.querySelector(s),auth=firebase.auth();
+/* Kembali ke aplikasi lewat intent:// (Chrome membuka aplikasi Kisah Lillah dengan data ini) */
+const keApp=p=>'intent://masuk?'+new URLSearchParams({state,p:FB?'fb':'g',...p}).toString()+'#Intent;scheme=kisahlillah;package=com.kisahlillah.app;end';
+function kembali(p,judul,teks){const u=keApp(p);$('#k').innerHTML=`<img src="assets/logo.png" alt=""><h1>${judul}</h1><p>${teks}</p><a class="b" href="${u}">Kembali ke aplikasi</a>`;setTimeout(()=>{location.href=u},300)}
+const pr=FB?new firebase.auth.FacebookAuthProvider():new firebase.auth.GoogleAuthProvider();
+if(FB)pr.addScope('email');else pr.setCustomParameters({prompt:'select_account'});
+document.title='Masuk ke Kisah Lillah dengan '+NM;$('#g').textContent='Lanjutkan dengan '+NM;
+const selesai=r=>{const c=(FB?firebase.auth.FacebookAuthProvider:firebase.auth.GoogleAuthProvider).credentialFromResult(r);
+ if(!c||!(c.idToken||c.accessToken))return kembali({galat:'token tidak diterima'},'Gagal masuk','Coba lagi dari aplikasi.');
+ kembali({id:c.idToken||'',at:c.accessToken||''},'Berhasil masuk','Ketuk tombol di bawah bila aplikasi belum terbuka otomatis.')};
+const gagal=e=>{const c=e&&e.code||'';if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;$('#ket').textContent='Gagal masuk ('+(c||e.message)+'). Coba lagi.'};
+auth.getRedirectResult().then(r=>{if(r&&r.user)selesai(r)}).catch(gagal);
+$('#g').onclick=()=>auth.signInWithPopup(pr).then(selesai).catch(e=>{const c=e.code||'';if(c==='auth/popup-blocked'||c==='auth/operation-not-supported-in-this-environment')return auth.signInWithRedirect(pr);gagal(e)});
+/* Batal: pindah ke aplikasi di dalam ketukan (Chrome hanya membuka aplikasi bila dipicu ketukan pengguna) */
+$('#x').onclick=()=>{const u=keApp({galat:'dibatalkan'});location.href=u;setTimeout(()=>kembali({galat:'dibatalkan'},'Dibatalkan','Ketuk tombol di bawah untuk kembali ke aplikasi.'),400)};
+if(!state)$('#ket').textContent='Halaman ini dibuka dari aplikasi Android Kisah Lillah. Buka aplikasinya lalu ketuk Masuk dengan '+NM+'.';
+</script>
+</body>
+</html>

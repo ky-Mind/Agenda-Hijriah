@@ -726,3 +726,19 @@ html.bugpick #view *{cursor:crosshair!important}
 @keyframes qlatar{from{opacity:0}}
 .qact,html[data-nav="0"] .qact,body:has(.qplay:not([hidden])) .qact{position:fixed;left:50%;right:auto;top:50%;bottom:auto;width:min(380px,calc(100% - 32px));transform:translate(-50%,-50%);z-index:19;margin:0;animation:qact-tengah var(--dur-m) var(--ease)}
 @keyframes qact-tengah{from{opacity:0;transform:translate(-50%,-50%) scale(.94)}}
+
+/* Navigasi bawah & bilah atas selalu di atas isi halaman (isi yang sedang bergeser tidak boleh menutupinya) */
+@media(max-width:760px){.side{position:relative;z-index:6;background:var(--surface)}}
+/* Ikon garis pengganti emoji */
+.ih{display:inline-flex;align-items:center;gap:7px}.ih .ic{color:var(--accent)}
+.ico{display:inline-flex;align-items:center;justify-content:flex-start;width:1.9em;color:var(--accent)}.ico .ic{width:19px;height:19px}
+.seg button{display:inline-flex;align-items:center;justify-content:center}.seg button .ic{width:17px;height:17px;stroke-width:2}
+.seg button.pr .ic{width:16px;height:16px}
+.qact-g i{display:grid;place-items:center;height:22px}.qact-g i .ic{width:20px;height:20px;stroke-width:1.8}.qact-g button.on i{color:#c8962a}
+.btn .ic+*,.btn>.ic{margin-right:2px}
+.tk{width:14px;height:14px;vertical-align:-2px;stroke-width:2}.rd .tk{color:var(--accent)}
+.lockmsg .ic,.banner>.ic{width:15px;height:15px;vertical-align:-2px}
+#kili .kili-bub .ic{width:24px;height:24px}
+/* Tasbih digital: lingkaran besar memenuhi layar */
+.ring{width:min(440px,90vw,58vh);margin:14px auto 18px}.ring circle{stroke-width:6}
+.ring button{font-size:clamp(64px,20vw,108px);font-weight:600;letter-spacing:-.02em}

@@ -1,4 +1,6 @@
 import {toast} from "../store.js";
+/* Ikon garis dari sprite di index.html (#i-…) */
+export const ico=(n,c="ic")=>`<svg class="${c}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 export const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 export const copy=async t=>{try{await navigator.clipboard.writeText(t);toast("Disalin")}catch(e){toast("Tidak bisa menyalin")}};
 const J={};export const json=u=>J[u]??=fetch(u,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(`${u} (HTTP ${r.status})`);return r.json()}).catch(e=>{delete J[u];throw e});

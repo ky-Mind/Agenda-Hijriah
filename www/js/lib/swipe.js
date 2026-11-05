@@ -59,8 +59,9 @@ export function initSwipe(view){
     if(e.touches.length!==1){const wasH=lock==="h";sx=null;if(wasH)settle(0,reset);return}
     const x=e.touches[0].clientX-sx,y=e.touches[0].clientY-sy;
     if(lock===null){
-      if(Math.abs(x)<8&&Math.abs(y)<8)return;
-      lock=Math.abs(x)>Math.abs(y)*1.2?"h":"v";
+      if(Math.abs(x)<16&&Math.abs(y)<16)return;
+      /* Ketukan yang sedikit bergeser (mis. mencentang absensi) tidak dianggap geser halaman */
+      lock=Math.abs(x)>Math.abs(y)*1.8?"h":"v";
       if(lock==="h"){dir=x<0?1:-1;target=neighbor(dir)}
     }
     if(lock!=="h")return;

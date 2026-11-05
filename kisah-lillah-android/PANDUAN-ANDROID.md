@@ -17,7 +17,7 @@ Berkas dilayani dengan alamat `https://agenda-hijriah.vercel.app/` sehingga data
   - **Adzan** (`res/raw/adzan.mp3`, `adzan_subuh.mp3`) sebagai alarm tepat waktu, mengikuti pengaturan Adzan di aplikasi
     (notifikasi / suara / waktu yang dimatikan). Bawaan pemasangan pertama: aktif. Dipasang ulang setelah HP menyala.
   - Notifikasi web (`Notification`) diarahkan ke notifikasi Android; getar tasbih, bagikan, warna bilah status mengikuti tema.
-  - **Masuk dengan Google** memakai lembar akun Google bawaan Android (Google melarang masuk di WebView), lalu token dipakai Firebase.
+  - **Masuk dengan Google** memakai lembar akun Google bawaan Android (Google melarang masuk di WebView), lalu token dipakai Firebase. Bila gagal (mis. sidik jari belum didaftarkan), otomatis lewat tab Chrome (`www/masuk-app.html`) dan kembali ke aplikasi lewat `kisahlillah://masuk`. Facebook selalu lewat tab Chrome.
     Facebook memakai cara pengalihan halaman.
   - Tombol kembali: menutup dialog, naik ke halaman induk; di Beranda tekan dua kali untuk keluar.
   - Pintasan tekan-lama ikon: Isi absensi, Jadwal shalat, Al-Qur'an.
