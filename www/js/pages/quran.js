@@ -91,11 +91,11 @@ async function index(box,isAlive){
   show();
   /* Geser samping berpindah tab (Surah, Juz, Bookmark, Terakhir Baca), seperti WhatsApp: tab sebelahnya ikut bergeser
      masuk. Pratinjau digambar ke wadah sementara dengan fungsi panel yang sama */
-  const TABS=["surah","juz","bm","hist"],FN={surah:surahPanel,juz:juzPanel,bm:bmPanel,hist:histPanel};
+  const URUT=["surah","juz","bm","hist"],FN={surah:surahPanel,juz:juzPanel,bm:bmPanel,hist:histPanel};
   const pratinjau=t=>{const asli=panel,tmp=document.createElement("div");tmp.className=asli.className;panel=tmp;try{FN[t]()}finally{panel=asli}return tmp};
   geser(box,{aktif:()=>panel,
-    tetangga:d=>{const t=TABS[TABS.indexOf(tab)+d];return t?pratinjau(t):null},
-    pindah:d=>{const t=TABS[TABS.indexOf(tab)+d];if(t){tab=t;show()}}});
+    tetangga:d=>{const t=URUT[URUT.indexOf(tab)+d];return t?pratinjau(t):null},
+    pindah:d=>{const t=URUT[URUT.indexOf(tab)+d];if(t){tab=t;show()}}});
 }
 
 export default async function(root,args){
