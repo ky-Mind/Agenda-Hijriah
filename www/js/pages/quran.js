@@ -1,5 +1,6 @@
 import {get,set,toast} from "../store.js";
 import {esc,skeleton,fail,copy,dialog} from "../lib/ui.js";
+import {geser} from "../lib/geser.js";
 /* Jumlah ayat baku tiap surah (total 6.236). Data dari sumber mana pun yang tidak cocok ditolak, lalu dicoba sumber cadangan. */
 const COUNT=[7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
 const CDN="https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/chapters/id/",EQ="https://equran.id/api/v2/surat";
@@ -56,7 +57,7 @@ async function index(box,isAlive){
   if(!isAlive())return;
   const last=get("quran_last");let tab="surah";
   box.innerHTML=`<div class="head"><h1>Al-Qur'an</h1><p>114 surah dengan terjemahan Indonesia, transliterasi, dan audio. Sumber: ${esc(r.src)}.</p></div>${last?`<a class="card" href="#/quran/${last.surah}/${last.ayat}"><h2>Lanjutkan membaca</h2><p>${esc(last.nama)} · ayat ${last.ayat}</p></a>`:""}<div class="seg qtabs" role="group" aria-label="Tampilan daftar">${TABS.map(([k,l])=>`<button type="button" data-tab="${k}" aria-pressed="false">${l}</button>`).join("")}</div><div data-p></div>`;
-  const panel=box.querySelector("[data-p]");
+  let panel=box.querySelector("[data-p]");
   const surahPanel=()=>{
     panel.innerHTML=`<div class="field"><input type="search" placeholder="Cari surah (nama atau nomor)" aria-label="Cari surah" data-q></div><div class="grid" data-l></div>`;
     const l=panel.querySelector("[data-l]"),draw=q=>{q=q.toLowerCase().trim();l.innerHTML=r.list.filter(s=>!q||`${s.id} ${s.transliteration} ${s.translation} ${s.name}`.toLowerCase().includes(q)).map(s=>`<a class="card" href="#/quran/${s.id}"><div class="row sp"><h2>${s.id}. ${esc(s.transliteration)}</h2><span class="arab" style="font-size:22px;line-height:1.4">${esc(s.name)}</span></div><p>${esc(s.translation)} · ${s.total_verses} ayat · ${tipe(s.type)}</p></a>`).join("")||'<div class="empty">Surah tidak ditemukan.</div>'};
@@ -88,6 +89,13 @@ async function index(box,isAlive){
     if(b.hasAttribute("data-hc")){if(await confirmDel("Hapus riwayat?","Semua riwayat terakhir baca akan dihapus. Lanjutkan membaca tetap tersimpan.")){set("quran_hist",[]);show()}}
   };
   show();
+  /* Geser samping berpindah tab (Surah, Juz, Bookmark, Terakhir Baca), seperti WhatsApp: tab sebelahnya ikut bergeser
+     masuk. Pratinjau digambar ke wadah sementara dengan fungsi panel yang sama */
+  const TABS=["surah","juz","bm","hist"],FN={surah:surahPanel,juz:juzPanel,bm:bmPanel,hist:histPanel};
+  const pratinjau=t=>{const asli=panel,tmp=document.createElement("div");tmp.className=asli.className;panel=tmp;try{FN[t]()}finally{panel=asli}return tmp};
+  geser(box,{aktif:()=>panel,
+    tetangga:d=>{const t=TABS[TABS.indexOf(tab)+d];return t?pratinjau(t):null},
+    pindah:d=>{const t=TABS[TABS.indexOf(tab)+d];if(t){tab=t;show()}}});
 }
 
 export default async function(root,args){
@@ -229,20 +237,15 @@ export default async function(root,args){
   const openSheet=()=>{if(!sheet.isConnected)document.body.appendChild(sheet)},closeSheet=()=>sheet.remove();
   const barClick=e=>{if(e.target.closest("[data-qset]"))openSheet()};
   const onKey=e=>{if(e.key==="Escape")return closeSheet();if(sheet.isConnected||e.target.closest?.("input,textarea"))return;if(e.key==="ArrowRight")flip(1);else if(e.key==="ArrowLeft")flip(-1)};
-  /* Geser kartu ke kiri/kanan (jari atau mouse) untuk pindah halaman. Geser tegak tetap untuk scroll biasa */
-  let gx=null,gy=0,gdx=0,glock=null,dragged=false;
-  v.addEventListener("pointerdown",e=>{if(e.button>0||e.target.closest("button"))return;gx=e.clientX;gy=e.clientY;gdx=0;glock=null});
-  v.addEventListener("pointermove",e=>{if(gx==null)return;const dx=e.clientX-gx,dy=e.clientY-gy;
-    if(glock==null&&Math.hypot(dx,dy)>10){glock=Math.abs(dx)>Math.abs(dy)*1.3;if(glock)v.setPointerCapture(e.pointerId)}
-    if(!glock)return;gdx=dx;v.style.transition="none";v.style.transform=`translateX(${dx*.5}px)`;v.style.opacity=1-Math.min(.4,Math.abs(dx)/700)});
-  /* Lepas geseran: kartu lama memudar sebentar ke arah geseran, lalu halaman baru masuk geser pendek + memudar (sama seperti pindah halaman utama) */
-  const gEnd=()=>{if(gx==null)return;gx=null;if(!glock){v.style.transition=v.style.transform=v.style.opacity="";return}dragged=true;setTimeout(()=>dragged=false,50);
-    const d=gdx<0?1:-1,can=Math.abs(gdx)>60&&(pg+d>=0&&pg+d<pages.length||d>0&&n<114||d<0&&n>1);
-    if(!can){v.style.transition="transform .22s var(--ease),opacity .22s";v.style.transform="";v.style.opacity="";setTimeout(()=>v.style.transition="",240);return}
-    v.style.transition="transform .14s ease-in,opacity .14s ease-in";v.style.transform=`translateX(${gdx*.5-d*36}px)`;v.style.opacity="0";
-    /* Pindah surah: kartu dibiarkan tak terlihat sampai halaman surah baru tampil, supaya tidak berkedip */
-    setTimeout(()=>{if(pg+d>=0&&pg+d<pages.length){v.style.transition="none";v.style.transform="";v.style.opacity=""}flip(d)},140)};
-  v.addEventListener("pointerup",gEnd);v.addEventListener("pointercancel",gEnd);
+  /* Geser kartu ke kiri/kanan untuk pindah halaman ayat, seperti WhatsApp: halaman sebelahnya ikut bergeser masuk
+     bersama jari; di ujung surah tampil kartu surah berikutnya/sebelumnya. Geser tegak tetap untuk scroll biasa */
+  let dragged=false;
+  const kartuSurah=d=>{const k=n+d;if(k<1||k>114)return null;const c=document.createElement("div");c.className=v.className.replace(/\b(pg-in|pg-l|pg-r)\b/g,"");
+    c.innerHTML=`<div class="geser-surah"><small>${d>0?"Surah berikutnya":"Surah sebelumnya"}</small><b>${esc(box.querySelector(`[data-nm="${k}"]`)?.textContent||`Surah ke-${k}`)}</b><span>Lepaskan untuk membuka</span></div>`;return c};
+  geser(v,{aktif:()=>v,
+    tetangga:d=>{const np=pg+d;if(np<0||np>=pages.length)return kartuSurah(d);const simpan=pg;pg=np;const h=html();pg=simpan;
+      const c=document.createElement("div");c.className=v.className.replace(/\b(pg-in|pg-l|pg-r)\b/g,"");c.style.cssText=v.style.cssText;c.innerHTML=h;c.querySelectorAll("[id]").forEach(x=>x.removeAttribute("id"));return c},
+    pindah:d=>{const np=pg+d;if(np>=0&&np<pages.length){pg=np;sel=0;slide="";draw(true);v.scrollIntoView({block:"start",behavior:"instant"})}else flip(d)}});
   bar.innerHTML=`<button class="icb" type="button" data-qset aria-label="Pengaturan baca"><svg class="ic"><use href="#i-gear" /></svg></button>`;
   bar.addEventListener("click",barClick);document.addEventListener("keydown",onKey);
   box.onclick=e=>{if(!dragged)onAct(e)};

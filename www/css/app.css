@@ -787,3 +787,14 @@ html.bugpick #view *{cursor:crosshair!important}
 /* Tasbih di layar lebar (desktop): isi di tengah, lingkaran menyesuaikan tinggi layar */
 @media(min-width:761px){.tsb-hal{display:flex;flex-direction:column;align-items:center;min-height:calc(100dvh - 120px);justify-content:center}.tsb-hal>*{width:100%}.tsb-hal .chips{justify-content:center;flex-wrap:wrap}.tsb-hal .ring{width:min(420px,calc(100dvh - 330px));min-width:240px}}
 .perm .btn,.perm .badge{white-space:nowrap;flex:none}
+/* Geser antar halaman seperti WhatsApp: potret halaman sebelah menempati sel grid yang sama dengan #view */
+.peek{grid-area:main;overflow:hidden;background:var(--bg);pointer-events:none;will-change:transform;min-width:0;min-height:0;position:relative;z-index:1}
+.peek *{animation:none!important;transition:none!important}
+@media(max-width:760px){.peek[data-mobile-title="header"] .head h1{display:none}}
+/* Pratinjau panel sebelah saat menggeser di dalam halaman (Al-Qur'an, tab Profil) */
+.geser-pv{position:absolute;margin:0!important;pointer-events:none;will-change:transform;z-index:1}
+.geser-pv *{animation:none!important;transition:none!important}
+.geser-on{overflow-x:clip}
+.geser-surah{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:240px;text-align:center}
+.geser-surah small{color:var(--muted)}.geser-surah b{font-size:20px}.geser-surah span{font-size:12.5px;color:var(--accent)}
+.prerender{position:fixed;left:-20000px;top:0;visibility:hidden;pointer-events:none;contain:strict;height:100vh;overflow:hidden}

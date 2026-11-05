@@ -13,6 +13,7 @@ import {signIn,signInEmail,signUpEmail,resetPassword,signOut,authErrorMessage} f
 import {FIRESTORE_RULES} from "../lib/rules.js";
 import {pickPart,loadDraft,saveDraft,clearDraft} from "../lib/bugpick.js";
 import {VERSION,BUILD} from "../version.js";
+import {geser} from "../lib/geser.js";
 
 /* Menu bagian pengaturan: kunci, ikon, judul, dan keterangan singkat */
 const SECTIONS={
@@ -57,6 +58,12 @@ export default function(root){
     if(sec)sec.textContent=tab?tab.textContent:"";
   }
   tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.tab)));
+  /* Geser samping berpindah tab, seperti WhatsApp: tab sebelahnya ikut bergeser masuk bersama jari */
+  const urut=tabs.map(b=>b.dataset.tab),kini=()=>groups.find(g=>!g.hidden);
+  const sebelah=d=>{const g=kini();return g?urut[urut.indexOf(g.dataset.g)+d]:null};
+  geser(root,{aktif:kini,
+    tetangga:d=>{const t=sebelah(d),g=t&&groups.find(x=>x.dataset.g===t);if(!g)return null;const c=g.cloneNode(true);c.hidden=false;c.removeAttribute("data-g");c.querySelectorAll("[id]").forEach(x=>x.removeAttribute("id"));return c},
+    pindah:d=>{const t=sebelah(d);if(t){show(t);tabs.find(b=>b.dataset.tab===t)?.scrollIntoView({inline:"center",block:"nearest"})}}});
   const first=readTab();
   show(tabs.some(b=>b.dataset.tab===first)?first:"profil");
 

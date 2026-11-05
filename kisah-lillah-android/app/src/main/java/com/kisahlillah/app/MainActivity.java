@@ -162,7 +162,7 @@ public class MainActivity extends Activity {
         else bukaIntent(getIntent(), true);
 
         /* Pertama kali dibuka: minta izin notifikasi & lokasi (jadwal shalat, adzan, widget) */
-        if (!pref.getBoolean("izin_awal", false)) web.postDelayed(this::mintaIzinAwal, 1800);
+        /* Izin tidak diminta otomatis: dialog "Selamat datang" di aplikasi yang memintanya (lokasi, notifikasi adzan) */
     }
 
     /* ===== Berkas aplikasi dari dalam APK (assets/www) ===== */
@@ -346,13 +346,32 @@ public class MainActivity extends Activity {
         String s = Notifikasi.cek(this);
         if ("ok".equals(s)) return "granted";
         if ("mati".equals(s)) return "denied";
-        boolean pernah = pref.getBoolean("diminta_notif", false);
-        return pernah && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ? "denied" : "default";
+        return pref.getBoolean("tolak_notif", false) && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ? "denied" : "default";
+    }
+
+    /** Izin lokasi untuk halaman: granted | denied (ditolak permanen) | prompt */
+    private String izinLokasi() {
+        if (punya(Manifest.permission.ACCESS_FINE_LOCATION) || punya(Manifest.permission.ACCESS_COARSE_LOCATION)) return "granted";
+        return pref.getBoolean("tolak_lokasi", false) && !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ? "denied" : "prompt";
+    }
+
+    private static final int RQ_LOKASI_JS = 15;
+    private void mintaLokasi() {
+        String st = izinLokasi();
+        if ("granted".equals(st)) { js("window.__klIzinLokasi&&__klIzinLokasi('granted')"); return; }
+        if ("denied".equals(st)) {
+            toast("Izin lokasi diblokir. Buka Izin › Lokasi › Izinkan, lalu kembali ke aplikasi.");
+            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName())));
+            js("window.__klIzinLokasi&&__klIzinLokasi('denied')");
+            return;
+        }
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, RQ_LOKASI_JS);
     }
 
     private void mintaNotif() {
         String s = izinNotif();
         if (!"default".equals(s) || Build.VERSION.SDK_INT < 33) {
+            if ("granted".equals(s)) { pref.edit().putBoolean("izin_berantai", true).putBoolean("izin_awal", true).apply(); web.postDelayed(this::lanjutIzin, 500); }
             if ("denied".equals(s)) { bukaPengaturanNotif(); toast("Izinkan notifikasi Kisah Lillah di Pengaturan"); }
             kirimIzinNotif();
             return;
@@ -389,6 +408,7 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int kode, String[] izin, int[] hasil) {
         super.onRequestPermissionsResult(kode, izin, hasil);
+        boolean ok = hasil.length > 0 && hasil[0] == PackageManager.PERMISSION_GRANTED;
         if (kode == RQ_IZIN_WEB && mintaWeb != null) {
             ArrayList<String> beri = new ArrayList<>();
             for (String r : mintaWeb.getResources()) {
@@ -397,13 +417,19 @@ public class MainActivity extends Activity {
             }
             if (beri.isEmpty()) mintaWeb.deny(); else mintaWeb.grant(beri.toArray(new String[0]));
             mintaWeb = null;
+        } else if (kode == RQ_LOKASI_JS) {
+            if (!punya(Manifest.permission.ACCESS_FINE_LOCATION) && !punya(Manifest.permission.ACCESS_COARSE_LOCATION)) pref.edit().putBoolean("tolak_lokasi", true).apply();
+            js("window.__klIzinLokasi&&__klIzinLokasi(" + JSONObject.quote(izinLokasi()) + ")");
         } else if (kode == RQ_IZIN_LOKASI && geoCb != null) {
+            if (!ok && !punya(Manifest.permission.ACCESS_COARSE_LOCATION)) pref.edit().putBoolean("tolak_lokasi", true).apply();
             geoCb.invoke(geoAsal, punya(Manifest.permission.ACCESS_FINE_LOCATION) || punya(Manifest.permission.ACCESS_COARSE_LOCATION), false);
             geoCb = null;
         } else if (kode == RQ_IZIN_AWAL) {
             kirimIzinNotif();
             web.postDelayed(this::lanjutIzin, 500);
         } else if (kode == RQ_IZIN_NOTIF) {
+            if (!ok) pref.edit().putBoolean("tolak_notif", true).apply();
+            else { pref.edit().putBoolean("izin_berantai", true).putBoolean("izin_awal", true).apply(); web.postDelayed(this::lanjutIzin, 500); }
             kirimIzinNotif();
         }
     }
@@ -606,6 +632,10 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface public String izinNotif() { return MainActivity.this.izinNotif(); }
+
+        @JavascriptInterface public String izinLokasi() { return MainActivity.this.izinLokasi(); }
+
+        @JavascriptInterface public void mintaLokasi() { runOnUiThread(MainActivity.this::mintaLokasi); }
 
         @JavascriptInterface public void mintaNotif() { runOnUiThread(MainActivity.this::mintaNotif); }
 

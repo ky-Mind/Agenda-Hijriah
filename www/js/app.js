@@ -8,13 +8,15 @@ import {onboard} from "./lib/onboard.js";
 import {hijriText} from "./lib/hijri.js";
 import {loc} from "./lib/prayer.js";
 import {initKili} from "./lib/kili.js";
-import {initSwipe} from "./lib/swipe.js";
+import {initSwipe,initBackSwipe} from "./lib/swipe.js";
 import {initPullRefresh} from "./lib/ptr.js";
 const view=document.getElementById("view"),LABEL={beranda:"Beranda",absensi:"Absensi",rekap:"Rekap",kalender:"Kalender",shalat:"Shalat",koleksi:"Koleksi",quran:"Al-Qur'an",hadits:"Hadits",doa:"Do'a",dzikir:"Dzikir",mutiara:"Kata Mutiara",pesan:"Pesan",tasbih:"Tasbih",profil:"Profil"};
 const PARENT={rekap:"absensi",quran:"koleksi",hadits:"koleksi",doa:"koleksi",dzikir:"koleksi",mutiara:"koleksi",tasbih:"koleksi"};
 const html={},mods={};let cleanup=null,seq=0,shown=location.hash,skip=false,quiet=false;
 window.KLGuard=null; /* halaman dapat mengisi {dirty(),save(),discard()} untuk menahan perpindahan saat ada perubahan belum tersimpan */
-const loadHtml=n=>html[n]??=fetch(`pages/${n}.html`,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(`pages/${n}.html (HTTP ${r.status})`);return r.text()}).catch(e=>{delete html[n];throw e});
+/* KLSnap[halaman] = potret isi terakhir (kerangka HTML bila belum pernah dibuka); dipakai swipe.js saat menggeser */
+const KLSnap=window.KLSnap={};let curKey=null;
+const loadHtml=n=>html[n]??=fetch(`pages/${n}.html`,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(`pages/${n}.html (HTTP ${r.status})`);return r.text()}).then(t=>{KLSnap[n]??={html:t,mt:""};return t}).catch(e=>{delete html[n];throw e});
 const NOJS=new Set(["koleksi"]);
 const loadMod=n=>NOJS.has(n)?Promise.resolve(null):mods[n]??=import(`./pages/${n}.js`).catch(e=>{console.error("Modul halaman gagal dimuat:",n,e);delete mods[n];return null});
 const ROOTS=["beranda","absensi","kalender","shalat","koleksi","profil","pesan"],bar=document.getElementById("bar"),backBtn=document.getElementById("back"),ttl=document.getElementById("ttl"),root=document.documentElement;
@@ -65,7 +67,7 @@ async function render(){
     if(!q){document.querySelectorAll(".modal").forEach(m=>{m.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))});
       document.querySelectorAll(".modal,.qact,.qact-latar").forEach(m=>m.remove())}
     if(cleanup){try{cleanup()}catch(e){}cleanup=null}
-    window.KLGuard=null;view.onclick=null;view.oninput=null;const st=q?view.scrollTop:0;view.innerHTML=h;view.scrollTop=st;view.classList.remove("busy");
+    window.KLGuard=null;view.onclick=null;view.oninput=null;if(curKey&&!q)KLSnap[curKey]={html:view.innerHTML,mt:view.dataset.mobileTitle||"",asli:true};const st=q?view.scrollTop:0;view.innerHTML=h;view.scrollTop=st;curKey=[name,...args].join("/");view.classList.remove("busy");
     paintBar(name,args);
     const heading=view.querySelector("h1");
     if(heading&&ROOTS.includes(name)&&name!=="beranda")ttl.textContent=heading.textContent.trim();
@@ -105,18 +107,37 @@ addEventListener("offline",()=>toast("Kamu sedang offline"));addEventListener("o
 if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 import("./lib/widgetdata.js").then(w=>{w.pushWidget();["kl-loc","kl-data-changed"].forEach(e=>document.addEventListener(e,()=>w.pushWidget()))}).catch(()=>{});
 render().then(()=>{if(location.protocol.startsWith("http")&&!localStorage.getItem("kl_onboard"))setTimeout(onboard,1500)});
+/* Pratinjau geser (seperti WhatsApp): halaman utama yang belum dibuka digambar diam-diam sekali di luar layar, supaya
+   saat menggeser, halaman sebelah tampil dengan isi aslinya (bukan kerangka kosong). Diulang saat data berubah. */
+const UTAMA=["beranda","absensi","kalender","shalat","koleksi","profil"];let pratinjauJalan=false;
+async function pratinjauLatar(){
+  if(pratinjauJalan)return;pratinjauJalan=true;
+  try{for(const n of UTAMA){
+    if(KLSnap[n]?.asli||curKey===n)continue;
+    try{
+      const [h,m]=await Promise.all([loadHtml(n),loadMod(n)]);
+      const box=document.createElement("div");box.className="prerender";box.setAttribute("aria-hidden","true");box.style.width=view.clientWidth+"px";box.innerHTML=h;document.body.appendChild(box);
+      const jaga=window.KLGuard;let c=null;
+      try{c=m?.default?await m.default(box,[]):null}catch(e){}
+      await wait(800);
+      if(curKey!==n&&!KLSnap[n]?.asli)KLSnap[n]={html:box.innerHTML,mt:n!=="beranda"&&box.querySelector("h1")?"header":"",asli:true};
+      try{c?.()}catch(e){}window.KLGuard=jaga;box.remove();
+    }catch(e){}
+    await wait(120);
+  }}finally{pratinjauJalan=false}
+}
+document.addEventListener("kl-data-changed",()=>{for(const k in KLSnap)if(k!==curKey&&UTAMA.includes(k))KLSnap[k].asli=false;setTimeout(pratinjauLatar,1500)});
 /* Muat semua halaman di latar belakang agar perpindahan halaman langsung tampil tanpa jeda */
 setTimeout(()=>Object.keys(LABEL).forEach((n,i)=>setTimeout(()=>{loadHtml(n).catch(()=>{});loadMod(n)},200*i)),1500);
+setTimeout(pratinjauLatar,2500);
 
-let sw=null;addEventListener("touchstart",e=>{const t=e.touches[0];sw=!backBtn.hidden&&t.clientX<28?{x:t.clientX,y:t.clientY}:null},{passive:true});
-addEventListener("touchend",e=>{if(!sw)return;const t=e.changedTouches[0];if(t.clientX-sw.x>80&&Math.abs(t.clientY-sw.y)<60)backBtn.click();sw=null},{passive:true});
 const offp=document.getElementById("offp"),offUp=()=>{offp.hidden=navigator.onLine};addEventListener("online",offUp);addEventListener("offline",offUp);offUp();
 
 /* Pesan: inisialisasi per akun + lencana belum dibaca */
 window.__klAuth?.onAuthStateChanged(u=>{chat.init(u);push.refresh(u)});
 document.addEventListener("kl-chat",setBadge);
 initKili();
-initSwipe(view);
+initSwipe(view);initBackSwipe(view,backBtn);
 /* Tarik untuk muat ulang: tarik data cloud terbaru lalu pasang ulang halaman yang sedang dibuka (tanpa animasi pindah halaman) */
 initPullRefresh(view,()=>{window.KLSync?.now?.();return Promise.resolve()});
 document.addEventListener("kl-profile",()=>chat.register(window.__klAuth?.currentUser));

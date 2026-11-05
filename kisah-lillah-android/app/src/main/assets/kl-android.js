@@ -52,6 +52,31 @@
   window.Notification = Notif;
   try { if (window.ServiceWorkerRegistration) ServiceWorkerRegistration.prototype.showNotification = function (t, o) { new Notif(t, o); return Promise.resolve(); }; } catch (e) {}
 
+  /* Status izin untuk halaman (dialog Selamat datang, Profil) dibaca dari Android, bukan dari WebView */
+  try {
+    var qAsli = navigator.permissions && navigator.permissions.query ? navigator.permissions.query.bind(navigator.permissions) : null;
+    if (navigator.permissions) navigator.permissions.query = function (d) {
+      var n = d && d.name;
+      if (n === "geolocation") return Promise.resolve({ state: A.izinLokasi(), onchange: null });
+      if (n === "notifications") { var x = A.izinNotif(); return Promise.resolve({ state: x === "default" ? "prompt" : x, onchange: null }); }
+      return qAsli ? qAsli(d) : Promise.reject(new Error("tidak didukung"));
+    };
+  } catch (e) {}
+  /* Lokasi: minta izin Android dulu (dialog jelas "Izinkan Kisah Lillah mengakses lokasi?"), baru ambil posisi.
+     Bila izin diblokir permanen, Pengaturan aplikasi dibuka. */
+  try {
+    var g = navigator.geolocation, posAsli = g.getCurrentPosition.bind(g);
+    g.getCurrentPosition = function (ok, gagal, opsi) {
+      if (A.izinLokasi() === "granted") return posAsli(ok, gagal, opsi);
+      window.__klIzinLokasi = function (st) {
+        window.__klIzinLokasi = null;
+        if (st === "granted") posAsli(ok, gagal, opsi);
+        else if (gagal) gagal({ code: 1, message: "Izin lokasi ditolak" });
+      };
+      A.mintaLokasi();
+    };
+  } catch (e) {}
+
   /* Semua file sudah ada di dalam APK: service worker (cache offline) tidak diperlukan */
   try {
     if (navigator.serviceWorker) {
