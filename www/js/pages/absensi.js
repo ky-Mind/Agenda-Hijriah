@@ -35,7 +35,14 @@ export default function(root,args){
   $("note").oninput=e=>{note=e.target.value;$("state").innerHTML=dirty()?'<span class="dirty">● Ada perubahan belum disimpan</span>':"Tersimpan"};
   $("list").onclick=async e=>{const row=e.target.closest("[data-id]");if(!row)return;const id=row.dataset.id;
     if(e.target.closest("[data-del]")){if(await ask("Hapus ibadah?","Ibadah ini dihapus dari daftar. Catatan lama tidak ikut terhapus.","Hapus")){saveAgenda(agenda().filter(i=>i.id!==id));delete rec[id];draw()}return}
-    const b=e.target.closest("[data-v]");if(!b)return;const v=+b.dataset.v;rec[id]=rec[id]===v?null:v;draw()};
+    const b=e.target.closest("[data-v]");if(!b)return;const v=+b.dataset.v;rec[id]=rec[id]===v?null:v;ringan(row)};
+  /* Centang/silang: hanya tombol di baris itu, ringkasan, dan status yang diperbarui (tanpa menggambar ulang
+     seluruh daftar, yang membuat halaman terlihat berkedip/bergerak) */
+  function ringan(row){
+    const id=row.dataset.id;row.querySelectorAll("[data-v]").forEach(x=>{const on=rec[id]===+x.dataset.v;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
+    const p=calc(rec);$("ringkas").textContent=`${p.done} terlaksana · ${p.miss} terlewat · ${p.total-p.done-p.miss} belum diisi${p.rest?` · ${p.rest} datang bulan`:""}`;$("pct").textContent=p.pct+"%";$("bar").style.width=p.pct+"%";
+    const t=savedAt(k);$("state").innerHTML=dirty()?'<span class="dirty">● Ada perubahan belum disimpan</span>':t?`Tersimpan ${new Date(t).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})}`:"Belum ada data tersimpan";
+  }
   $("addform").onsubmit=e=>{e.preventDefault();const n=$("newname").value.trim();if(!n)return;saveAgenda([...agenda(),{id:"c"+Date.now().toString(36),nama:n,ic:$("newic").value.trim()||"✨"}]);$("newname").value="";$("newic").value="";draw()};
   $("reset").onclick=async()=>{if(await ask("Kembalikan daftar bawaan?","Daftar ibadah kembali seperti semula. Data absensi yang sudah tercatat tetap aman.","Kembalikan")){resetAgenda();draw()}};
   $("save").onclick=save;

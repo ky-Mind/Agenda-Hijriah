@@ -742,3 +742,15 @@ html.bugpick #view *{cursor:crosshair!important}
 /* Tasbih digital: lingkaran besar memenuhi layar */
 .ring{width:min(440px,90vw,58vh);margin:14px auto 18px}.ring circle{stroke-width:6}
 .ring button{font-size:clamp(64px,20vw,108px);font-weight:600;letter-spacing:-.02em}
+
+/* Tasbih: muat satu layar; pengaturan di popup tengah */
+.tasbih .head{margin-bottom:8px}.tasbih .head h1{font-size:22px}.tasbih .chips{margin-bottom:2px}
+.tasbih .ring{width:min(440px,90vw,calc(100dvh - 400px));min-width:220px;margin:6px auto 14px}
+.tset-btn{border-radius:999px;gap:7px}.tset-btn small{font-weight:400;font-size:12.5px}
+.tset .box{width:min(380px,100%)}.tset-head{margin-bottom:6px}.tset-head h2{font-size:18px}
+.tset-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.tset-row .btn{min-width:96px;border-radius:999px}.tset-row .btn[aria-pressed=true]{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.tset-row select{min-width:96px}
+.tset-act{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:14px;border-top:1px solid var(--line)}.tset-act .btn{gap:6px;border-radius:999px}
+.tset.out .box{opacity:0;transform:scale(.97);transition:opacity .15s,transform .15s}.tset.out{opacity:0;transition:opacity .15s}
+.tset .btn:not(.danger){border:1px solid var(--line);background:var(--raised)}.tset .btn.ghost{border:0;background:transparent}
