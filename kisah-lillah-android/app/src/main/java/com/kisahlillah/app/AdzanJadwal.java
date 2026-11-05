@@ -43,6 +43,7 @@ final class AdzanJadwal {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
         for (int k = 0; k < MAKS; k++) am.cancel(niat(c, k, null, null, null));
+        p.edit().putInt("alarm_n", 0).putString("alarm_berikut", "").apply();
         JSONObject s;
         try { s = new JSONObject(p.getString("adzan", "{}")); } catch (Exception e) { s = new JSONObject(); }
         boolean notif = s.optBoolean("notif"), suara = s.optBoolean("sound");
@@ -67,8 +68,10 @@ final class AdzanJadwal {
             PendingIntent pi = niat(c, n, "Waktu " + nama, "Waktu " + nama + " telah tiba untuk wilayah " + (lok.isEmpty() ? "kamu" : lok) + ".", jenis);
             if (tepat) am.setAlarmClock(new AlarmManager.AlarmClockInfo(t, bukaAplikasi(c)), pi);
             else am.setWindow(AlarmManager.RTC_WAKEUP, t, 60_000, pi);
+            if (n == 0) p.edit().putString("alarm_berikut", nama + " " + x[1]).putLong("alarm_t", t).apply();
             n++;
         }
+        p.edit().putInt("alarm_n", n).apply();
     }
 
     /** Uji: adzan berbunyi beberapa detik lagi (untuk dicoba dengan aplikasi ditutup & layar mati) */

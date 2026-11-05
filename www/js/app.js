@@ -60,6 +60,10 @@ async function render(){
   let h,m,err="";try{[h,m]=await Promise.all([loadHtml(name),loadMod(name)])}catch(e){err=e.message;h=`<div class="wrap"><div class="empty"><p>Halaman tidak dapat dimuat.</p><p class="muted" style="font-size:12px;word-break:break-all">${String(err).replace(/</g,"&lt;")}</p><button class="btn sm mt" onclick="location.reload()">Muat ulang</button></div></div>`;m=null}
   clearTimeout(slow);if(my!==seq)return;
   const swap=()=>{
+    /* Keluar dari halaman (tombol kembali aplikasi, navigasi, atau tombol kembali HP): popup yang masih terbuka ikut ditutup.
+       Dialog ditutup lewat Escape agar janji (Promise)-nya selesai; sisanya dihapus */
+    if(!q){document.querySelectorAll(".modal").forEach(m=>{m.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))});
+      document.querySelectorAll(".modal,.qact,.qact-latar").forEach(m=>m.remove())}
     if(cleanup){try{cleanup()}catch(e){}cleanup=null}
     window.KLGuard=null;view.onclick=null;view.oninput=null;const st=q?view.scrollTop:0;view.innerHTML=h;view.scrollTop=st;view.classList.remove("busy");
     paintBar(name,args);

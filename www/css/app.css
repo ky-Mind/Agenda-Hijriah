@@ -744,8 +744,8 @@ html.bugpick #view *{cursor:crosshair!important}
 .ring button{font-size:clamp(64px,20vw,108px);font-weight:600;letter-spacing:-.02em}
 
 /* Tasbih: muat satu layar; pengaturan di popup tengah */
-.tasbih .head{margin-bottom:8px}.tasbih .head h1{font-size:22px}.tasbih .chips{margin-bottom:2px}
-.tasbih .ring{width:min(440px,90vw,calc(100dvh - 400px));min-width:220px;margin:6px auto 14px}
+.tsb-hal .head{margin-bottom:8px}.tsb-hal .head h1{font-size:22px}.tsb-hal .chips{margin-bottom:2px}
+.tsb-hal .ring{width:min(440px,90vw,calc(100dvh - 400px));min-width:220px;margin:6px auto 14px}
 .tset-btn{border-radius:999px;gap:7px}.tset-btn small{font-weight:400;font-size:12.5px}
 .tset .box{width:min(380px,100%)}.tset-head{margin-bottom:6px}.tset-head h2{font-size:18px}
 .tset-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
@@ -783,3 +783,7 @@ html.bugpick #view *{cursor:crosshair!important}
 .qr .fl.tuju{background:color-mix(in srgb,var(--accent) 20%,transparent);border-radius:8px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .qr .tuju.kedip{animation:aykedip .3s ease-in-out 3}
 @keyframes aykedip{50%{background:color-mix(in srgb,var(--accent) 40%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 38%,transparent)}}
+.ksl-pv{margin-top:8px}.ksl-pv span{width:52px}
+/* Tasbih di layar lebar (desktop): isi di tengah, lingkaran menyesuaikan tinggi layar */
+@media(min-width:761px){.tsb-hal{display:flex;flex-direction:column;align-items:center;min-height:calc(100dvh - 120px);justify-content:center}.tsb-hal>*{width:100%}.tsb-hal .chips{justify-content:center;flex-wrap:wrap}.tsb-hal .ring{width:min(420px,calc(100dvh - 330px));min-width:240px}}
+.perm .btn,.perm .badge{white-space:nowrap;flex:none}

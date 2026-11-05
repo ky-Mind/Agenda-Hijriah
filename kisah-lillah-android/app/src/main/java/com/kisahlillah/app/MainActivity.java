@@ -295,6 +295,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        /* Pasang ulang alarm adzan tiap aplikasi dibuka (bila sempat dibatalkan sistem/hemat baterai) */
+        try { AdzanJadwal.pasang(this); } catch (Exception ignored) {}
+        js("window.dispatchEvent(new Event('kl-android-kembali'))");
         if (web != null) js("window.dispatchEvent(new Event('focus'))");
         /* Kembali dari halaman Pengaturan (alarm/baterai): lanjutkan langkah izin berikutnya */
         if (pref != null && pref.getBoolean("izin_berantai", false) && pref.getBoolean("izin_awal", false)) web.postDelayed(this::lanjutIzin, 400);
@@ -617,6 +620,43 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void hentikanAdzan() { AdzanLayanan.henti(MainActivity.this); }
 
         @JavascriptInterface public void ujiAdzan(int detik) { AdzanJadwal.uji(MainActivity.this, detik); }
+
+        /** Putar adzan sekarang lewat pemutar Android (jalur yang sama dengan saat aplikasi tertutup) */
+        @JavascriptInterface public void putarAdzan(String jenis) {
+            boolean subuh = "subuh".equals(jenis);
+            try { AdzanLayanan.mulai(MainActivity.this, subuh ? "Tes adzan Subuh" : "Tes adzan", "Beginilah adzan berbunyi saat waktu shalat tiba.", subuh ? "subuh" : "adzan"); }
+            catch (Exception e) { Notifikasi.tampil(MainActivity.this, "Tes adzan", "Beginilah adzan berbunyi saat waktu shalat tiba.", subuh ? "adzan_subuh" : "adzan"); }
+        }
+
+        /** Keadaan pengingat adzan untuk Profil: izin & alarm yang terpasang */
+        @JavascriptInterface public String statusAdzan() {
+            JSONObject o = new JSONObject();
+            try {
+                o.put("notif", Notifikasi.cek(MainActivity.this));
+                android.app.AlarmManager am = (android.app.AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                o.put("alarm", Build.VERSION.SDK_INT < 31 || (am != null && am.canScheduleExactAlarms()));
+                android.os.PowerManager pm = (android.os.PowerManager) getSystemService(Context.POWER_SERVICE);
+                o.put("baterai", pm == null || pm.isIgnoringBatteryOptimizations(getPackageName()));
+                o.put("n", pref.getInt("alarm_n", 0));
+                o.put("berikut", pref.getString("alarm_berikut", ""));
+                o.put("merek", Build.MANUFACTURER);
+            } catch (Exception ignored) {}
+            return o.toString();
+        }
+
+        /** Perbaiki satu izin: notif | alarm | baterai | aplikasi (pengaturan aplikasi: mulai otomatis/tanpa batasan) */
+        @JavascriptInterface public void perbaikiAdzan(String apa) {
+            runOnUiThread(() -> {
+                try {
+                    if ("notif".equals(apa)) { if (Build.VERSION.SDK_INT >= 33 && !punya(Manifest.permission.POST_NOTIFICATIONS) && !"denied".equals(izinNotif())) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, RQ_IZIN_NOTIF); else bukaPengaturanNotif(); }
+                    else if ("alarm".equals(apa) && Build.VERSION.SDK_INT >= 31) startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + getPackageName())));
+                    else if ("baterai".equals(apa)) {
+                        try { startActivity(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + getPackageName()))); }
+                        catch (Exception e) { startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)); }
+                    } else startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName())));
+                } catch (Exception e) { toast("Buka Pengaturan HP › Aplikasi › Kisah Lillah"); }
+            });
+        }
 
         @JavascriptInterface public void warnaBar(String atas, String bawah) {
             runOnUiThread(() -> {

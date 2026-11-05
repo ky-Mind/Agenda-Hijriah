@@ -120,17 +120,25 @@
     try { A.warnaBar(atas, bawah); } catch (e) {}
   }
 
-  /* Tombol kembali HP: tutup dialog/lembar dulu, lalu naik ke halaman induk; "akar" = sudah di Beranda */
+  /* Tombol kembali HP, format sama dengan fadzkuruuni (fadzKembali):
+     1) tutup popup paling atas (Pengaturan baca/tasbih, aksi ayat, dialog, pemilih tanggal)
+     2) halaman anak: naik ke halaman induk, sama seperti tombol ‹ di aplikasi
+     3) halaman utama selain Beranda: ke Beranda; di Beranda = "akar" (Android: tekan sekali lagi untuk keluar) */
+  var esc = function () { (document.activeElement || document.body).dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", keyCode: 27, bubbles: true, cancelable: true })); };
   window.klKembali = function () {
-    var jumlah = function () { return document.body.childElementCount + document.querySelectorAll(".modal,[open],.open,.show").length; };
-    var a = jumlah(), t = document.activeElement || document.body;
-    t.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", keyCode: 27, bubbles: true, cancelable: true }));
-    if (jumlah() !== a) return "ok";
-    /* Dialog yang tidak menanggapi Escape: ketuk latarnya (sama seperti mengetuk di luar kotak) */
-    var q = document.querySelector(".qact-latar");
-    if (q) { q.click(); return "ok"; }
-    var m = document.querySelectorAll(".modal");
-    if (m.length) { m[m.length - 1].click(); return "ok"; }
+    var o = document.querySelectorAll(".modal,.qact-latar");
+    if (o.length) {
+      var d = o[o.length - 1];
+      if (d.classList.contains("qact-latar")) { d.click(); return "ok"; }
+      esc();
+      if (d.isConnected) d.click();          // ketuk latar (sama dengan mengetuk di luar kotak)
+      if (d.isConnected) d.remove();
+      return "ok";
+    }
+    /* Panel lain yang menutup dengan Escape (mis. panel tasbih melayang, Kili) */
+    var n = document.querySelectorAll("[open],.open,.show").length;
+    esc();
+    if (document.querySelectorAll("[open],.open,.show").length !== n) return "ok";
     var b = document.getElementById("back");
     if (b && !b.hidden) { b.click(); return "ok"; }
     var h = location.hash.replace(/^#\/?/, "");

@@ -109,6 +109,7 @@ export default async function(root,args){
   sheet.innerHTML=`<div class="box ksh"><div class="ksh-h"><span class="si"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></span><div><b>Pengaturan baca</b><small>${s.id}. ${esc(s.transliteration)} · ${s.verses.length} ayat</small></div><button class="ksh-x" type="button" data-close aria-label="Tutup"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
     <div class="ksh-b">
     <div class="qpv"><span class="qpa arab" data-prev>${BISMILLAH}</span><small class="qpl" data-pvl>Bismillāhir-raḥmānir-raḥīm</small><small class="qpt" data-pvt>Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.</small></div>
+    <div class="ksh-c ksl ksl-pv"><span>Ukuran</span><input type="range" min="20" max="48" step="1" value="${pref.size}" aria-label="Ukuran huruf Arab" data-zr><b data-sz>${pref.size}</b></div>
     <div class="ksh-act"><button class="btn primary sm" type="button" data-all><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg>Putar semua</button><button class="btn sm" type="button" data-stop><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg>Berhenti</button><input type="number" min="1" max="${s.verses.length}" placeholder="Ayat ke…" aria-label="Lompat ke ayat" data-j></div>
     <div class="ksh-l">Mode baca</div><div class="qpills">${MODES.map(([k,l])=>`<button type="button" data-mode="${k}" aria-pressed="false">${l}</button>`).join("")}</div>
     <div class="ksh-l">Tampilkan</div>
@@ -116,7 +117,6 @@ export default async function(root,args){
     <div class="ksh-c ksh-mt">${sw("latin","Transliterasi","Teks Latin di bawah teks Arab")}${sw("arti","Terjemahan","Arti dalam bahasa Indonesia")}</div>
     <div class="ksh-c">${sw("tajwid","Tajwid berwarna","Warna sesuai hukum bacaan")}<div class="tjlegend"><span class="tj-gh">Dengung</span><span class="tj-ql">Qalqalah</span><span class="tj-md">Mad</span><span class="tj-sl">Tidak dibaca</span></div></div>
     <div class="ksh-l">Tema baca</div><div class="qthemes">${THEMES.map(([k,l,c])=>`<button type="button" data-th="${k}" style="--c:${c}" aria-pressed="false"><i></i>${l}</button>`).join("")}</div>
-    <div class="ksh-l">Ukuran huruf Arab</div><div class="ksh-c ksl"><span>Arab</span><input type="range" min="20" max="48" step="1" value="${pref.size}" aria-label="Ukuran huruf Arab" data-zr><b data-sz>${pref.size}</b></div>
     <div class="ksh-l">Jenis huruf Arab</div><div class="qfonts">${FONT_LIST.map(([k,l])=>`<button type="button" data-font="${k}" style="font-family:${FONTS[k]}" aria-pressed="false"><span class="qfp">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ</span><small>${l}</small></button>`).join("")}</div>
     <p class="src qsrc">Teks: Tanzil.net · Tajwid: tarekeldeeb/quran-tajweed-embedded (CC BY 4.0)</p>
     </div></div>`;
@@ -215,6 +215,8 @@ export default async function(root,args){
     if(d.pg)return flip(+d.pg);
     if(d.z){pref.size=Math.min(48,Math.max(20,pref.size+ +d.z));return save()}
     if(d.font){pref.font=d.font;return save()}
+    /* Tombol aksi ayat (putar, tandai, bookmark, salin): popup aksi langsung ditutup */
+    if((d.p||d.m||d.cp||d.bm)&&b.closest(".qact")&&sel){sel=0;draw()}
     if(d.p)return play(+d.p,false);
     if(d.all!==undefined){closeSheet();return play(1,true)}
     if(d.stop!==undefined)return stop();

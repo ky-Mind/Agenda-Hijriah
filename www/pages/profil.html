@@ -45,8 +45,11 @@
     <div class="perm"><div><b>Waktu yang diingatkan</b><small class="muted">Matikan waktu yang tidak diperlukan</small></div></div>
     <div class="chips" data-r="pchips" style="margin:0 0 4px"><button class="chip" data-pr="Fajr">Subuh</button><button class="chip" data-pr="Dhuhr">Dzuhur</button><button class="chip" data-pr="Asr">Ashar</button><button class="chip" data-pr="Maghrib">Maghrib</button><button class="chip" data-pr="Isha">Isya</button></div>
     <h3 class="sub">Coba suara</h3>
-    <div class="row"><button class="btn sm" data-r="atestsubuh">🌅 Tes adzan Subuh</button><button class="btn sm" data-r="atest">🔔 Tes adzan biasa</button><button class="btn sm" data-r="astop">⏹ Hentikan</button></div>
-    <p class="muted mt" style="font-size:13px">Pengingat berbunyi selama Kisah Lillah terbuka di perangkat. Tes selalu memutar suara dan menampilkan notifikasi (jika izin diberikan).</p></div>
+    <div class="row"><button class="btn sm" data-r="atestsubuh"><svg class="ic" aria-hidden="true"><use href="#i-sunrise"/></svg>Tes adzan Subuh</button><button class="btn sm" data-r="atest"><svg class="ic" aria-hidden="true"><use href="#i-bell"/></svg>Tes adzan biasa</button><button class="btn sm" data-r="astop"><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg>Hentikan</button></div>
+    <p class="muted mt" style="font-size:13px" data-r="anote">Pengingat berbunyi selama Kisah Lillah terbuka di perangkat. Tes selalu memutar suara dan menampilkan notifikasi (jika izin diberikan).</p>
+    <div data-r="andro" hidden><h3 class="sub">Saat aplikasi ditutup</h3><div data-r="astat"></div>
+      <button class="btn sm primary mt" type="button" data-r="auji"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>Uji adzan 30 detik lagi</button>
+      <p class="muted" style="font-size:12.5px;margin-top:6px">Ketuk, lalu tutup aplikasi dan matikan layar. Bila adzan berbunyi, pengingat sudah berjalan.</p></div></div>
   <div class="card"><h2>Lokasi shalat</h2>
     <div class="perm"><div><b>Lokasi shalat</b><small class="muted" data-r="locname"></small></div><div class="row"><span class="badge" data-r="gbadge"></span><button class="btn sm" data-r="gps">Gunakan lokasi saya</button></div></div>
     <div class="row mt"><a class="btn sm" href="#/shalat">Cari lokasi lain</a></div></div>
@@ -90,5 +93,7 @@
         <p class="muted">Dari seorang santri, untuk sebuah karya.<br>Dari satu ide, menjadi sebuah aplikasi.</p>
       </div></details>
     <p class="muted mt" style="font-size:13px">Kisah Lillah · Catat ibadah, jaga istiqamah.</p></div>
+  <div class="card"><h2>Tentang aplikasi</h2>
+    <div class="perm"><div><b class="ih"><img src="assets/logo.png" alt="" style="width:22px;height:22px">Kisah Lillah</b><small class="muted" data-r="appver">Versi —</small></div><span class="badge" data-r="appbadge">Web</span></div></div>
   </section>
 </div>

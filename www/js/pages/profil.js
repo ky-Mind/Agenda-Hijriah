@@ -5,14 +5,14 @@ import {settings,save,enable,test,stop} from "../lib/adzan.js";
 import {setTheme} from "../lib/theme.js";
 import {loc} from "../lib/prayer.js";
 import {geoState,notifState,useMyLocation,geoMsg,GEO_TXT,NOTIF_TXT} from "../lib/perm.js";
-import {ask,copy,dialog,esc} from "../lib/ui.js";
+import {ask,copy,dialog,esc,ico} from "../lib/ui.js";
 import * as chat from "../lib/chat.js";
 import * as push from "../lib/push.js";
 import {quranStatus,downloadQuran,prepareTimes,timesStatus} from "../lib/offline.js";
 import {signIn,signInEmail,signUpEmail,resetPassword,signOut,authErrorMessage} from "../lib/auth.js";
 import {FIRESTORE_RULES} from "../lib/rules.js";
 import {pickPart,loadDraft,saveDraft,clearDraft} from "../lib/bugpick.js";
-import {VERSION} from "../version.js";
+import {VERSION,BUILD} from "../version.js";
 
 /* Menu bagian pengaturan: kunci, ikon, judul, dan keterangan singkat */
 const SECTIONS={
@@ -342,6 +342,30 @@ export default function(root){
   });
   $("astop").onclick=()=>stop();
   permsUi();
+  /* Aplikasi Android: adzan dipasang sebagai alarm Android (berbunyi walau aplikasi ditutup / layar mati).
+     Tampilkan izin yang dibutuhkan beserta tombol perbaikannya, alarm yang terpasang, dan uji 30 detik. */
+  /* Versi aplikasi (Profil › Bantuan › Tentang aplikasi). APK: versionName dari kisah-lillah-android/app/build.gradle */
+  const apkVer=window.KLAndroid?.versi?.()||"";
+  $("appver").textContent=apkVer?`Versi ${apkVer} · tampilan ${VERSION} (${BUILD})`:`Versi ${VERSION} (${BUILD})`;
+  $("appbadge").textContent=apkVer?"Android":"Web";
+  const KA=window.KL_ANDROID&&window.KLAndroid&&window.KLAndroid.statusAdzan?window.KLAndroid:null;
+  const ast=()=>{if(!KA)return;let o={};try{o=JSON.parse(KA.statusAdzan())}catch(e){}
+    const row=(ok,label,ket,fix)=>`<div class="perm"><div><b class="ih">${ico(ok?"ok":"warn")}${label}</b><small class="muted">${ket}</small></div>${ok?'<span class="badge">Siap</span>':`<button class="btn sm primary" type="button" data-fix="${fix}">Izinkan</button>`}</div>`;
+    const oem=/xiaomi|redmi|poco|oppo|realme|vivo|huawei|honor|infinix|tecno|itel|oneplus|meizu|asus/i.test(o.merek||"");
+    $("astat").innerHTML=row(o.notif==="ok","Notifikasi","Izin menampilkan pemberitahuan adzan","notif")
+      +row(!!o.alarm,"Alarm tepat waktu","Adzan berbunyi tepat di menitnya","alarm")
+      +row(!!o.baterai,"Tanpa batasan baterai","Agar tidak dihentikan saat aplikasi ditutup","baterai")
+      +`<div class="perm"><div><b class="ih">${ico(o.n?"clock":"warn")}${o.n?`${o.n} adzan terpasang`:"Belum ada adzan terpasang"}</b><small class="muted">${o.n?`Berikutnya: ${esc(o.berikut)}`:"Aktifkan pengingat adzan atau suara adzan di atas, lalu buka Beranda sekali agar jadwal tersimpan."}</small></div></div>`
+      +(oem?`<p class="muted" style="font-size:12.5px;margin:8px 0 6px">HP ${esc(o.merek)} sering menutup aplikasi di latar belakang. Buka <b>Pengaturan aplikasi</b>, aktifkan <b>Mulai otomatis</b>, dan pilih <b>Tanpa batasan</b> pada Baterai.</p><button class="btn sm" type="button" data-fix="aplikasi">${ico("gear")}Pengaturan aplikasi</button>`:"")};
+  const astKembali=()=>setTimeout(ast,300);
+  if(KA){
+    $("andro").hidden=false;
+    $("anote").textContent="Adzan dipasang sebagai alarm Android, jadi tetap berbunyi walau aplikasi ditutup atau layar mati, selama izin di bawah lengkap.";
+    $("astat").onclick=e=>{const b=e.target.closest("[data-fix]");if(b)KA.perbaikiAdzan(b.dataset.fix)};
+    $("auji").onclick=()=>{KA.ujiAdzan(30);toast("Adzan uji berbunyi 30 detik lagi. Tutup aplikasi dan matikan layar sekarang.")};
+    $("atest").onclick=()=>KA.putarAdzan("biasa");$("atestsubuh").onclick=()=>KA.putarAdzan("subuh");$("astop").onclick=()=>KA.hentikanAdzan();
+    ast();addEventListener("kl-android-kembali",astKembali);document.addEventListener("kl-adzan",astKembali);
+  }
 
   /* Privasi pesan */
   const chatPrefUi=()=>{
@@ -500,7 +524,7 @@ export default function(root){
   bs.onclick=async()=>{
     if(bs.disabled)return;
     const u=auth?.currentUser,doc={type:draft.type==="saran"?"saran":"bug",name:bn.value.trim().slice(0,80),text:br.value.trim().slice(0,2000),
-      page:(draft.shots?.[0]?.page)||"",ua:navigator.userAgent.slice(0,200),ver:VERSION,uid:u?.uid||null,email:u?.email||null,
+      page:(draft.shots?.[0]?.page)||"",ua:navigator.userAgent.slice(0,200),ver:apkVer?`apk ${apkVer} / web ${VERSION}`:VERSION,uid:u?.uid||null,email:u?.email||null,
       at:firebase.firestore.FieldValue.serverTimestamp(),status:"baru",shots:(draft.shots||[]).slice(0,3)};
     if(JSON.stringify(doc).length>950000)return toast("Gambar terlalu besar, hapus salah satu bagian");
     bs.disabled=true;bs.textContent="Mengirim…";
@@ -523,5 +547,6 @@ export default function(root){
     document.removeEventListener("kl-action",onAct);
     document.removeEventListener("kl-ftasbih",floatTasbihUi);
     document.removeEventListener("kl-ai",aiUi);
+    removeEventListener("kl-android-kembali",astKembali);document.removeEventListener("kl-adzan",astKembali);
   };
 }
