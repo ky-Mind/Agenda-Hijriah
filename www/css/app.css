@@ -754,3 +754,32 @@ html.bugpick #view *{cursor:crosshair!important}
 .tset-act{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:14px;border-top:1px solid var(--line)}.tset-act .btn{gap:6px;border-radius:999px}
 .tset.out .box{opacity:0;transform:scale(.97);transition:opacity .15s,transform .15s}.tset.out{opacity:0;transition:opacity .15s}
 .tset .btn:not(.danger){border:1px solid var(--line);background:var(--raised)}.tset .btn.ghost{border:0;background:transparent}
+
+/* Lembar Pengaturan baca: format seperti fadzkuruuni (kepala tetap, pratinjau, bagian berlabel), gaya Kisah Lillah */
+.qsheet .box.ksh{width:min(400px,100%);padding:0;display:flex;flex-direction:column;max-height:calc(100dvh - 32px);overflow:hidden}
+.ksh-h{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+.ksh-h>div{flex:1;min-width:0}.ksh-h b{display:block;font-size:17px}.ksh-h small{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ksh-h .si{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:none}.ksh-h .si .ic{width:19px;height:19px}
+.ksh-x{width:34px;height:34px;border:0;border-radius:50%;background:var(--hover);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none}
+.ksh-b{padding:4px 16px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
+.ksh-l{margin:16px 2px 8px;color:var(--muted);font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.ksh-c{border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.ksh-c+.ksh-c{margin-top:10px}
+.qpv{margin:14px 0 4px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);text-align:center;display:flex;flex-direction:column;gap:4px}
+.qpv .qpa{font-size:var(--af,28px);line-height:1.9;direction:rtl}.qpv .qpl{color:var(--accent);font-style:italic;font-size:13px}.qpv .qpt{color:var(--muted);font-size:13px}
+.ksh-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.ksh-act .btn{border-radius:999px;gap:6px}.ksh-act input{width:96px;border-radius:999px;padding-left:14px}
+.ksr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;cursor:pointer}.ksr+.ksr{border-top:1px solid var(--line)}
+.ksr b{display:block;font-size:14px;font-weight:600}.ksr small{display:block;font-size:12px;color:var(--muted)}
+.sw{appearance:none;-webkit-appearance:none;flex:none;width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;transition:background .18s;margin:0;border:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .18s var(--ease)}
+.sw:checked{background:var(--accent)}.sw:checked::after{transform:translateX(18px)}.sw:disabled{cursor:not-allowed}
+.ksh-mt.off{opacity:.45}.ksh-mt.off .ksr{cursor:not-allowed}
+.ksh-mn{margin:0 2px 8px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.ksh-c .tjlegend{padding:0 12px 11px;margin:0}
+.ksl{display:flex;align-items:center;gap:12px;padding:10px 12px}.ksl span{font-size:14px;width:44px}.ksl input{flex:1;accent-color:var(--accent)}.ksl b{min-width:28px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums}
+/* Ayat yang dituju: blok warna aksen, berkedip 3 kali saat tiba */
+.qr .ayah.tuju{padding-left:10px;padding-right:10px;border-radius:12px;border-top-color:transparent;background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.qr .ayah.tuju+.ayah{border-top-color:transparent}
+.qr .fl.tuju{background:color-mix(in srgb,var(--accent) 20%,transparent);border-radius:8px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.qr .tuju.kedip{animation:aykedip .3s ease-in-out 3}
+@keyframes aykedip{50%{background:color-mix(in srgb,var(--accent) 40%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 38%,transparent)}}

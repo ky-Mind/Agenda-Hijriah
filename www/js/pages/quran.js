@@ -103,17 +103,26 @@ export default async function(root,args){
   const THEMES=[["terang","Terang","#f4f3ee"],["sepia","Sepia","#f4ecd8"],["gelap","Gelap","#0f1412"]],MODES=[["ayat","Per ayat"],["alir","Mengalir"]];
   /* Pengaturan baca dibuka dari ikon ⚙ di bilah atas: aksi putar, lompat ayat, dan semua pilihan tampilan */
   const sheet=document.createElement("div");sheet.className="modal qsheet";sheet.setAttribute("role","dialog");sheet.setAttribute("aria-label","Pengaturan baca");
-  sheet.innerHTML=`<div class="box"><div class="row sp qsheet-head"><h2>Pengaturan baca</h2><button class="btn ghost sm" type="button" data-close aria-label="Tutup"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
-    <div class="row qsheet-act"><button class="btn primary sm" type="button" data-all><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg>Putar semua</button><button class="btn sm" type="button" data-stop>Berhenti</button><input type="number" min="1" max="${s.verses.length}" placeholder="Ayat ke…" aria-label="Lompat ke ayat" data-j></div>
-    <div class="qsheet-sec"><span class="qlabel">Tema baca</span><div class="qthemes">${THEMES.map(([k,l,c])=>`<button type="button" data-th="${k}" style="--c:${c}" aria-pressed="false"><i></i>${l}</button>`).join("")}</div></div>
-    <div class="qsheet-sec"><span class="qlabel">Tampilan</span><div class="qpills">${MODES.map(([k,l])=>`<button type="button" data-mode="${k}" aria-pressed="false">${l}</button>`).join("")}</div></div>
-    <div class="qsheet-sec"><span class="qlabel">Tampilkan</span><div class="qtoggles"><button type="button" data-t="latin" aria-pressed="${pref.latin}">Transliterasi</button><button type="button" data-t="arti" aria-pressed="${pref.arti}">Terjemahan</button><button type="button" data-t="tajwid" aria-pressed="${pref.tajwid}">Tajwid berwarna</button></div>
-      <div class="tjlegend"><span class="tj-gh">Dengung</span><span class="tj-ql">Qalqalah</span><span class="tj-md">Mad</span><span class="tj-sl">Tidak dibaca</span></div></div>
-    <div class="qsheet-sec"><span class="qlabel">Contoh tampilan</span><div class="qprev arab" data-prev>${BISMILLAH} <span class="fln">١</span></div></div>
-    <div class="qsheet-sec"><span class="qlabel">Ukuran huruf Arab</span><div class="qstep"><button type="button" data-z="-2" aria-label="Perkecil huruf">A−</button><output data-sz>${pref.size}px</output><button type="button" data-z="2" aria-label="Perbesar huruf">A+</button></div></div>
-    <div class="qsheet-sec"><span class="qlabel">Jenis huruf</span><div class="qfonts">${FONT_LIST.map(([k,l])=>`<button type="button" data-font="${k}" style="font-family:${FONTS[k]}" aria-pressed="false"><span class="qfp">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ</span><small>${l}</small></button>`).join("")}</div></div>
+  /* Tata letak sama dengan lembar pengaturan baca fadzkuruuni (kepala tetap + pratinjau + bagian berlabel), gaya Kisah Lillah.
+     Mode Mengalir hanya menampilkan teks Arab bersambung, jadi Transliterasi & Terjemahan dikunci dengan keterangannya. */
+  const sw=(t,j,k)=>`<label class="ksr"><span><b>${j}</b><small>${k}</small></span><input type="checkbox" class="sw" data-sw="${t}"></label>`;
+  sheet.innerHTML=`<div class="box ksh"><div class="ksh-h"><span class="si"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></span><div><b>Pengaturan baca</b><small>${s.id}. ${esc(s.transliteration)} · ${s.verses.length} ayat</small></div><button class="ksh-x" type="button" data-close aria-label="Tutup"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+    <div class="ksh-b">
+    <div class="qpv"><span class="qpa arab" data-prev>${BISMILLAH}</span><small class="qpl" data-pvl>Bismillāhir-raḥmānir-raḥīm</small><small class="qpt" data-pvt>Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.</small></div>
+    <div class="ksh-act"><button class="btn primary sm" type="button" data-all><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg>Putar semua</button><button class="btn sm" type="button" data-stop><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg>Berhenti</button><input type="number" min="1" max="${s.verses.length}" placeholder="Ayat ke…" aria-label="Lompat ke ayat" data-j></div>
+    <div class="ksh-l">Mode baca</div><div class="qpills">${MODES.map(([k,l])=>`<button type="button" data-mode="${k}" aria-pressed="false">${l}</button>`).join("")}</div>
+    <div class="ksh-l">Tampilkan</div>
+    <p class="ksh-mn" data-mn hidden>Mode Mengalir hanya menampilkan teks Arab bersambung. Pilih <b>Per ayat</b> untuk menampilkan transliterasi dan terjemahan.</p>
+    <div class="ksh-c ksh-mt">${sw("latin","Transliterasi","Teks Latin di bawah teks Arab")}${sw("arti","Terjemahan","Arti dalam bahasa Indonesia")}</div>
+    <div class="ksh-c">${sw("tajwid","Tajwid berwarna","Warna sesuai hukum bacaan")}<div class="tjlegend"><span class="tj-gh">Dengung</span><span class="tj-ql">Qalqalah</span><span class="tj-md">Mad</span><span class="tj-sl">Tidak dibaca</span></div></div>
+    <div class="ksh-l">Tema baca</div><div class="qthemes">${THEMES.map(([k,l,c])=>`<button type="button" data-th="${k}" style="--c:${c}" aria-pressed="false"><i></i>${l}</button>`).join("")}</div>
+    <div class="ksh-l">Ukuran huruf Arab</div><div class="ksh-c ksl"><span>Arab</span><input type="range" min="20" max="48" step="1" value="${pref.size}" aria-label="Ukuran huruf Arab" data-zr><b data-sz>${pref.size}</b></div>
+    <div class="ksh-l">Jenis huruf Arab</div><div class="qfonts">${FONT_LIST.map(([k,l])=>`<button type="button" data-font="${k}" style="font-family:${FONTS[k]}" aria-pressed="false"><span class="qfp">ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ</span><small>${l}</small></button>`).join("")}</div>
     <p class="src qsrc">Teks: Tanzil.net · Tajwid: tarekeldeeb/quran-tajweed-embedded (CC BY 4.0)</p>
     </div></div>`;
+  /* Sakelar & penggeser di lembar pengaturan */
+  sheet.addEventListener("change",e=>{const t=e.target.dataset.sw;if(t){pref[t]=e.target.checked;save()}});
+  sheet.addEventListener("input",e=>{if(e.target.matches("[data-zr]")){pref.size=+e.target.value;set("quran_pref",pref);paint()}});
   box.innerHTML=`<div class="head"><h1>${s.id}. ${esc(s.transliteration)} <span class="arab" style="font-size:26px;display:inline">${esc(s.name)}</span></h1><p>${esc(s.translation)} · ${s.verses.length} ayat · ${tipe(s.type)}</p></div>
   <div class="card" data-v></div>
   <div class="qpager" data-pager hidden><button class="qpg" type="button" data-pg="-1" aria-label="Halaman sebelumnya">‹</button><div class="qpg-mid"><span data-pg-t></span><div class="qpg-bar"><i data-pg-i></i></div></div><button class="qpg" type="button" data-pg="1" aria-label="Halaman berikutnya">›</button></div>
@@ -134,7 +143,11 @@ export default async function(root,args){
       ?head+`<div class="arab flowtext">${vs.map(a=>`<span class="fl" id="a${a.id}">${tj(a,true)} <span class="fln">${ar(a.id)}</span></span>`).join(" ")}</div>${pages.length>1?`<div class="qpgno">${ar(pg+1)}</div>`:""}`
       :head+vs.map(a=>`<div class="item ayah" id="a${a.id}"><div class="num"><span class="anum">${ar(a.id)}</span></div><div><div class="arab">${tj(a,true)}</div>${a.transliteration?`<p class="latin">${esc(a.transliteration)}</p>`:""}${a.translation?`<p class="tr">${esc(a.translation)}</p>`:""}</div></div>`).join("")};
   /* Kelas ayah yang ditandai dan bookmark diperbarui di tempat */
-  const marks=()=>{const lt=last(),bm=bmData().items;v.querySelectorAll("[id^=a]").forEach(el=>{const id=+el.id.slice(1);el.classList.toggle("mark",lt?.surah===n&&lt?.ayat===id);el.classList.toggle("sel",sel===id);el.classList.toggle("saved",bm.some(i=>i.surah===n&&i.ayat===id))})};
+  /* Ayat yang dituju (dari Lanjutkan membaca, Terakhir baca, bookmark, lompat ayat) diberi blok warna dan berkedip 3 kali;
+     blok tetap sampai ayat lain dipilih. Menggantikan penanda garis "terakhir dibaca" yang lama. */
+  let tuju=jump;
+  const kedip=id=>{tuju=id;marks();const t=v.querySelector("#a"+id);if(!t)return;t.classList.remove("kedip");void t.offsetWidth;t.classList.add("kedip")};
+  const marks=()=>{const bm=bmData().items;v.querySelectorAll("[id^=a]").forEach(el=>{const id=+el.id.slice(1);el.classList.toggle("tuju",!sel&&tuju===id);el.classList.toggle("sel",sel===id);el.classList.toggle("saved",bm.some(i=>i.surah===n&&i.ayat===id))})};
   /* Bilah aksi hanya dipasang ulang untuk ayat yang dipilih */
   /* Bilah aksi melayang di bawah; ayat terpilih digeser naik bila tertutup bilah itu */
   /* Aksi ayat muncul di tengah layar dengan latar buram; ketuk latar = tutup */
@@ -149,8 +162,11 @@ export default async function(root,args){
     sheet.querySelectorAll("[data-th]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.th===pref.theme));
     sheet.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.mode===pref.mode));
     sheet.querySelectorAll("[data-font]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.font===pref.font));
-    sheet.querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed",pref[x.dataset.t]));
-    sheet.querySelectorAll("[data-sz]").forEach(x=>x.textContent=pref.size+"px");
+    const alir=pref.mode==="alir";
+    sheet.querySelectorAll("[data-sw]").forEach(x=>{x.checked=!!pref[x.dataset.sw];if(x.closest(".ksh-mt"))x.disabled=alir});
+    sheet.querySelector(".ksh-mt").classList.toggle("off",alir);sheet.querySelector("[data-mn]").hidden=!alir;
+    sheet.querySelector("[data-pvl]").hidden=alir||!pref.latin;sheet.querySelector("[data-pvt]").hidden=alir||!pref.arti;
+    sheet.querySelectorAll("[data-sz]").forEach(x=>x.textContent=pref.size);const zr=sheet.querySelector("[data-zr]");if(+zr.value!==pref.size)zr.value=pref.size;
     const pv=sheet.querySelector("[data-prev]");pv.style.fontSize=pref.size+"px";pv.style.fontFamily=FONTS[pref.font]||FONTS.amiri;
     const pgr=box.querySelector("[data-pager]"),[a,b]=pages[pg];pgr.hidden=pages.length<2;
     pgr.querySelector("[data-pg-t]").textContent=`Halaman ${pg+1} dari ${pages.length} · ayat ${a+1}–${b}`;
@@ -187,12 +203,12 @@ export default async function(root,args){
   /* Lompat ke ayat terakhir dibaca langsung di frame yang sama, tanpa jeda 50 ms, supaya layar tidak sempat tampil dari atas lalu meloncat. Setelah font Arab selesai dimuat, posisi diperbaiki lagi karena tinggi baris bisa berubah */
   const toJump=()=>v.querySelector("#a"+jump)?.scrollIntoView({block:"center",behavior:"instant"});
   if(jump>0)pg=pageOf(jump);
-  draw(true);if(jump>0){toJump();document.fonts?.ready.then(()=>alive&&toJump())}
+  draw(true);if(jump>0){toJump();kedip(jump);document.fonts?.ready.then(()=>alive&&toJump())}
   /* Surah sebelum dan sesudahnya diambil diam-diam setelah halaman tampil, supaya tombol ‹ dan › langsung muncul tanpa jeda memuat */
   const pre=setTimeout(()=>[n-1,n+1].forEach(k=>k>=1&&k<=114&&getSurah(k).catch(()=>{})),700);
-  sheet.querySelector("[data-j]").onchange=e=>{const i=+e.target.value;if(i>=1&&i<=s.verses.length){closeSheet();goPage(pageOf(i),{to:i})}else toast(`Ayat 1–${s.verses.length}`)};
+  sheet.querySelector("[data-j]").onchange=e=>{const i=+e.target.value;if(i>=1&&i<=s.verses.length){closeSheet();goPage(pageOf(i),{to:i});setTimeout(()=>kedip(i),60)}else toast(`Ayat 1–${s.verses.length}`)};
   const save=rebuild=>{set("quran_pref",pref);draw(rebuild)};
-  const onAct=e=>{const f=e.target.closest(".fl");if(f){const id=+f.id.slice(1);sel=sel===id?0:id;return draw()}const item=e.target.closest(".item.ayah");if(item&&!e.target.closest("button")){const id=+item.id.slice(1);sel=sel===id?0:id;return draw()}const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+  const onAct=e=>{const f=e.target.closest(".fl");if(f){const id=+f.id.slice(1);sel=sel===id?0:id;if(sel&&sel!==tuju)tuju=0;return draw()}const item=e.target.closest(".item.ayah");if(item&&!e.target.closest("button")){const id=+item.id.slice(1);sel=sel===id?0:id;if(sel&&sel!==tuju)tuju=0;return draw()}const b=e.target.closest("button");if(!b)return;const d=b.dataset;
     if(d.t){pref[d.t]=!pref[d.t];return save()}
     if(d.th){pref.theme=d.th;return save()}
     if(d.mode){const first=pages[pg][0]+1;pref.mode=d.mode;pages=paginate(s.verses,pref.mode);pg=pageOf(first);return save(true)}

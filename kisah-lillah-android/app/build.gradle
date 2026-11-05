@@ -14,8 +14,8 @@ android {
         applicationId 'com.kisahlillah.app'
         minSdk 24
         targetSdk 36
-        versionCode 5
-        versionName '5.2.1'
+        versionCode 6
+        versionName '5.2.2'
         manifestPlaceholders = [host: 'agenda-hijriah.vercel.app']
     }
     signingConfigs {
