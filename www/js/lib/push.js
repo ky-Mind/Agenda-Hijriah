@@ -22,17 +22,27 @@ export async function enable(){
   const reg=await ready();let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(key)});
   const j=sub.toJSON(),id=await hash(j.endpoint);
   await sref(u.uid).set({subs:{[id]:{endpoint:j.endpoint,keys:j.keys,ua:navigator.userAgent.slice(0,80),at:Date.now()}}},{merge:true});
-  localStorage.setItem(ON,"1");localStorage.setItem("kl_push_id",id+"|"+u.uid)}
+  localStorage.setItem(ON,"1");localStorage.removeItem("kl_push_off");localStorage.setItem("kl_push_id",id+"|"+u.uid)}
 export async function disable(){
   const u=window.__klAuth&&__klAuth.currentUser;
   if(APK()){const id=(localStorage.getItem("kl_push_id")||"").split("|")[0];if(u&&id)await sref(u.uid).update({["fcm."+id]:firebase.firestore.FieldValue.delete()}).catch(()=>{});
     localStorage.removeItem(ON);localStorage.removeItem("kl_push_id");localStorage.setItem("kl_push_off","1");return}
   try{const reg=await ready(),sub=await reg.pushManager.getSubscription();if(sub){const id=await hash(sub.endpoint);await sub.unsubscribe();if(u)await sref(u.uid).update({["subs."+id]:firebase.firestore.FieldValue.delete()}).catch(()=>{})}}catch(e){}
-  localStorage.removeItem(ON);localStorage.removeItem("kl_push_id")}
+  localStorage.removeItem(ON);localStorage.removeItem("kl_push_id");localStorage.setItem("kl_push_off","1")}
 /* dipanggil saat login: pastikan langganan perangkat ini tercatat untuk akun ini */
+/* Dipanggil setiap kali masuk/aplikasi dibuka, di SEMUA perangkat: notifikasi pesan latar belakang aktif otomatis kecuali
+   pengguna sendiri mematikannya (kl_push_off).
+   APK: izin notifikasi belum pernah ditanya -> ditanya sekali setelah masuk. Browser: aktif otomatis bila izin sudah diberikan
+   (browser tidak mengizinkan meminta izin tanpa ketukan, jadi yang belum memberi izin memakai tombol Aktifkan). */
 export async function refresh(u){
-  if(u&&APK()){if(localStorage.getItem("kl_push_off")!=="1"&&Notification.permission==="granted")try{await simpanFcm(u)}catch(e){}return}
-  if(!u||!isOn()||!supported()||Notification.permission!=="granted")return;
+  if(!u||localStorage.getItem("kl_push_off")==="1")return;
+  if(APK()){
+    try{let p=Notification.permission;
+      if(p==="default"&&!localStorage.getItem("kl_push_tanya")){localStorage.setItem("kl_push_tanya","1");p=await Notification.requestPermission()}
+      if(p==="granted")await simpanFcm(u)}catch(e){}
+    return}
+  if(!supported()||Notification.permission!=="granted")return;
+  if(!isOn()){try{await enable()}catch(e){}return}
   try{const reg=await ready(),sub=await reg.pushManager.getSubscription();if(!sub){localStorage.removeItem(ON);return}
     const id=await hash(sub.endpoint)+"|"+u.uid;if(localStorage.getItem("kl_push_id")===id)return;const j=sub.toJSON();
     await sref(u.uid).set({subs:{[id.split("|")[0]]:{endpoint:j.endpoint,keys:j.keys,ua:navigator.userAgent.slice(0,80),at:Date.now()}}},{merge:true});localStorage.setItem("kl_push_id",id)}catch(e){}}

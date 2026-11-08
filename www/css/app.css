@@ -834,3 +834,6 @@ html.bugpick #view *{cursor:crosshair!important}
 @media (max-width:420px){.wrow{padding:8px}.wseg button{padding:0 7px!important;font-size:12px}.wnm b{font-size:13.5px}}
 /* Absensi: keterangan kecil di bawah nama ibadah (mis. Al-Kahfi · Malam & hari Jumat) */
 .ibn{display:inline-flex;flex-direction:column;line-height:1.25}.ibn small{font-size:11.5px;color:var(--accent);font-weight:500;margin-top:2px}
+/* Jendela unduh/perbarui aplikasi */
+.rilis-h{display:flex;gap:12px;align-items:center}.rilis-h img{width:48px;height:48px;flex:none}.rilis-h h2{margin:0}
+.rilis-p{margin:0 0 4px;padding-left:20px;font-size:14px;line-height:1.6}.rilis-m .dlg-actions a.btn{text-decoration:none}

@@ -3,6 +3,7 @@ import {hijriText,masehiText,key,events,nextEvent,addDays} from "../lib/hijri.js
 import {loc,upcoming,tzLabel,tzOffset,wallNow,dhuhaOf} from "../lib/prayer.js";
 import {progress,day,agendaFor,streaks} from "../lib/ibadah.js";
 import {json,hasAr,esc} from "../lib/ui.js";
+import {terbaru,lebihBaru} from "../lib/rilis.js";
 const C=2*Math.PI*15;
 export default function(root){
   const $=n=>root.querySelector(`[data-r="${n}"]`),now=new Date(),h=now.getHours(),k=key(now);
@@ -27,6 +28,11 @@ export default function(root){
     if(h>=20&&!Object.keys(rec).length)c.push(["Absensi hari ini masih kosong","Catat ibadahmu sebelum tidur.","#/absensi"]);
     if(h>=20&&st.cur>0&&p.pct<50)c.push([`Jaga rangkaian ${st.cur} harimu`,"Capai 50% hari ini agar tidak terputus.","#/absensi"]);
     const e=$("hint");if(c[0]){e.hidden=false;e.href=c[0][2];$("ht").textContent=c[0][0];$("hs").textContent=c[0][1]}})();
+  /* APK lama: ajak memperbarui ke rilis terbaru (fitur baru seperti notifikasi pesan di latar belakang hanya ada di versi baru).
+     Info rilis dari GitHub, diperiksa paling sering 6 jam sekali. */
+  (async function(){await 0;const v=window.KLAndroid?.versi?.();if(!v)return;const r=await terbaru();
+    if(!alive||!r||!r.v||!lebihBaru(r.v,v))return;
+    const e=$("hint");e.hidden=false;e.href=r.url;e.target="_blank";e.rel="noopener";$("ht").textContent=`Versi baru ${r.v} tersedia`;$("hs").textContent=`Kamu memakai ${v}. Ketuk untuk memperbarui.`})();
   const l=loc();let dl=0,iv,busy=false,alive=true;
   const meta=src=>`${l.name} · ${tzLabel(tzOffset(l))}${src==="local"?" · hitung lokal":""}`;$("lokasi").textContent=meta();
   async function load(){busy=true;
