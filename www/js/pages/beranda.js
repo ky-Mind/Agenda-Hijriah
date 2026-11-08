@@ -1,7 +1,7 @@
 import {get} from "../store.js";
 import {hijriText,masehiText,key,events,nextEvent,addDays} from "../lib/hijri.js";
 import {loc,upcoming,tzLabel,tzOffset,wallNow,dhuhaOf} from "../lib/prayer.js";
-import {progress,day,agenda,streaks} from "../lib/ibadah.js";
+import {progress,day,agendaFor,streaks} from "../lib/ibadah.js";
 import {json,hasAr,esc} from "../lib/ui.js";
 const C=2*Math.PI*15;
 export default function(root){
@@ -16,9 +16,12 @@ export default function(root){
   const last=get("quran_last");if(last)$("last").textContent=`Lanjut: ${last.nama} · ${last.ayat}`;
   json("data/mutiara.json").then(q=>{const x=q[Math.floor(now/864e5)%q.length],ar=hasAr(x.text);$("q-arab").hidden=!ar;$("q-arab").textContent=ar?x.text:"";$("q-arti").textContent=ar?x.detail:"“"+x.text+"”";$("q-arti").className=ar?"":"quote";$("q-src").textContent=x.source}).catch(()=>{$("q-arti").textContent="Kata mutiara belum dapat dimuat."});
   /* Saran cerdas: satu pengingat paling relevan menurut waktu & data hari ini */
-  (function(){const rec=day(k),L=agenda(),dz=get("dz_"+k,{}),todo=id=>L.some(i=>i.id===id)&&rec[id]==null,c=[];
+  (function(){const rec=day(k),L=agendaFor(k),dz=get("dz_"+k,{}),todo=id=>L.some(i=>i.id===id)&&rec[id]==null,c=[];
     if(h>=4&&h<11&&!(dz.pagi||[]).length)c.push(["Dzikir pagi belum dibaca","Luangkan beberapa menit sebelum beraktivitas.","#/dzikir"]);
     if(h>=5&&h<11&&todo("dhuha"))c.push(["Waktu Dhuha","Belum dicentang hari ini.","#/absensi"]);
+    /* Al-Kahfi: malam Jumat (Kamis setelah Maghrib) dan hari Jumat */
+    const hr=now.getDay(),kahfi=get("abs_"+key(addDays(now,hr===4?1:0)),{}).al_kahfi;
+    if(((hr===4&&h>=18)||(hr===5&&h<18))&&kahfi==null)c.push([hr===4?"Malam Jumat: baca Al-Kahfi":"Hari Jumat: baca Al-Kahfi","Diterangi cahaya di antara dua Jumat (HR. Al-Hakim).","#/quran/18"]);
     if(h>=15&&h<20&&!(dz.petang||[]).length)c.push(["Dzikir petang belum dibaca","Waktunya sebelum Maghrib.","#/dzikir"]);
     const tm=events(addDays(now,1)).find(e=>/Puasa|Ayyamul|Arafah|Asyura|Idul/.test(e));if(h>=15&&tm)c.push([`Besok: ${tm}`,"Siapkan niat dan sahur.","#/kalender"]);
     if(h>=20&&!Object.keys(rec).length)c.push(["Absensi hari ini masih kosong","Catat ibadahmu sebelum tidur.","#/absensi"]);

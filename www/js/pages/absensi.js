@@ -1,6 +1,6 @@
 import {esc,confirmLeave,ask,dialog,ico} from "../lib/ui.js";
 import {hijriText,masehiText,key,fromKey,HARI,addDays} from "../lib/hijri.js";
-import {agenda,saveAgenda,resetAgenda,day,saveDay,calc,savedAt,progress,icoOf} from "../lib/ibadah.js";
+import {agenda,agendaFor,saveAgenda,resetAgenda,day,saveDay,calc,savedAt,progress,icoOf} from "../lib/ibadah.js";
 import {rekap,waNumber,waUrl,openUrl} from "../lib/wa.js";
 import {get,set,del,toast} from "../store.js";
 import {calPick} from "../lib/calpick.js";
@@ -16,12 +16,12 @@ export default function(root,args){
   window.KLGuard={dirty,save,discard:()=>{rec={...day(k)};note=get("note_"+k,"");base=snap()}};
   async function go(nk){if(nk===k)return;if(dirty()){const a=await confirmLeave();if(a==="save")save();else if(a!=="discard")return}load(nk)}
   function draw(){
-    const d=fromKey(k),p=calc(rec),list=agenda();
+    const d=fromKey(k),list=edit?agenda():agendaFor(k),p=calc(rec,agendaFor(k));
     $("hijri").textContent=hijriText(d);$("masehi").textContent=masehiText(d)+(k===today()?" · hari ini":"");$("pick").value=k;
     const td=today();document.dispatchEvent(new CustomEvent("kl-today",{detail:k===td?0:k>td?-1:1}));$("today").disabled=k===td;
     $("ringkas").textContent=`${p.done} terlaksana · ${p.miss} terlewat · ${p.total-p.done-p.miss} belum diisi${p.rest?` · ${p.rest} datang bulan`:""}`;$("pct").textContent=p.pct+"%";$("bar").style.width=p.pct+"%";
     const B=(i,v,c,t,l)=>`<button class="${c} ${rec[i.id]===v?"on":""}" data-v="${v}" aria-label="${l}: ${esc(i.nama)}" aria-pressed="${rec[i.id]===v}">${t}</button>`;
-    $("list").innerHTML=list.length?list.map(i=>`<div class="ibadah" data-id="${esc(i.id)}"><span><span class="ico" aria-hidden="true">${icoOf(i)}</span>${esc(i.nama)}</span>${edit?'<button class="btn sm danger" data-del>Hapus</button>':`<div class="seg">${B(i,1,"ok",ico("ok"),"Terlaksana")}${B(i,0,"no",ico("x"),"Terlewat")}${B(i,2,"pr",ico("drop"),"Datang bulan")}${/tadarus/i.test(i.id+i.nama)?B(i,3,"kh",ico("khatam"),"Khatam"):""}</div>`}</div>`).join(""):'<div class="empty">Belum ada ibadah. Pilih "Ubah daftar" untuk menambah.</div>';
+    $("list").innerHTML=list.length?list.map(i=>`<div class="ibadah" data-id="${esc(i.id)}"><span><span class="ico" aria-hidden="true">${icoOf(i)}</span><span class="ibn">${esc(i.nama)}${i.ket?`<small>${esc(i.ket)}${edit?" · muncul di hari Jumat":""}</small>`:""}</span></span>${edit?'<button class="btn sm danger" data-del>Hapus</button>':`<div class="seg">${B(i,1,"ok",ico("ok"),"Terlaksana")}${B(i,0,"no",ico("x"),"Terlewat")}${B(i,2,"pr",ico("drop"),"Datang bulan")}${/tadarus/i.test(i.id+i.nama)?B(i,3,"kh",ico("khatam"),"Khatam"):""}</div>`}</div>`).join(""):'<div class="empty">Belum ada ibadah. Pilih "Ubah daftar" untuk menambah.</div>';
     $("edit").setAttribute("aria-pressed",edit);$("edit").textContent=edit?"Selesai":"Ubah daftar";$("addform").hidden=!edit;$("all").hidden=edit;
     if($("note")!==document.activeElement)$("note").value=note;
     const w=[];for(let i=6;i>=0;i--){const x=addDays(new Date(),-i),q=progress(key(x));w.push(`<div title="${q.pct}%"><div class="col"><i class="${q.pct?"":"z"}" style="height:${Math.max(q.pct,4)}%"></i></div><small>${HARI[x.getDay()].slice(0,3)}</small></div>`)}
@@ -31,7 +31,7 @@ export default function(root,args){
   $("prev").onclick=()=>go(key(addDays(fromKey(k),-1)));$("nextd").onclick=()=>go(key(addDays(fromKey(k),1)));$("today").onclick=()=>go(today());
   $("pick").onchange=e=>OK.test(e.target.value)&&go(e.target.value);
   $("edit").onclick=()=>{edit=!edit;draw()};
-  $("all").onclick=()=>{agenda().forEach(i=>{rec[i.id]=1});draw()};
+  $("all").onclick=()=>{agendaFor(k).forEach(i=>{rec[i.id]=1});draw()};
   $("note").oninput=e=>{note=e.target.value;$("state").innerHTML=dirty()?'<span class="dirty">● Ada perubahan belum disimpan</span>':"Tersimpan"};
   $("list").onclick=async e=>{const row=e.target.closest("[data-id]");if(!row)return;const id=row.dataset.id;
     if(e.target.closest("[data-del]")){if(await ask("Hapus ibadah?","Ibadah ini dihapus dari daftar. Catatan lama tidak ikut terhapus.","Hapus")){saveAgenda(agenda().filter(i=>i.id!==id));delete rec[id];draw()}return}
@@ -40,7 +40,7 @@ export default function(root,args){
      seluruh daftar, yang membuat halaman terlihat berkedip/bergerak) */
   function ringan(row){
     const id=row.dataset.id;row.querySelectorAll("[data-v]").forEach(x=>{const on=rec[id]===+x.dataset.v;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
-    const p=calc(rec);$("ringkas").textContent=`${p.done} terlaksana · ${p.miss} terlewat · ${p.total-p.done-p.miss} belum diisi${p.rest?` · ${p.rest} datang bulan`:""}`;$("pct").textContent=p.pct+"%";$("bar").style.width=p.pct+"%";
+    const p=calc(rec,agendaFor(k));$("ringkas").textContent=`${p.done} terlaksana · ${p.miss} terlewat · ${p.total-p.done-p.miss} belum diisi${p.rest?` · ${p.rest} datang bulan`:""}`;$("pct").textContent=p.pct+"%";$("bar").style.width=p.pct+"%";
     const t=savedAt(k);$("state").innerHTML=dirty()?'<span class="dirty">● Ada perubahan belum disimpan</span>':t?`Tersimpan ${new Date(t).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})}`:"Belum ada data tersimpan";
   }
   $("addform").onsubmit=e=>{e.preventDefault();const n=$("newname").value.trim();if(!n)return;saveAgenda([...agenda(),{id:"c"+Date.now().toString(36),nama:n,ic:$("newic").value.trim()||"✨"}]);$("newname").value="";$("newic").value="";draw()};

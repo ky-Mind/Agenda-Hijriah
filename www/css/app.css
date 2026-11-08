@@ -832,3 +832,5 @@ html.bugpick #view *{cursor:crosshair!important}
 .wseg button[aria-pressed=true].m-senyap{background:var(--hover);color:var(--text)}
 .wseg button[aria-pressed=true].m-off{background:color-mix(in srgb,var(--danger) 16%,transparent);color:var(--danger)}
 @media (max-width:420px){.wrow{padding:8px}.wseg button{padding:0 7px!important;font-size:12px}.wnm b{font-size:13.5px}}
+/* Absensi: keterangan kecil di bawah nama ibadah (mis. Al-Kahfi · Malam & hari Jumat) */
+.ibn{display:inline-flex;flex-direction:column;line-height:1.25}.ibn small{font-size:11.5px;color:var(--accent);font-weight:500;margin-top:2px}

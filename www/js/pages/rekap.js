@@ -1,6 +1,6 @@
 import {esc,copy} from "../lib/ui.js";
 import {key,addDays,HARI,MASEHI,hijriText} from "../lib/hijri.js";
-import {agenda,day,calc,streaks,BADGES} from "../lib/ibadah.js";
+import {agenda,agendaFor,day,calc,streaks,BADGES} from "../lib/ibadah.js";
 import {waNumber,waUrl,openUrl} from "../lib/wa.js";
 import {toast} from "../store.js";
 export default function(root){
@@ -12,7 +12,7 @@ export default function(root){
     const sk=streaks();$("stk").textContent=`${sk.cur} hari beruntun · rekor ${sk.best}`;$("badges").innerHTML=BADGES.map(([n,t])=>`<div class="badge-i ${sk.best>=n?"on":""}"><svg class="ic"><use href="#i-star"/></svg><b>${n} hari</b><small>${t}</small></div>`).join("");
     root.querySelectorAll("[data-m]").forEach(c=>c.classList.toggle("on",c.dataset.m===mode));
     const {s,e,title}=range(),list=agenda(),days=[];for(let d=s;d<=e;d=addDays(d,1))days.push(d);
-    const rows=days.map(d=>({d,k:key(d),r:day(key(d))})).map(x=>({...x,p:calc(x.r,list)})),rec=rows.filter(x=>x.p.filled>0);
+    const rows=days.map(d=>({d,k:key(d),r:day(key(d))})).map(x=>({...x,p:calc(x.r,agendaFor(x.k))})),rec=rows.filter(x=>x.p.filled>0);
     $("title").textContent=title;$("sub").textContent=`${hijriText(s)} – ${hijriText(e)}`;
     const avg=rec.length?Math.round(rec.reduce((a,x)=>a+x.p.pct,0)/rec.length):0,done=rec.reduce((a,x)=>a+x.p.done,0),miss=rec.reduce((a,x)=>a+x.p.miss,0);
     $("metrics").innerHTML=[[rec.length+"/"+days.length,"hari tercatat"],[avg+"%","rata-rata"],[done,"terlaksana"],[miss,"terlewat"]].map(([b,l])=>`<div class="metric"><b>${b}</b><span>${l}</span></div>`).join("");
