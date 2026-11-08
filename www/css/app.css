@@ -157,7 +157,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 9px;border-radius:var(--r);background:color-mix(in srgb,var(--on-accent) 16%,transparent)}.pill .ic{width:13px;height:13px}
 .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:center;background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath fill='none' stroke='%23fff' stroke-opacity='.10' d='M28 4l6 14 14-6-6 14 14 6-14 6 6 14-14-6-6 14-6-14-14 6 6-14-14-6 14-6-6-14 14 6z'/%3E%3C/svg%3E");color:var(--on-accent);border-radius:var(--r2);padding:20px;margin-bottom:12px;box-shadow:var(--shadow)}
 .hero .eyebrow{color:inherit;opacity:.8}.hero-time{font-size:clamp(30px,6vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1}.hero-cd{font-variant-numeric:tabular-nums;opacity:.9;margin:2px 0 10px}
-.hero-days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.hero-days>div{text-align:center;padding:8px 2px;border-radius:var(--r);background:color-mix(in srgb,var(--on-accent) 12%,transparent);font-size:12px;min-width:0}.hero-days span{display:block;opacity:.85}.hero-days b{display:block;font-size:14px;font-variant-numeric:tabular-nums}.hero-days .on{background:var(--on-accent);color:var(--accent)}
+.hero-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.hero-days>div{text-align:center;padding:8px 2px;border-radius:var(--r);background:color-mix(in srgb,var(--on-accent) 12%,transparent);font-size:12px;min-width:0}.hero-days span{display:block;opacity:.85}.hero-days b{display:block;font-size:14px;font-variant-numeric:tabular-nums}.hero-days .on{background:var(--on-accent);color:var(--accent)}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
 .tile{display:flex;align-items:center;gap:12px;padding:14px;background:var(--raised);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);transition:background .12s,transform .12s;min-width:0}.tile:hover{background:var(--hover);transform:translateY(-1px)}
 .tile b{display:block;font-size:17px;line-height:1.2}.tile small{display:block;color:var(--muted);font-size:12px;line-height:1.3;overflow:hidden;text-overflow:ellipsis}.tile>div:last-child{min-width:0}
@@ -800,3 +800,18 @@ html.bugpick #view *{cursor:crosshair!important}
 .prerender{position:fixed;left:-20000px;top:0;visibility:hidden;pointer-events:none;contain:strict;height:100vh;overflow:hidden}
 /* Profil › Bantuan › Bagikan aplikasi */
 .row-btns{display:flex;gap:8px;flex-wrap:wrap}.row-btns .btn{flex:1 1 150px;justify-content:center;gap:8px}
+
+/* Beranda: jadwal sebaris 7 waktu. lewat = redup, kini = sedang berjalan (garis tepi + titik), on = sorotan penuh */
+.hero-days>div{position:relative;transition:background .3s,color .3s,opacity .3s,box-shadow .3s}
+.hero-days span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-days .lewat{opacity:.5}
+.hero-days .kini{box-shadow:inset 0 0 0 1.5px var(--hero-fg);opacity:1}
+.hero-days .kini::after{content:"";position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:#f3c969;box-shadow:0 0 0 2px color-mix(in srgb,#f3c969 35%,transparent);animation:kiniDenyut 1.8s ease-in-out infinite}
+.hero-days .on{background:var(--hero-fg);color:var(--hero-bg);box-shadow:0 4px 14px rgb(0 0 0 / .22);transform:translateY(-1px)}
+.hero-days .on b{font-weight:800}
+.hero-days .on.kini::after{background:#d9a53a}
+.hero-days .sunah span{font-style:italic}
+@keyframes kiniDenyut{50%{transform:scale(1.35);opacity:.7}}
+@media (max-width:760px){.hero-days{gap:3px}.hero-days>div{padding:7px 0;font-size:9.5px}.hero-days b{font-size:11px;letter-spacing:-.01em}.hero-days .kini::after{top:3px;right:3px;width:5px;height:5px}}
+@media (max-width:360px){.hero-days>div{font-size:8.5px}.hero-days b{font-size:10px}}
+@media (prefers-reduced-motion:reduce){.hero-days .kini::after{animation:none}}
