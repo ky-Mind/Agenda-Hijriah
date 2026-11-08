@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Identitas aplikasi di Firebase (aplikasi Android com.kisahlillah.app di proyek kisah-2cc70; bukan rahasia, kunci API
+     klien publik yang sama dengan www/firebase-config.js). Dibaca otomatis oleh Firebase saat aplikasi mulai, jadi plugin
+     google-services tidak diperlukan. Dipakai untuk notifikasi pesan (PesanFcm). -->
+<resources>
+    <string name="google_app_id" translatable="false">1:417572719269:android:de2a93417ef4850c441b4c</string>
+    <string name="gcm_defaultSenderId" translatable="false">417572719269</string>
+    <string name="google_api_key" translatable="false">AIzaSyClWUfI6U_IiT9yUxKZrPq39z1X_GDhD4k</string>
+    <string name="project_id" translatable="false">kisah-2cc70</string>
+    <string name="google_storage_bucket" translatable="false">kisah-2cc70.firebasestorage.app</string>
+</resources>
