@@ -229,6 +229,8 @@ public class MainActivity extends Activity {
 
     /** Langkah izin berikutnya (dipanggil setelah dialog izin & tiap kali kembali dari halaman Pengaturan) */
     private long izinTerakhir = 0;
+    /** Hanya di memori: benar saat aplikasi sendiri membuka halaman izin Android (catatan izin bisa ikut dipulihkan cadangan Android saat pasang ulang) */
+    private boolean keIzin = false;
     private void lanjutIzin() {
         if (!pref.getBoolean("izin_berantai", false)) return;
         long kini = System.currentTimeMillis();
@@ -240,6 +242,7 @@ public class MainActivity extends Activity {
                 android.app.AlarmManager am = (android.app.AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 if (am != null && !am.canScheduleExactAlarms()) {
                     toast("Izinkan \"Alarm & pengingat\" agar adzan berbunyi tepat waktu");
+                    keIzin = true;
                     startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + getPackageName())));
                     return;
                 }
@@ -248,6 +251,7 @@ public class MainActivity extends Activity {
                 pref.edit().putBoolean("izin_baterai_diminta", true).apply();
                 android.os.PowerManager pm = (android.os.PowerManager) getSystemService(Context.POWER_SERVICE);
                 if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                    keIzin = true;
                     startActivity(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + getPackageName())));
                     return;
                 }
@@ -300,7 +304,7 @@ public class MainActivity extends Activity {
         js("window.dispatchEvent(new Event('kl-android-kembali'))");
         if (web != null) js("window.dispatchEvent(new Event('focus'))");
         /* Kembali dari halaman Pengaturan (alarm/baterai): lanjutkan langkah izin berikutnya */
-        if (pref != null && pref.getBoolean("izin_berantai", false) && pref.getBoolean("izin_awal", false)) web.postDelayed(this::lanjutIzin, 400);
+        if (keIzin && pref != null && pref.getBoolean("izin_berantai", false)) { keIzin = false; web.postDelayed(this::lanjutIzin, 400); }
     }
 
     /* Tautan https://agenda-hijriah.vercel.app/#/... dari widget, pintasan, notifikasi, atau aplikasi lain */

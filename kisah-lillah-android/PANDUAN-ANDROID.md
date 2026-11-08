@@ -24,7 +24,7 @@ Berkas dilayani dengan alamat `https://agenda-hijriah.vercel.app/` sehingga data
 
 ## Satu langkah di Firebase (agar Masuk dengan Google jalan)
 Firebase Console › Project settings › Your apps › **Add app › Android**: paket `com.kisahlillah.app`, lalu tambahkan sidik jari:
-- SHA-1: `29:06:96:9E:F9:EE:BB:89:71:CE:D3:1A:15:64:6E:EF:12:29:BC:C8`
+- SHA-1: `29:06:96:9E:F9:EA:EE:B8:97:1C:ED:31:A1:56:46:EE:F1:22:9B:C8`
 - SHA-256: `EA:89:02:99:94:01:89:73:A1:65:43:D5:C9:7C:7F:39:7F:E6:5E:02:16:0A:5F:81:D2:E5:96:44:B9:A7:95:FB`
 
 ## Belum ada di versi ini
