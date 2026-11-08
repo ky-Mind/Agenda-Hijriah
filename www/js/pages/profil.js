@@ -349,6 +349,27 @@ export default function(root){
   const apkVer=window.KLAndroid?.versi?.()||"";
   $("appver").textContent=apkVer?`Versi ${apkVer} · tampilan ${VERSION} (${BUILD})`:`Versi ${VERSION} (${BUILD})`;
   $("appbadge").textContent=apkVer?"Android":"Web";
+  /* Bagikan aplikasi: di APK mengirim file APK yang terpasang (bisa lewat Bluetooth/Quick Share tanpa internet) beserta
+     tautan rilis terbaru; di web memakai lembar bagikan bawaan (atau menyalin tautan bila tidak tersedia). */
+  const REL="https://github.com/ky-Mind/Agenda-Hijriah/releases/latest",SITE="https://agenda-hijriah.vercel.app/";
+  const ajak=`Assalamu'alaikum! Yuk pakai Kisah Lillah: absen ibadah harian, jadwal shalat dan adzan, Al-Qur'an, dzikir, dan tasbih dalam satu aplikasi.\n\nUnduh aplikasi Android (versi terbaru): ${REL}\nAtau buka lewat browser: ${SITE}`;
+  const bisaApk=!!window.KLAndroid?.bagikanApk;
+    $("shareapp").onclick=async()=>{
+    if(bisaApk){toast("Menyiapkan file aplikasi…");return window.KLAndroid.bagikanApk(ajak)}
+    if(navigator.share){try{await navigator.share({title:"Kisah Lillah",text:ajak})}catch(e){}return}
+    copy(ajak);
+  };
+  $("sharelink").onclick=()=>copy(ajak);
+  /* Versi rilis terbaru dari GitHub; tombol berubah jadi "Perbarui" bila APK ini lebih lama */
+  const lebihBaru=(a,b)=>{const x=a.split(".").map(Number),y=b.split(".").map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
+  fetch("https://api.github.com/repos/ky-Mind/Agenda-Hijriah/releases/latest").then(r=>r.ok?r.json():Promise.reject()).then(r=>{
+    const v=String(r.tag_name||"").replace(/^v/,""),apk=(r.assets||[]).find(a=>/\.apk$/i.test(a.name));
+    if(apk)$("relget").href=apk.browser_download_url;
+    const tgl=r.published_at?new Date(r.published_at).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}):"";
+    const baru=apkVer&&v&&lebihBaru(v,apkVer);
+    $("relinfo").textContent=`Versi ${v}${tgl?" · "+tgl:""}${apk?" · "+(apk.size/1048576).toFixed(1)+" MB":""}${apkVer?(baru?" · ada pembaruan":v===apkVer?" · sudah terpasang":""):""}`;
+    $("relget").textContent=baru?"Perbarui":"Unduh";if(baru)$("relget").classList.add("primary");
+  }).catch(()=>{$("relinfo").textContent="Lihat semua rilis di GitHub"});
   const KA=window.KL_ANDROID&&window.KLAndroid&&window.KLAndroid.statusAdzan?window.KLAndroid:null;
   const ast=()=>{if(!KA)return;let o={};try{o=JSON.parse(KA.statusAdzan())}catch(e){}
     const row=(ok,label,ket,fix)=>`<div class="perm"><div><b class="ih">${ico(ok?"ok":"warn")}${label}</b><small class="muted">${ket}</small></div>${ok?'<span class="badge">Siap</span>':`<button class="btn sm primary" type="button" data-fix="${fix}">Izinkan</button>`}</div>`;

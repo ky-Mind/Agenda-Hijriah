@@ -718,6 +718,34 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> startActivity(Intent.createChooser(new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, teks), "Bagikan")));
         }
 
+        /** Bagikan aplikasi ini: file APK yang terpasang (disalin ke cache) + teks ajakan. Lembar bagikan Android
+            menampilkan WhatsApp, Bluetooth, Quick Share, Telegram, Drive, dan lainnya. */
+        @JavascriptInterface public void bagikanApk(String teks) {
+            new Thread(() -> {
+                try {
+                    File dir = new File(getCacheDir(), "bagikan");
+                    if (!dir.exists()) dir.mkdirs();
+                    File[] lama = dir.listFiles();
+                    if (lama != null) for (File f : lama) f.delete();
+                    File out = new File(dir, "Kisah-Lillah-" + versi() + ".apk");
+                    try (java.io.InputStream in = new java.io.FileInputStream(getApplicationInfo().sourceDir);
+                         java.io.OutputStream os = new java.io.FileOutputStream(out)) {
+                        byte[] b = new byte[65536]; int n;
+                        while ((n = in.read(b)) > 0) os.write(b, 0, n);
+                    }
+                    Uri u = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", out);
+                    Intent i = new Intent(Intent.ACTION_SEND).setType("application/vnd.android.package-archive")
+                            .putExtra(Intent.EXTRA_STREAM, u).putExtra(Intent.EXTRA_TEXT, teks)
+                            .putExtra(Intent.EXTRA_SUBJECT, "Aplikasi Kisah Lillah")
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    i.setClipData(android.content.ClipData.newRawUri("", u));
+                    runOnUiThread(() -> startActivity(Intent.createChooser(i, "Bagikan Kisah Lillah")));
+                } catch (Exception e) {
+                    runOnUiThread(() -> bagikan(teks));
+                }
+            }).start();
+        }
+
         @JavascriptInterface public void masukGoogle() { runOnUiThread(MainActivity.this::mulaiMasukGoogle); }
 
         @JavascriptInterface public void masukChrome(String p) { runOnUiThread(() -> mulaiMasuk("fb".equals(p) ? "fb" : "g")); }
