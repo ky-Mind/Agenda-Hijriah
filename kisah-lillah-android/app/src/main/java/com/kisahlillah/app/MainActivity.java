@@ -74,6 +74,8 @@ import java.util.Map;
 public class MainActivity extends Activity {
     static final String HOST = "agenda-hijriah.vercel.app";
     static final String AWAL = "https://" + HOST + "/";
+    /** Aplikasi sedang tampil di layar (notifikasi pesan FCM tidak perlu ditampilkan) */
+    static volatile boolean diDepan = false;
     /** ID klien Web Google proyek Firebase kisah-2cc70 (untuk token yang dikenali Firebase) */
     private static final String KLIEN_WEB = "417572719269-k12o1h8upjbmbk7ub754nv32och3c1j7.apps.googleusercontent.com";
 
@@ -297,8 +299,15 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent i) { super.onNewIntent(i); setIntent(i); bukaIntent(i, false); }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        diDepan = false;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        diDepan = true;
         /* Pasang ulang alarm adzan tiap aplikasi dibuka (bila sempat dibatalkan sistem/hemat baterai) */
         try { AdzanJadwal.pasang(this); } catch (Exception ignored) {}
         js("window.dispatchEvent(new Event('kl-android-kembali'))");
@@ -492,6 +501,10 @@ public class MainActivity extends Activity {
                         }
                     });
         } catch (Exception e) { mulaiMasuk("g"); }
+    }
+
+    void kirimFcm(String tok, String galat) {
+        js("window.__klFcm&&window.__klFcm(" + (tok == null ? "null" : JSONObject.quote(tok)) + "," + (galat == null ? "null" : JSONObject.quote(galat)) + ")");
     }
 
     private void hasilGoogle(String token, String galat) { kirimMasuk("g", token, null, galat); }
@@ -745,6 +758,12 @@ public class MainActivity extends Activity {
                 }
             }).start();
         }
+
+        /** Token FCM HP ini (notifikasi pesan di latar belakang); hasil lewat window.__klFcm(token, galat) */
+        @JavascriptInterface public void mintaFcm() { runOnUiThread(() -> PesanFcm.minta(MainActivity.this)); }
+
+        /** Keluar akun: token FCM dihapus agar pesan akun itu tidak lagi masuk ke HP ini */
+        @JavascriptInterface public void keluarAkun() { new Thread(PesanFcm::hapus).start(); }
 
         @JavascriptInterface public void masukGoogle() { runOnUiThread(MainActivity.this::mulaiMasukGoogle); }
 

@@ -85,6 +85,9 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_pengingat_info" />
         </receiver>
 
+        <service android:name=".PesanFcm" android:exported="false">
+            <intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT" /></intent-filter>
+        </service>
         <service android:name=".AdzanLayanan" android:exported="false" android:foregroundServiceType="mediaPlayback" />
 
         <receiver android:name=".AdzanReceiver" android:exported="false">

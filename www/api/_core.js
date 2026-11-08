@@ -30,6 +30,11 @@ exports.makeNotify=d=>async function notify(req,res){
     let sent=0;const dead={};
     await Promise.all(Object.entries(subs).map(async([id,s])=>{try{await webpush.sendNotification({endpoint:s.endpoint,keys:s.keys},JSON.stringify(payload),{TTL:3600,urgency:"high"});sent++}
       catch(e){if(e&&(e.statusCode===404||e.statusCode===410))dead["subs."+id]=admin.firestore.FieldValue.delete()}}));
+    /* Aplikasi Android: Firebase Cloud Messaging (pesan data prioritas tinggi; aplikasi yang menampilkan notifikasinya) */
+    const fcm=(ss.exists&&ss.data().fcm)||{};
+    await Promise.all(Object.entries(fcm).map(async([id,f])=>{if(!f||!f.token)return;
+      try{await admin.messaging().send({token:f.token,data:{judul:String(payload.title||""),isi:String(payload.body||""),tag:String(payload.tag||""),url:String(payload.url||"")},android:{priority:"high",ttl:3600000}});sent++}
+      catch(e){const c=String(e&&(e.code||e.errorInfo&&e.errorInfo.code)||"");if(/registration-token-not-registered|invalid-registration-token|invalid-argument/.test(c))dead["fcm."+id]=admin.firestore.FieldValue.delete()}}));
     if(Object.keys(dead).length)await sref.update(dead).catch(()=>{});
     return out(200,{ok:true,sent});
   }catch(e){console.error("notify:",e&&(e.code||e.message));const a=/auth\/|ID token|Decoding Firebase|argument-error/i.test(String(e&&(e.code||e.message)));return out(a?401:500,{error:a?"auth":"server"})}

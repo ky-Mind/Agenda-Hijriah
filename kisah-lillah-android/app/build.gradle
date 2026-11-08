@@ -46,10 +46,13 @@ def salinWww = tasks.register('salinWww', Sync) {
 preBuild.dependsOn salinWww
 
 dependencies {
-    implementation 'androidx.browser:browser:1.10.0'    // tab Chrome aman untuk masuk Google/Facebook (cadangan)
+    implementation 'androidx.browser:browser:1.10.0'    // tab Chrome aman untuk masuk Google (cadangan)
     implementation 'androidx.core:core:1.13.0'          // FileProvider untuk foto kamera
     // Masuk dengan Google langsung di aplikasi (lembar akun Google bawaan Android)
     implementation 'androidx.credentials:credentials:1.3.0'
     implementation 'androidx.credentials:credentials-play-services-auth:1.3.0'
     implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
+    // Notifikasi pesan di latar belakang (Firebase Cloud Messaging, lihat PesanFcm); identitas Firebase di res/values/firebase.xml
+    implementation platform('com.google.firebase:firebase-bom:33.7.0')
+    implementation 'com.google.firebase:firebase-messaging'
 }

@@ -40,7 +40,11 @@ final class Notifikasi {
         senyap.setSound(null, null);
         senyap.enableVibration(false);
         senyap.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        for (NotificationChannel k : new NotificationChannel[]{adzan, subuh, waktu, umum, bunyi, info, senyap}) nm.createNotificationChannel(k);
+        NotificationChannel pesan = new NotificationChannel("pesan", "Pesan", NotificationManager.IMPORTANCE_HIGH);
+        pesan.setDescription("Pesan dan permintaan chat baru (muncul walau aplikasi ditutup)");
+        pesan.enableVibration(true);
+        pesan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        for (NotificationChannel k : new NotificationChannel[]{adzan, subuh, waktu, umum, bunyi, info, senyap, pesan}) nm.createNotificationChannel(k);
     }
 
     private static Uri suara(Context c, int raw) { return Uri.parse("android.resource://" + c.getPackageName() + "/" + raw); }
@@ -72,6 +76,23 @@ final class Notifikasi {
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
         try { nm.notify(8, dasar(c, "adzan_info", judul, isi).setAutoCancel(true).build()); } catch (Exception ignored) {}
+    }
+
+    /** Pesan baru dari FCM. url = "./#/pesan/<id>" dibuka di aplikasi saat notifikasi diketuk; satu notifikasi per chat (tag) */
+    static void pesan(Context c, String judul, String isi, String tag, String url) {
+        siapkanKanal(c);
+        NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return;
+        String hash = url == null ? "#/pesan" : url.replaceFirst("^\\./", "");
+        if (!hash.startsWith("#")) hash = "#/pesan";
+        Intent i = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(MainActivity.AWAL + hash), c, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        int id = 3000 + Math.abs((tag == null ? "pesan" : tag).hashCode() % 5000);
+        PendingIntent pi = PendingIntent.getActivity(c, id, i, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification.Builder b = dasar(c, "pesan", judul, isi).setContentIntent(pi).setAutoCancel(true).setCategory(Notification.CATEGORY_MESSAGE)
+                .setWhen(System.currentTimeMillis()).setShowWhen(true);
+        if (Build.VERSION.SDK_INT < 26) b.setPriority(Notification.PRIORITY_HIGH).setDefaults(Notification.DEFAULT_ALL);
+        try { nm.notify(id, b.build()); } catch (Exception ignored) {}
     }
 
     /** ok | izin (izin notifikasi belum diberikan) | mati (notifikasi aplikasi dimatikan) */

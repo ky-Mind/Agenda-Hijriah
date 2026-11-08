@@ -19,7 +19,7 @@ const MESSAGES = {
   "auth/user-not-found": "Email atau kata sandi salah.",
   "auth/user-disabled": "Akun ini dinonaktifkan.",
   "auth/too-many-requests": "Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.",
-  "auth/email-already-in-use": "Email ini sudah terdaftar. Pilih Masuk, atau masuk dengan Google/Facebook jika dulu mendaftar lewat sana.",
+  "auth/email-already-in-use": "Email ini sudah terdaftar. Pilih Masuk, atau masuk dengan Google jika dulu mendaftar lewat sana.",
   "auth/weak-password": "Kata sandi minimal 6 karakter.",
   "auth/account-exists-with-different-credential": "Email akun Facebook ini sudah terdaftar dengan cara lain. Masuk dulu dengan Google atau email, Facebook akan otomatis tersambung ke akun yang sama.",
   "auth/credential-already-in-use": "Akun Facebook ini sudah tersambung ke akun lain.",

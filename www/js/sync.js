@@ -60,7 +60,20 @@ function start(user,quiet){
   if(!quiet||KLSync.state!=="err")status("busy");
   unsub=ref.onSnapshot(pull,fail);
 }
-window.KLSync={state:"off",code:"",t:0,flush:push,now(){tries=0;clearTimeout(retryT);legDone=false;start(cur)}};
+/* Keluar akun: hapus semua data akun dari perangkat ini TANPA ikut terkirim sebagai "hapus" ke cloud (sinkron dihentikan
+   dulu, lalu dihapus langsung). Pengaturan perangkat (tema, lokasi, adzan, dll.) tetap. Masuk lagi = data dipulihkan dari cloud. */
+const TETAP=/^(kl2_(theme|adzan|loc|hijri_offset|quran_pref|cal_view|cache)|kl_onboard|kl_sidebar_collapsed)/;
+async function wipe(){
+  if(unsub){try{unsub()}catch(e){}unsub=null}
+  ref=null;cur=null;clearTimeout(timer);clearTimeout(retryT);dirty.clear();
+  const L=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^kl/.test(k)&&!TETAP.test(k))L.push(k)}
+  L.forEach(k=>rawDel.call(localStorage,k));
+  try{sessionStorage.clear()}catch(e){}
+  /* Kunci chat di perangkat (cadangannya terkunci PIN di cloud) dan cache Firestore offline */
+  try{indexedDB.deleteDatabase("kl-e2e")}catch(e){}
+  try{if(window.__klDb){await __klDb.terminate();await __klDb.clearPersistence()}}catch(e){}
+  status("off");return L.length}
+window.KLSync={state:"off",code:"",t:0,flush:push,wipe,now(){tries=0;clearTimeout(retryT);legDone=false;start(cur)}};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)push()});
 window.addEventListener("pagehide",push);
 window.addEventListener("online",()=>{tries=0;if(KLSync.state==="err")start(cur,true);else if(dirty.size)schedule()});

@@ -166,7 +166,7 @@ export default function(root){
     else if(url){upd({photo:url});ident();toast("Foto profil disimpan")}
   };
 
-  /* Akun: Google, Facebook, atau email */
+  /* Akun: Google atau email */
   const showAuthErr=m=>{
     $("autherr").hidden=false;
     $("autherr").textContent=m;
@@ -202,7 +202,6 @@ export default function(root){
     }
   };
   $("login").onclick=social("google");
-  $("loginfb").onclick=social("facebook");
 
   /* Email + kata sandi: satu formulir untuk masuk, daftar, dan atur ulang kata sandi */
   const mailBusy=on=>$("mailform").querySelectorAll("button").forEach(b=>b.disabled=on);
@@ -243,8 +242,17 @@ export default function(root){
     catch(e){showAuthErr(authErrorMessage(e))}
   };
   $("logout").onclick=async()=>{
-    const ok=await dialog({title:"Keluar dari akun?",text:"Data tetap aman di perangkat ini dan di cloud. Masuk lagi kapan saja untuk melanjutkan sinkron.",actions:[{label:"Keluar",value:true,cls:"danger"},{label:"Batal",value:false}]});
-    if(ok===true){await signOut();toast("Kamu sudah keluar")}
+    const ok=await dialog({title:"Keluar dari akun?",text:"Nama, foto, nomor WhatsApp, absensi, catatan, dan pesan akun ini dihapus dari perangkat ini. Semuanya tetap aman di cloud dan kembali saat kamu masuk lagi.",actions:[{label:"Keluar",value:true,cls:"danger"},{label:"Batal",value:false}]});
+    if(ok!==true)return;
+    const b=$("logout");b.disabled=true;b.textContent="Mengamankan data…";
+    /* 1) kirim perubahan terakhir ke cloud, 2) lepas notifikasi pesan perangkat ini, 3) keluar, 4) hapus data akun di perangkat */
+    try{await window.KLSync?.flush?.()}catch(e){}
+    try{await push.disable()}catch(e){}
+    try{window.KLAndroid?.keluarAkun?.()}catch(e){}
+    await signOut();
+    try{await window.KLSync?.wipe?.()}catch(e){}
+    toast("Kamu sudah keluar. Data akun dihapus dari perangkat ini.");
+    setTimeout(()=>location.replace(location.pathname+"#/beranda"),300);setTimeout(()=>location.reload(),700)
   };
 
   /* Sinkron cloud */
