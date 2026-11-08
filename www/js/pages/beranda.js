@@ -1,6 +1,6 @@
 import {get} from "../store.js";
 import {hijriText,masehiText,key,events,nextEvent,addDays} from "../lib/hijri.js";
-import {loc,upcoming,tzLabel,tzOffset,wallNow} from "../lib/prayer.js";
+import {loc,upcoming,tzLabel,tzOffset,wallNow,dhuhaOf} from "../lib/prayer.js";
 import {progress,day,agenda,streaks} from "../lib/ibadah.js";
 import {json,hasAr,esc} from "../lib/ui.js";
 const C=2*Math.PI*15;
@@ -27,31 +27,37 @@ export default function(root){
   const l=loc();let dl=0,iv,busy=false,alive=true;
   const meta=src=>`${l.name} · ${tzLabel(tzOffset(l))}${src==="local"?" · hitung lokal":""}`;$("lokasi").textContent=meta();
   async function load(){busy=true;
-    try{const n=await upcoming(l);if(!alive)return;dl=Date.now()+n.ms;$("next").textContent=`${n.nm} ${n.time}${n.tomorrow?" (besok)":""}`;$("lokasi").textContent=meta(n.t._src);
+    try{const n=await upcoming(l);if(!alive)return;dl=Date.now()+n.ms;$("lokasi").textContent=meta(n.t._src);
       jd=n;mini();tick()}
     catch(e){if(alive){$("next").textContent="—";$("countdown").textContent="Jadwal belum dapat dihitung. Atur lokasi di halaman Shalat."}}
     finally{busy=false}}
-  /* Jadwal sebaris: Subuh, Terbit, Dhuha, Dzuhur, Ashar, Maghrib, Isya.
-     lewat = redup; kini = waktu yang sedang berjalan (garis tepi + titik); on = sorotan penuh.
-     Seperti fadzkuruuni: sorotan penuh tetap di waktu yang baru masuk selama 10 menit, lalu pindah ke waktu berikutnya. */
+  /* Kartu atas = WAKTU SEKARANG: "Sekarang · Waktu Isya", jam yang berjalan, lalu "Menuju Subuh 04:03 · 07:19:23".
+     Jadwal sebaris: Subuh, Terbit, Dhuha, Dzuhur, Ashar, Maghrib, Isya.
+     lewat = redup; kini = waktu yang sedang berjalan (sorotan penuh + titik); berikut = garis tepi. */
   const URUT=[["Fajr","Subuh"],["Sunrise","Terbit"],["Dhuha","Dhuha"],["Dhuhr","Dzuhur"],["Asr","Ashar"],["Maghrib","Maghrib"],["Isha","Isya"]];
-  const mnt=v=>{const m=/^(\d+):(\d+)/.exec(v||"");return m?+m[1]*60+ +m[2]:null},jam=x=>`${String(Math.floor(x/60)%24).padStart(2,"0")}:${String(x%60).padStart(2,"0")}`;
-  /* Dhuha: matahari setinggi ±4,5° (sekitar 20 menit setelah terbit di Indonesia) */
-  const dhuha=t=>{const s=mnt(t.Sunrise);return s==null?null:jam(s+Math.round(5.33/(15*Math.cos(l.lat*Math.PI/180))*60))};
-  let jd=null,sidik="";
+  const z=v=>String(v).padStart(2,"0");
+  const mnt=v=>{const m=/^(\d+):(\d+)/.exec(v||"");return m?+m[1]*60+ +m[2]:null},jam=x=>`${z(Math.floor(x/60)%24)}:${z(x%60)}`;
+  const dhuha=t=>dhuhaOf(t,l);
+  let jd=null,sidik="",S={};
   function mini(){if(!jd)return;const t={...jd.t,Dhuha:dhuha(jd.t)},w=wallNow(l),c=w.getHours()*60+w.getMinutes();
     const M=URUT.map(([id])=>mnt(t[id]));
     let kini=-1,berikut=-1;
-    if(jd.tomorrow){kini=6;berikut=0}   // setelah Isya: jadwal besok, Isya masih berjalan, Subuh berikutnya
-    else{M.forEach((m,i)=>{if(m!=null&&m<=c)kini=i});berikut=M.findIndex(m=>m!=null&&m>c);if(kini<0)kini=6}
-    const baru=!jd.tomorrow&&M[kini]!=null&&c>=M[kini]&&c-M[kini]<10;
-    const on=baru?kini:berikut;
-    const html=URUT.map(([id,nm],i)=>{const k=[!jd.tomorrow&&M[i]!=null&&M[i]<=c&&i!==kini?"lewat":"",i===kini?"kini":"",i===on?"on":"",i===1||i===2?"sunah":""].filter(Boolean).join(" ");
+    if(jd.tomorrow){kini=6;berikut=0}   // setelah Isya: tabel = jadwal besok; Isya masih berjalan, Subuh berikutnya
+    else{M.forEach((m,i)=>{if(m!=null&&m<=c)kini=i});berikut=M.findIndex(m=>m!=null&&m>c);if(kini<0)kini=6;if(berikut<0)berikut=0}
+    S={kini:URUT[kini][1],berikut:URUT[berikut][1],jamB:t[URUT[berikut][0]]||"",besok:jd.tomorrow||berikut===0&&kini===6&&c>=12*60,
+       target:!jd.tomorrow&&M[berikut]!=null&&M[berikut]>c?M[berikut]:null};
+    const html=URUT.map(([id,nm],i)=>{const k=[!jd.tomorrow&&M[i]!=null&&M[i]<=c&&i!==kini?"lewat":"",i===kini?"kini on":"",i===berikut?"berikut":"",i===1||i===2?"sunah":""].filter(Boolean).join(" ");
       return `<div class="${k}"${i===kini?' aria-current="time"':""}><span>${esc(nm)}</span><b>${esc(t[id]||"—")}</b></div>`}).join("");
-    if(html!==sidik){$("mini").innerHTML=html;sidik=html}}
-  function tick(){if(!dl)return;if(Date.now()%30000<1000)mini();const s=Math.max(0,Math.round((dl-Date.now())/1e3));
-    $("countdown").textContent=`${String(Math.floor(s/3600)).padStart(2,"0")}:${String(Math.floor(s%3600/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")} lagi`;
-    if(s===0&&!busy)setTimeout(load,1200)}
+    if(html!==sidik){$("mini").innerHTML=html;sidik=html}
+    const sb=S.kini==="Terbit"||S.kini==="Dhuha"?S.kini==="Terbit"?"Matahari terbit":"Waktu Dhuha":"Waktu "+S.kini;
+    $("eyebrow").textContent="Sekarang · "+sb}
+  function tick(){if(!jd)return;if(Date.now()%30000<1000)mini();
+    const w=wallNow(l),now=w.getHours()*3600+w.getMinutes()*60+w.getSeconds();
+    $("next").innerHTML=`${z(w.getHours())}:${z(w.getMinutes())}<small class="hero-dt">:${z(w.getSeconds())}</small> <small class="hero-tz">${esc(tzLabel(tzOffset(l)))}</small>`;
+    let s=S.target!=null?S.target*60-now:Math.round((dl-Date.now())/1e3);if(s<0)s=0;
+    $("countdown").textContent=`Menuju ${S.berikut}${S.besok?" besok":""} ${S.jamB} · ${z(Math.floor(s/3600))}:${z(Math.floor(s%3600/60))}:${z(s%60)} lagi`;
+    if(S.target!=null&&s===0)setTimeout(mini,1200);
+    if(Date.now()>=dl&&!busy){dl=Infinity;setTimeout(load,1200)}}
   load();iv=setInterval(tick,1000);
   return()=>{alive=false;clearInterval(iv)};
 }

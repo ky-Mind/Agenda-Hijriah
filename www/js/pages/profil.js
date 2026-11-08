@@ -1,9 +1,9 @@
 import {get,set,keys,toast} from "../store.js";
 import {paint,cropPhoto} from "../lib/avatar.js";
 import {normalize,validNumber,waUrl,openUrl} from "../lib/wa.js";
-import {settings,save,enable,test,stop} from "../lib/adzan.js";
+import {settings,save,enable,test,stop,modeOf,MODE} from "../lib/adzan.js";
 import {setTheme} from "../lib/theme.js";
-import {loc} from "../lib/prayer.js";
+import {loc,timings,WAKTU,TAMBAHAN,dhuhaOf} from "../lib/prayer.js";
 import {geoState,notifState,useMyLocation,geoMsg,GEO_TXT,NOTIF_TXT} from "../lib/perm.js";
 import {ask,copy,dialog,esc,ico} from "../lib/ui.js";
 import * as chat from "../lib/chat.js";
@@ -291,17 +291,28 @@ export default function(root){
     $("nbadge").textContent=NOTIF_TXT[n]||"—";
     $("nbadge").classList.toggle("warn",n==="denied");
     const on=s.notif&&n==="granted";
-    $("perm").textContent=n==="denied"?"Diblokir di pengaturan browser/HP":on?"Aktif untuk 5 waktu shalat":s.notif?"Izin belum diberikan di perangkat ini":"Belum aktif";
-    root.querySelectorAll("[data-pr]").forEach(b=>{
-      const off=!!(s.off||{})[b.dataset.pr];
-      b.classList.toggle("on",!off);
-      b.setAttribute("aria-pressed",!off);
-    });
+    $("perm").textContent=n==="denied"?"Diblokir di pengaturan browser/HP":on?`Aktif · ${WAKTU.filter(([w])=>modeOf(w,s)!=="off").length} waktu diingatkan`:s.notif?"Izin belum diberikan di perangkat ini":"Belum aktif";
     $("tnotif").setAttribute("aria-pressed",on);
     $("tnotif").textContent=on?"Matikan":"Aktifkan";
-    $("tsound").setAttribute("aria-pressed",s.sound);
-    $("tsound").textContent=s.sound?"Aktif":"Mati";
+    wsetUi();
   };
+  /* Mode tiap waktu (Adzan / Notif / Senyap / Mati). Disimpan di pengaturan adzan sebagai mode{id:…};
+     di APK ikut terkirim ke alarm Android, jadi berlaku juga saat aplikasi ditutup. */
+  let jamHari={};
+  timings(new Date(),loc()).then(t=>{t.Dhuha=dhuhaOf(t,loc());jamHari=t;wsetUi()}).catch(()=>{});
+  function wsetUi(){
+    const s=settings(),aktif=s.notif;
+    $("wset").innerHTML=WAKTU.map(([id,nm])=>{const m=modeOf(id,s),ops=MODE.filter(([v])=>!(v==="adzan"&&TAMBAHAN.includes(id)));
+      return `<div class="wrow${m==="off"?" mati":""}"><div class="wnm"><b>${nm}</b><small>${jamHari[id]&&/^\d/.test(jamHari[id])?jamHari[id]:""}${TAMBAHAN.includes(id)?" · tanpa adzan":""}</small></div><div class="seg wseg" role="group" aria-label="Pengingat ${nm}">${ops.map(([v,lb])=>`<button type="button" data-w="${id}" data-m="${v}" aria-pressed="${m===v}" class="m-${v}">${lb}</button>`).join("")}</div></div>`}).join("");
+    $("wset").classList.toggle("redup",!aktif);
+  }
+  const aturWaktu=(id,m)=>{const s=settings(),o={};WAKTU.forEach(([w])=>o[w]=modeOf(w,s));
+    if(id)o[id]=m;else WAKTU.forEach(([w])=>{if(!TAMBAHAN.includes(w))o[w]=m});
+    save({mode:o,sound:Object.values(o).includes("adzan"),off:Object.fromEntries(WAKTU.filter(([w])=>o[w]==="off").map(([w])=>[w,true]))});
+    ping("kl-adzan");wsetUi()};
+  $("wset").onclick=e=>{const b=e.target.closest("[data-w]");if(!b)return;aturWaktu(b.dataset.w,b.dataset.m);
+    const nm=WAKTU.find(x=>x[0]===b.dataset.w)[1],t={adzan:"memutar adzan",notif:"notifikasi berbunyi",senyap:"notifikasi tanpa bunyi",off:"tidak diingatkan"}[b.dataset.m];toast(settings().notif?`${nm}: ${t}`:`${nm}: ${t}. Aktifkan dulu Pengingat adzan di atas.`)};
+  root.querySelectorAll("[data-pre]").forEach(b=>b.onclick=()=>{aturWaktu(null,b.dataset.pre);toast("Semua waktu shalat: "+b.textContent+" (Imsak, Terbit, Dhuha tetap)")});
   $("gps").onclick=async()=>{
     const b=$("gps");
     b.disabled=true;
@@ -331,16 +342,8 @@ export default function(root){
     ping("kl-adzan");
     permsUi();
   };
-  $("tsound").onclick=()=>{save({sound:!settings().sound});ping("kl-adzan");permsUi()};
   $("atest").onclick=()=>test("biasa");
   $("atestsubuh").onclick=()=>test("subuh");
-  root.querySelectorAll("[data-pr]").forEach(b=>b.onclick=()=>{
-    const o={...(settings().off||{})};
-    o[b.dataset.pr]=!o[b.dataset.pr];
-    save({off:o});
-    ping("kl-adzan");
-    permsUi();
-  });
   $("astop").onclick=()=>stop();
   permsUi();
   /* Aplikasi Android: adzan dipasang sebagai alarm Android (berbunyi walau aplikasi ditutup / layar mati).

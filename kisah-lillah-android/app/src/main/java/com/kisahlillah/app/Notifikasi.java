@@ -35,7 +35,12 @@ final class Notifikasi {
         bunyi.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         NotificationChannel info = new NotificationChannel("adzan_info", "Riwayat waktu shalat", NotificationManager.IMPORTANCE_LOW);
         info.setSound(null, null);
-        for (NotificationChannel k : new NotificationChannel[]{adzan, subuh, waktu, umum, bunyi, info}) nm.createNotificationChannel(k);
+        NotificationChannel senyap = new NotificationChannel("waktu_senyap", "Waktu shalat (senyap)", NotificationManager.IMPORTANCE_DEFAULT);
+        senyap.setDescription("Pengingat waktu yang diatur Senyap: muncul tanpa bunyi dan getar");
+        senyap.setSound(null, null);
+        senyap.enableVibration(false);
+        senyap.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        for (NotificationChannel k : new NotificationChannel[]{adzan, subuh, waktu, umum, bunyi, info, senyap}) nm.createNotificationChannel(k);
     }
 
     private static Uri suara(Context c, int raw) { return Uri.parse("android.resource://" + c.getPackageName() + "/" + raw); }
@@ -86,10 +91,11 @@ final class Notifikasi {
                 .setCategory(kanal.startsWith("adzan") || "waktu".equals(kanal) ? Notification.CATEGORY_ALARM : Notification.CATEGORY_MESSAGE);
         if (Build.VERSION.SDK_INT < 26) {
             b.setPriority(Notification.PRIORITY_HIGH).setVibrate(new long[]{0, 200, 100, 200, 100, 300});
-            if ("adzan".equals(kanal)) b.setSound(suara(c, R.raw.adzan));
+            if ("waktu_senyap".equals(kanal)) b.setPriority(Notification.PRIORITY_DEFAULT).setVibrate(null).setSound(null);
+            else if ("adzan".equals(kanal)) b.setSound(suara(c, R.raw.adzan));
             else if ("adzan_subuh".equals(kanal)) b.setSound(suara(c, R.raw.adzan_subuh));
             else b.setDefaults(Notification.DEFAULT_SOUND);
         }
-        try { nm.notify(kanal.startsWith("adzan") || "waktu".equals(kanal) ? 7 : (int) (System.currentTimeMillis() % 100000), b.build()); } catch (Exception ignored) {}
+        try { nm.notify(kanal.startsWith("adzan") || kanal.startsWith("waktu") ? 7 : (int) (System.currentTimeMillis() % 100000), b.build()); } catch (Exception ignored) {}
     }
 }

@@ -2,6 +2,11 @@ import {get,set} from "../store.js";
 export const CITIES={Jakarta:[-6.2088,106.8456,420],Bandung:[-6.9175,107.6191,420],Bogor:[-6.595,106.8166,420],Semarang:[-6.9667,110.4167,420],Yogyakarta:[-7.7956,110.3695,420],Surabaya:[-7.2575,112.7521,420],Malang:[-7.9666,112.6326,420],Denpasar:[-8.65,115.2167,480],Medan:[3.5952,98.6722,420],Palembang:[-2.9761,104.7754,420],Pekanbaru:[0.5071,101.4478,420],Padang:[-0.9471,100.4172,420],Banjarmasin:[-3.3186,114.5944,480],Pontianak:[-0.0263,109.3425,420],Balikpapan:[-1.2379,116.8529,480],Makassar:[-5.1477,119.4327,480],Manado:[1.4748,124.8421,480],Jayapura:[-2.5337,140.7181,540]};
 export const NAMES=[["Imsak","Imsak"],["Fajr","Subuh"],["Sunrise","Terbit"],["Dhuhr","Dzuhur"],["Asr","Ashar"],["Maghrib","Maghrib"],["Isha","Isya"]];
 export const PRAYERS=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+/* Waktu yang bisa diingatkan (Profil › Notifikasi). Imsak, Terbit, Dhuha: hanya notifikasi (tanpa adzan) */
+export const WAKTU=[["Imsak","Imsak"],["Fajr","Subuh"],["Sunrise","Terbit"],["Dhuha","Dhuha"],["Dhuhr","Dzuhur"],["Asr","Ashar"],["Maghrib","Maghrib"],["Isha","Isya"]];
+export const TAMBAHAN=["Imsak","Sunrise","Dhuha"];
+/* Dhuha: matahari setinggi ±4,5° (sekitar 20 menit setelah terbit di Indonesia) */
+export function dhuhaOf(t,l=loc()){const m=/^(\d+):(\d+)/.exec(t?.Sunrise||"");if(!m)return null;const x=+m[1]*60+ +m[2]+Math.round(5.33/(15*Math.cos(l.lat*Math.PI/180))*60);return `${String(Math.floor(x/60)%24).padStart(2,"0")}:${String(x%60).padStart(2,"0")}`}
 export const loc=()=>get("loc",{name:"Bandung",lat:CITIES.Bandung[0],lng:CITIES.Bandung[1],tz:420});
 export const setLoc=l=>{set("loc",l);document.dispatchEvent(new CustomEvent("kl-loc"))};
 /* Zona waktu lokasi (menit dari UTC): tersimpan > aturan WIB/WITA/WIT untuk Indonesia > zona perangkat */

@@ -40,10 +40,13 @@ final class Widget {
     }
 
     /** Waktu shalat dari data tersimpan: [nama, jam, epoch ms, kalimat] */
-    static ArrayList<Object[]> slot(Context c) {
+    static ArrayList<Object[]> slot(Context c) { return slot(c, "slots"); }
+
+    /** kunci "slots" (5 waktu shalat, juga untuk widget) atau "extra" (Imsak, Terbit, Dhuha: hanya untuk pengingat) */
+    static ArrayList<Object[]> slot(Context c, String kunci) {
         ArrayList<Object[]> L = new ArrayList<>();
         try {
-            JSONArray A = new JSONObject(pref(c).getString("widget", "{}")).optJSONArray("slots");
+            JSONArray A = new JSONObject(pref(c).getString("widget", "{}")).optJSONArray(kunci);
             if (A == null) return L;
             for (int i = 0; i < A.length(); i++) {
                 JSONObject o = A.getJSONObject(i);

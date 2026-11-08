@@ -18,6 +18,7 @@ public class AdzanReceiver extends BroadcastReceiver {
             Widget.pref(c).edit().putLong("adzan_terakhir", System.currentTimeMillis()).apply();
             String jenis = i.getStringExtra("jenis"), judul = i.getStringExtra("judul"), isi = i.getStringExtra("isi");
             if ("info".equals(jenis)) Notifikasi.tampil(c, judul, isi, "waktu");
+            else if ("senyap".equals(jenis)) Notifikasi.tampil(c, judul, isi, "waktu_senyap");
             else {
                 try { AdzanLayanan.mulai(c, judul, isi, "subuh".equals(jenis) ? "subuh" : "adzan"); }
                 catch (Exception e) { Notifikasi.tampil(c, judul, isi, "subuh".equals(jenis) ? "adzan_subuh" : "adzan"); }

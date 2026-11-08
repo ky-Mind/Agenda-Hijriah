@@ -41,9 +41,10 @@
   <section data-g="notif" role="tabpanel" hidden>
   <div class="card"><h2>Pengingat adzan</h2>
     <div class="perm"><div><b>Pengingat adzan</b><small class="muted" data-r="perm"></small></div><div class="row"><span class="badge" data-r="nbadge"></span><button class="btn sm" data-r="tnotif" aria-pressed="false">Aktifkan</button></div></div>
-    <div class="perm"><div><b>Suara adzan</b><small class="muted">Subuh memakai adzan Subuh; Dzuhur sampai Isya memakai adzan biasa</small></div><button class="btn sm" data-r="tsound" aria-pressed="false">Mati</button></div>
-    <div class="perm"><div><b>Waktu yang diingatkan</b><small class="muted">Matikan waktu yang tidak diperlukan</small></div></div>
-    <div class="chips" data-r="pchips" style="margin:0 0 4px"><button class="chip" data-pr="Fajr">Subuh</button><button class="chip" data-pr="Dhuhr">Dzuhur</button><button class="chip" data-pr="Asr">Ashar</button><button class="chip" data-pr="Maghrib">Maghrib</button><button class="chip" data-pr="Isha">Isya</button></div>
+    <h3 class="sub">Waktu yang diingatkan</h3>
+    <p class="muted wset-ket">Atur tiap waktu: <b>Adzan</b> memutar suara adzan, <b>Notif</b> berbunyi seperti notifikasi biasa, <b>Senyap</b> muncul tanpa bunyi, <b>Mati</b> tidak diingatkan.</p>
+    <div class="wpre" role="group" aria-label="Atur semua sekaligus"><span class="muted">Atur semua:</span><button class="chip" type="button" data-pre="adzan">Adzan</button><button class="chip" type="button" data-pre="notif">Notif</button><button class="chip" type="button" data-pre="senyap">Senyap</button></div>
+    <div class="wset" data-r="wset"></div>
     <h3 class="sub">Coba suara</h3>
     <div class="row"><button class="btn sm" data-r="atestsubuh"><svg class="ic" aria-hidden="true"><use href="#i-sunrise"/></svg>Tes adzan Subuh</button><button class="btn sm" data-r="atest"><svg class="ic" aria-hidden="true"><use href="#i-bell"/></svg>Tes adzan biasa</button><button class="btn sm" data-r="astop"><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg>Hentikan</button></div>
     <p class="muted mt" style="font-size:13px" data-r="anote">Pengingat berbunyi selama Kisah Lillah terbuka di perangkat. Tes selalu memutar suara dan menampilkan notifikasi (jika izin diberikan).</p>
