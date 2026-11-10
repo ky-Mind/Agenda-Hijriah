@@ -40,7 +40,12 @@ export async function register(u,force){
   if(!u||!u.email||!db())return;const p=get("chat_prefs",{}),k="kl_chat_idx_"+u.uid,photo=p.hidden?"":await myPhoto(u),sig=myName(u)+"|"+!!p.hidden+"|"+E.state.pub+"|"+photo.length;
   if(!force&&localStorage.getItem(k)===sig)return;
   const ref=db().collection("userIndex").doc(norm(u.email));
-  try{if(p.hidden)await ref.delete();else await ref.set({uid:u.uid,name:myName(u),email:norm(u.email),pub:E.state.pub||"",photo,updated:Date.now()});localStorage.setItem(k,sig)}catch(e){console.warn("indeks chat",e&&e.code||e);state.err=e&&e.code||"err"}}
+  const isi=f=>({uid:u.uid,name:myName(u),email:norm(u.email),pub:E.state.pub||"",...(f?{photo:f}:{}),updated:Date.now()});
+  try{if(p.hidden)await ref.delete();else await ref.set(isi(photo));localStorage.setItem(k,sig);state.err=""}
+  catch(e){
+    /* Ditolak (mis. foto terlalu besar / aturan server lama tanpa kolom photo): daftar ulang tanpa foto agar tetap bisa dichat */
+    if(!p.hidden&&photo)try{await ref.set(isi(""));localStorage.setItem(k,sig);state.err="";return}catch(e2){e=e2}
+    console.warn("indeks chat",e&&e.code||e);state.err=e&&e.code||"err"}}
 /* Diagnosa: apakah kunci publik akun ini benar-benar sudah terdaftar di userIndex? */
 export async function checkIndex(u){if(!u||!u.email||!db()||!E.state.ready)return"na";if(get("chat_prefs",{}).hidden)return"hidden";
   try{const d=await db().collection("userIndex").doc(norm(u.email)).get();if(!d.exists)return"missing";const x=d.data();return x.pub&&x.pub===E.state.pub?"ok":"stale"}catch(e){return"error"}}

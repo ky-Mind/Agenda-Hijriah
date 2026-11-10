@@ -62,7 +62,7 @@ function start(user,quiet){
 }
 /* Keluar akun: hapus semua data akun dari perangkat ini TANPA ikut terkirim sebagai "hapus" ke cloud (sinkron dihentikan
    dulu, lalu dihapus langsung). Pengaturan perangkat (tema, lokasi, adzan, dll.) tetap. Masuk lagi = data dipulihkan dari cloud. */
-const TETAP=/^(kl2_(theme|adzan|loc|hijri_offset|quran_pref|cal_view|cache)|kl_onboard|kl_sidebar_collapsed)/;
+const TETAP=/^(kl2_(theme|adzan|loc|hijri_offset|quran_pref|cal_view|cache)|kl_onboard|kl_offline_tawar|kl_sidebar_collapsed)/;
 async function wipe(){
   if(unsub){try{unsub()}catch(e){}unsub=null}
   ref=null;cur=null;clearTimeout(timer);clearTimeout(retryT);dirty.clear();

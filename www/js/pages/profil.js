@@ -1,7 +1,7 @@
 import {get,set,keys,toast} from "../store.js";
 import {paint,cropPhoto} from "../lib/avatar.js";
 import {normalize,validNumber,waUrl,openUrl} from "../lib/wa.js";
-import {settings,save,enable,test,stop,modeOf,MODE} from "../lib/adzan.js";
+import {settings,save,enable,test,stop,modeOf,MODE,izinTes} from "../lib/adzan.js";
 import {setTheme} from "../lib/theme.js";
 import {loc,timings,WAKTU,TAMBAHAN,dhuhaOf} from "../lib/prayer.js";
 import {geoState,notifState,useMyLocation,geoMsg,GEO_TXT,NOTIF_TXT} from "../lib/perm.js";
@@ -352,6 +352,7 @@ export default function(root){
   };
   $("atest").onclick=()=>test("biasa");
   $("atestsubuh").onclick=()=>test("subuh");
+  $("atestnotif").onclick=()=>test("notif");
   $("astop").onclick=()=>stop();
   permsUi();
   /* Aplikasi Android: adzan dipasang sebagai alarm Android (berbunyi walau aplikasi ditutup / layar mati).
@@ -396,7 +397,7 @@ export default function(root){
     $("anote").textContent="Adzan dipasang sebagai alarm Android, jadi tetap berbunyi walau aplikasi ditutup atau layar mati, selama izin di bawah lengkap.";
     $("astat").onclick=e=>{const b=e.target.closest("[data-fix]");if(b)KA.perbaikiAdzan(b.dataset.fix)};
     $("auji").onclick=()=>{KA.ujiAdzan(30);toast("Adzan uji berbunyi 30 detik lagi. Tutup aplikasi dan matikan layar sekarang.")};
-    $("atest").onclick=()=>KA.putarAdzan("biasa");$("atestsubuh").onclick=()=>KA.putarAdzan("subuh");$("astop").onclick=()=>KA.hentikanAdzan();
+    $("atest").onclick=async()=>{await izinTes();KA.putarAdzan("biasa")};$("atestsubuh").onclick=async()=>{await izinTes();KA.putarAdzan("subuh")};$("astop").onclick=()=>KA.hentikanAdzan();
     ast();addEventListener("kl-android-kembali",astKembali);document.addEventListener("kl-adzan",astKembali);
   }
 

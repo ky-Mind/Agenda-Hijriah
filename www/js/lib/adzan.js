@@ -22,7 +22,19 @@ export async function fire(id,force){
     const o=opts(id,m==="senyap");
     try{const r=await swReady();if(r?.showNotification)await r.showNotification("Waktu "+NAMA[id],o);else new Notification("Waktu "+NAMA[id],o)}catch(e){try{new Notification("Waktu "+NAMA[id],o)}catch(_){}}}
   if(m==="adzan"&&(s.sound||force||s.mode))play(id==="Fajr")}
-export const test=kind=>fire(kind==="subuh"?"Fajr":"Dhuhr",true);
+/* Tes: minta izin notifikasi dulu bila belum pernah ditanya, lalu tampilkan notifikasi (+ suara adzan, kecuali kind "notif") */
+export async function izinTes(){
+  if(!("Notification"in window))return"unsupported";
+  let p=Notification.permission;if(p==="default"){try{p=await Notification.requestPermission()}catch(e){}}
+  if(p==="denied")toast("Izin notifikasi diblokir. Izinkan lewat pengaturan situs/aplikasi, lalu coba lagi.");
+  return p}
+export async function test(kind){
+  const p=await izinTes();
+  if(kind!=="notif")return fire(kind==="subuh"?"Fajr":"Dhuhr",true);
+  if(p!=="granted")return;
+  const o={...opts("Dhuhr"),body:"Notifikasi Kisah Lillah berjalan dengan baik.",tag:"kl-tes",silent:false};
+  try{const r=await swReady();if(r?.showNotification)await r.showNotification("Tes notifikasi",o);else new Notification("Tes notifikasi",o)}catch(e){try{new Notification("Tes notifikasi",o)}catch(_){}}
+  toast("Notifikasi tes dikirim")}
 export async function enable(){
   if(!("Notification"in window))return"unsupported";
   if(!isSecureContext)return"insecure";

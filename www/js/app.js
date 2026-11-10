@@ -6,6 +6,7 @@ import * as push from "./lib/push.js";
 import {confirmLeave,wait} from "./lib/ui.js";
 import {onboard} from "./lib/onboard.js";
 import {cekRilis} from "./lib/rilis.js";
+import {tawarOffline} from "./lib/tawaroffline.js";
 import {hijriText} from "./lib/hijri.js";
 import {loc} from "./lib/prayer.js";
 import {initKili} from "./lib/kili.js";
@@ -107,7 +108,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)schedule()
 addEventListener("offline",()=>toast("Kamu sedang offline"));addEventListener("online",()=>toast("Kembali online"));
 if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 import("./lib/widgetdata.js").then(w=>{w.pushWidget();["kl-loc","kl-data-changed"].forEach(e=>document.addEventListener(e,()=>w.pushWidget()))}).catch(()=>{});
-render().then(()=>{if(location.protocol.startsWith("http")&&!localStorage.getItem("kl_onboard"))setTimeout(onboard,1500);cekRilis()});
+render().then(()=>{if(location.protocol.startsWith("http")&&!localStorage.getItem("kl_onboard"))setTimeout(onboard,1500);cekRilis();tawarOffline()});
 /* Pratinjau geser (seperti WhatsApp): halaman utama yang belum dibuka digambar diam-diam sekali di luar layar, supaya
    saat menggeser, halaman sebelah tampil dengan isi aslinya (bukan kerangka kosong). Diulang saat data berubah. */
 const UTAMA=["beranda","absensi","kalender","shalat","koleksi","profil"];let pratinjauJalan=false;
