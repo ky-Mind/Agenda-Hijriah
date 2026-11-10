@@ -154,6 +154,8 @@
     var o = document.querySelectorAll(".modal,.qact-latar");
     if (o.length) {
       var d = o[o.length - 1];
+      /* Jendela wajib (unduh/update aplikasi, mode offline, selamat datang): hanya tertutup lewat tombolnya */
+      if (d.dataset && d.dataset.wajib) { var bx = d.querySelector(".box"); if (bx) { bx.classList.remove("goyang"); void bx.offsetWidth; bx.classList.add("goyang"); } return "ok"; }
       if (d.classList.contains("qact-latar")) { d.click(); return "ok"; }
       esc();
       if (d.isConnected) d.click();          // ketuk latar (sama dengan mengetuk di luar kotak)

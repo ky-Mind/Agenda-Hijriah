@@ -17,15 +17,17 @@ export async function terbaru(){
 const hp=()=>/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
 const tunggu=t=>new Promise(r=>setTimeout(r,t));
 /* Tunggu sampai tidak ada jendela lain (mis. Selamat datang) */
+/* Jendela wajib (data-wajib) hanya tertutup lewat tombolnya; ketukan di luar = kotak bergoyang sebagai tanda */
+export const goyang=m=>{const b=m.querySelector(".box");if(!b)return;b.classList.remove("goyang");void b.offsetWidth;b.classList.add("goyang")};
 export async function giliran(){for(let i=0;i<120&&document.querySelector(".modal");i++)await tunggu(1000)}
 function jendela({judul,teks,poin,tombol,url,info}){
-  const m=document.createElement("div");m.className="modal rilis-m";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",judul);
+  const m=document.createElement("div");m.className="modal rilis-m";m.dataset.wajib="1";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",judul);
   m.innerHTML=`<div class="box"><div class="rilis-h"><img src="assets/logo.png" alt=""><div><h2>${esc(judul)}</h2><small class="muted">${esc(info)}</small></div></div>
     <p style="margin:10px 0 8px">${esc(teks)}</p><ul class="rilis-p">${poin.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
     <div class="dlg-actions"><button class="btn" data-a="nanti">Nanti saja</button><a class="btn primary" data-a="ok" href="${esc(url)}" target="_blank" rel="noopener">${esc(tombol)}</a></div></div>`;
   document.body.appendChild(m);
   const tutup=()=>m.remove();
-  m.onclick=e=>{const b=e.target.closest("[data-a]");if(e.target===m||b?.dataset.a==="nanti")return tutup();if(b?.dataset.a==="ok")setTimeout(tutup,300)};
+  m.onclick=e=>{const b=e.target.closest("[data-a]");if(e.target===m)return goyang(m);if(b?.dataset.a==="nanti")return tutup();if(b?.dataset.a==="ok")setTimeout(tutup,300)};
 }
 let terakhir=0;
 export async function cekRilis(){

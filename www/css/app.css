@@ -837,3 +837,7 @@ html.bugpick #view *{cursor:crosshair!important}
 /* Jendela unduh/perbarui aplikasi */
 .rilis-h{display:flex;gap:12px;align-items:center}.rilis-h img{width:48px;height:48px;flex:none}.rilis-h h2{margin:0}
 .rilis-p{margin:0 0 4px;padding-left:20px;font-size:14px;line-height:1.6}.rilis-m .dlg-actions a.btn{text-decoration:none}
+
+/* Jendela wajib: ketukan di luar = goyang (hanya tombol yang menutup) */
+@keyframes goyang{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.modal .box.goyang{animation:goyang .38s ease}

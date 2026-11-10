@@ -18,7 +18,8 @@ const html={},mods={};let cleanup=null,seq=0,shown=location.hash,skip=false,quie
 window.KLGuard=null; /* halaman dapat mengisi {dirty(),save(),discard()} untuk menahan perpindahan saat ada perubahan belum tersimpan */
 /* KLSnap[halaman] = potret isi terakhir (kerangka HTML bila belum pernah dibuka); dipakai swipe.js saat menggeser */
 const KLSnap=window.KLSnap={};let curKey=null;
-const loadHtml=n=>html[n]??=fetch(`pages/${n}.html`,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(`pages/${n}.html (HTTP ${r.status})`);return r.text()}).then(t=>{KLSnap[n]??={html:t,mt:""};return t}).catch(e=>{delete html[n];throw e});
+const UTAMA=["beranda","absensi","kalender","shalat","koleksi","profil"];
+const loadHtml=n=>html[n]??=fetch(`pages/${n}.html`,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(`pages/${n}.html (HTTP ${r.status})`);return r.text()}).then(t=>{KLSnap[n]??={html:t,mt:UTAMA.includes(n)&&n!=="beranda"?"header":""};return t}).catch(e=>{delete html[n];throw e});
 const NOJS=new Set(["koleksi"]);
 const loadMod=n=>NOJS.has(n)?Promise.resolve(null):mods[n]??=import(`./pages/${n}.js`).catch(e=>{console.error("Modul halaman gagal dimuat:",n,e);delete mods[n];return null});
 const ROOTS=["beranda","absensi","kalender","shalat","koleksi","profil","pesan"],bar=document.getElementById("bar"),backBtn=document.getElementById("back"),ttl=document.getElementById("ttl"),root=document.documentElement;
@@ -63,11 +64,14 @@ async function render(){
   const slow=setTimeout(()=>view.classList.add("busy"),160);
   let h,m,err="";try{[h,m]=await Promise.all([loadHtml(name),loadMod(name)])}catch(e){err=e.message;h=`<div class="wrap"><div class="empty"><p>Halaman tidak dapat dimuat.</p><p class="muted" style="font-size:12px;word-break:break-all">${String(err).replace(/</g,"&lt;")}</p><button class="btn sm mt" onclick="location.reload()">Muat ulang</button></div></div>`;m=null}
   clearTimeout(slow);if(my!==seq)return;
+  /* Halaman utama yang sudah pernah tampil/digambar di latar: pasang langsung isinya yang terakhir (bukan kerangka kosong),
+     lalu skrip halaman memperbaruinya di tempat. Jadi masuk halaman tidak terlihat "memuat ulang" atau berkedip. */
+  if(!err&&!q&&!args.length&&UTAMA.includes(name)&&KLSnap[name]?.asli&&curKey!==name)h=KLSnap[name].html;
   const swap=()=>{
     /* Keluar dari halaman (tombol kembali aplikasi, navigasi, atau tombol kembali HP): popup yang masih terbuka ikut ditutup.
        Dialog ditutup lewat Escape agar janji (Promise)-nya selesai; sisanya dihapus */
-    if(!q){document.querySelectorAll(".modal").forEach(m=>{m.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))});
-      document.querySelectorAll(".modal,.qact,.qact-latar").forEach(m=>m.remove())}
+    if(!q){document.querySelectorAll(".modal:not([data-wajib])").forEach(m=>{m.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))});
+      document.querySelectorAll(".modal:not([data-wajib]),.qact,.qact-latar").forEach(m=>m.remove())}
     if(cleanup){try{cleanup()}catch(e){}cleanup=null}
     window.KLGuard=null;view.onclick=null;view.oninput=null;if(curKey&&!q)KLSnap[curKey]={html:view.innerHTML,mt:view.dataset.mobileTitle||"",asli:true};const st=q?view.scrollTop:0;view.innerHTML=h;view.scrollTop=st;curKey=[name,...args].join("/");view.classList.remove("busy");
     paintBar(name,args);
@@ -111,10 +115,12 @@ import("./lib/widgetdata.js").then(w=>{w.pushWidget();["kl-loc","kl-data-changed
 render().then(()=>{if(location.protocol.startsWith("http")&&!localStorage.getItem("kl_onboard"))setTimeout(onboard,1500);cekRilis();tawarOffline()});
 /* Pratinjau geser (seperti WhatsApp): halaman utama yang belum dibuka digambar diam-diam sekali di luar layar, supaya
    saat menggeser, halaman sebelah tampil dengan isi aslinya (bukan kerangka kosong). Diulang saat data berubah. */
-const UTAMA=["beranda","absensi","kalender","shalat","koleksi","profil"];let pratinjauJalan=false;
+let pratinjauJalan=false;
 async function pratinjauLatar(){
   if(pratinjauJalan)return;pratinjauJalan=true;
-  try{for(const n of UTAMA){
+  /* Mulai dari halaman tetangga halaman yang sedang dibuka (yang paling mungkin digeser) */
+  const i0=Math.max(0,UTAMA.indexOf((curKey||"beranda").split("/")[0]));
+  try{for(const n of [...UTAMA].sort((a,b)=>Math.abs(UTAMA.indexOf(a)-i0)-Math.abs(UTAMA.indexOf(b)-i0))){
     if(KLSnap[n]?.asli||curKey===n)continue;
     try{
       const [h,m]=await Promise.all([loadHtml(n),loadMod(n)]);
@@ -131,7 +137,7 @@ async function pratinjauLatar(){
 document.addEventListener("kl-data-changed",()=>{for(const k in KLSnap)if(k!==curKey&&UTAMA.includes(k))KLSnap[k].asli=false;setTimeout(pratinjauLatar,1500)});
 /* Muat semua halaman di latar belakang agar perpindahan halaman langsung tampil tanpa jeda */
 setTimeout(()=>Object.keys(LABEL).forEach((n,i)=>setTimeout(()=>{loadHtml(n).catch(()=>{});loadMod(n)},200*i)),1500);
-setTimeout(pratinjauLatar,2500);
+setTimeout(pratinjauLatar,400);
 
 const offp=document.getElementById("offp"),offUp=()=>{offp.hidden=navigator.onLine};addEventListener("online",offUp);addEventListener("offline",offUp);offUp();
 
