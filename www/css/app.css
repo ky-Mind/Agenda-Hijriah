@@ -13,7 +13,7 @@ a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;c
 .side-foot{margin-top:auto;padding:10px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
 .sync{display:flex;align-items:center;gap:8px}.sync i{width:7px;height:7px;border-radius:50%;background:var(--muted)}
 .sync[data-s=ok] i{background:var(--accent)}.sync[data-s=busy] i{background:var(--warn)}.sync[data-s=err] i{background:var(--danger)}
-#view{overflow:auto;height:100%;--vpt:32px;padding:var(--vpt) clamp(16px,4vw,48px) 80px;}#view.in{animation:fi .16s ease}#view.busy{opacity:.55;transition:opacity .15s}@keyframes fi{from{opacity:0}to{opacity:1}}
+#view{overflow:auto;height:100%;--vpt:32px;padding:var(--vpt) clamp(16px,4vw,48px) 80px;}#view.busy{opacity:.55;transition:opacity .15s}@keyframes fi{from{opacity:0}to{opacity:1}}
 .wrap{max-width:820px;margin:0 auto}
 h1{font-size:25px;font-weight:600;letter-spacing:-.01em}h2{font-size:15px;font-weight:600}
 .head{margin-bottom:22px}.head p,.muted{color:var(--muted)}.back{display:inline-flex;gap:6px;align-items:center;color:var(--muted);margin-bottom:10px;font-size:14px}.back:hover{color:var(--text)}
@@ -136,8 +136,8 @@ html[data-dir=next]::view-transition-new(page){animation-name:tab-in-r}html[data
 html[data-dir=prev]::view-transition-new(page){animation-name:tab-in-l}html[data-dir=prev]::view-transition-old(page){animation-name:tab-out-r}
 @keyframes in-r{from{transform:translateX(var(--sl))}}@keyframes out-l{to{transform:translateX(-22%);opacity:.55}}
 @keyframes in-l{from{transform:translateX(-22%);opacity:.55}}@keyframes out-r{to{transform:translateX(var(--sl))}}
-@keyframes tab-in-r{from{transform:translateX(12%);opacity:0}}@keyframes tab-out-l{to{transform:translateX(-12%);opacity:0}}
-@keyframes tab-in-l{from{transform:translateX(-12%);opacity:0}}@keyframes tab-out-r{to{transform:translateX(12%);opacity:0}}
+@keyframes tab-in-r{from{transform:translateX(6%)}}@keyframes tab-out-l{to{transform:translateX(-12%);opacity:0}}
+@keyframes tab-in-l{from{transform:translateX(-6%)}}@keyframes tab-out-r{to{transform:translateX(12%);opacity:0}}
 #view.in{animation:fi var(--dur-s) ease}#view.in[data-anim=fwd]{animation:in-r var(--dur-m) var(--ease)}#view.in[data-anim=back]{animation:in-l var(--dur-m) var(--ease)}#view.in[data-anim=next]{animation:tab-in-r .24s ease}#view.in[data-anim=prev]{animation:tab-in-l .24s ease}
 /* Tombol */
 .btn{min-height:38px;padding:8px 14px;font-weight:500;font-size:14px;-webkit-tap-highlight-color:transparent;user-select:none;justify-content:center;transition:background .12s,transform .08s,border-color .12s}
@@ -492,7 +492,7 @@ html[data-vt=theme]::view-transition-old(root),html[data-vt=theme]::view-transit
 @media(prefers-reduced-motion:reduce){.qr.pg-in,.qr.pg-l,.qr.pg-r{animation:none}}
 /* Kehalusan seluruh halaman: koleksi, sub halaman, dan umpan balik sentuh */
 @keyframes rise{from{opacity:0;transform:translateY(8px)}}
-.list-cards>.lc{animation:rise var(--dur-m) var(--ease) both}
+/* Kartu/daftar tidak dianimasikan ulang tiap kali digambar: setiap ketukan menggambar ulang daftar, dan animasi muncul membuat halaman terlihat "refresh" */
 .list-cards>.lc:nth-child(2){animation-delay:40ms}.list-cards>.lc:nth-child(3){animation-delay:80ms}.list-cards>.lc:nth-child(4){animation-delay:120ms}.list-cards>.lc:nth-child(5){animation-delay:160ms}.list-cards>.lc:nth-child(6){animation-delay:200ms}
 a.lc,a.card,.chip,.qa,.tile{transition:background var(--dur-s) var(--ease),transform var(--dur-s) var(--ease),box-shadow var(--dur-s) var(--ease)}
 a.lc:active,a.card:active,.qa:active,.tile:active{transform:scale(.98);background:var(--hover)}
@@ -503,7 +503,6 @@ a.lc:active,a.card:active,.qa:active,.tile:active{transform:scale(.98);backgroun
 @media(prefers-reduced-motion:reduce){.list-cards>.lc{animation:none}a.lc:active,a.card:active,.qa:active,.tile:active,.chip:active,.ring button:active{transform:none}}
 /* Pesan baru dan daftar yang digambar ulang muncul dengan halus */
 .b.in{animation:rise var(--dur-s) var(--ease) both}
-[data-r="list"]>*,[data-r="items"]>*,[data-r="grid"]>*{animation:rise var(--dur-s) var(--ease) backwards}
 @media(prefers-reduced-motion:reduce){.b.in,[data-r="list"]>*,[data-r="items"]>*,[data-r="grid"]>*{animation:none}}
 /* Ketuk atau tekan tidak menggeser isi: hanya warna dan latar yang berubah */
 .btn:active,.send:active,.qstep button:active,.ring button:active,.chip:active,a.lc:active,a.card:active,.qa:active,.tile:active,a.card:hover{transform:none}
@@ -841,3 +840,10 @@ html.bugpick #view *{cursor:crosshair!important}
 /* Jendela wajib: ketukan di luar = goyang (hanya tombol yang menutup) */
 @keyframes goyang{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
 .modal .box.goyang{animation:goyang .38s ease}
+
+/* Keterangan tombol absensi: arti centang, silang, tetes (haid), khatam */
+.abs-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 2px;font-size:12px;color:var(--muted)}
+.abs-leg span{display:inline-flex;align-items:center;gap:5px}
+.abs-leg i{display:inline-grid;place-items:center;width:20px;height:20px;border:1px solid var(--line);border-radius:6px}
+.abs-leg .ic{width:12px;height:12px}
+.linkbtn.danger{color:var(--danger)}

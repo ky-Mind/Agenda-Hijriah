@@ -181,7 +181,7 @@ export default function(root){
     $("via").innerHTML=via.map(v=>`<span class="via">${v}</span>`).join("");
     $("logins").hidden=!!u||!$("mailform").hidden;
     if(u)$("mailform").hidden=true;
-    $("acctacts").hidden=!u;
+    $("acctacts").hidden=!u;$("acctdel").hidden=!u;
     if(u)$("autherr").hidden=true;
     /* Nama Google hanya jadi contoh di isian, tidak disimpan. Kalau disimpan, nama itu bisa lebih baru dari nama
        yang sudah diganti di cloud dan menimpanya saat masuk di perangkat baru */
@@ -253,6 +253,34 @@ export default function(root){
     try{await window.KLSync?.wipe?.()}catch(e){}
     toast("Kamu sudah keluar. Data akun dihapus dari perangkat ini.");
     setTimeout(()=>location.replace(location.pathname+"#/beranda"),300);setTimeout(()=>location.reload(),700)
+  };
+
+  /* Hapus akun (wajib untuk Play Store): hapus semua data di cloud (sinkron, absensi lama, profil, entri pencarian pesan),
+     lalu akun Firebase-nya, lalu data di perangkat. Firebase meminta login ulang bila sesi sudah lama. */
+  $("delacct").onclick=async()=>{
+    const u=window.__klAuth?.currentUser,db=window.__klDb;if(!u||!db)return;
+    const ok=await dialog({title:"Hapus akun selamanya?",text:"Semua absensi, catatan, pengaturan yang tersinkron, profil, dan kunci pesan akun ini dihapus dari cloud dan dari perangkat ini. Tindakan ini tidak bisa dibatalkan.",actions:[{label:"Hapus selamanya",value:true,cls:"danger"},{label:"Batal",value:false}]});
+    if(ok!==true)return;
+    const b=$("delacct");b.disabled=true;b.textContent="Menghapus…";
+    try{
+      window.KLSync?.stop?.();
+      try{await push.disable()}catch(e){}
+      try{window.KLAndroid?.keluarAkun?.()}catch(e){}
+      const ud=db.collection("users").doc(u.uid);
+      for(const sub of ["data","absensi_harian"]){const q=await ud.collection(sub).get();await Promise.all(q.docs.map(d=>d.ref.delete()))}
+      await ud.delete();
+      if(u.email){try{await db.collection("userIndex").doc(u.email.trim().toLowerCase()).delete()}catch(e){}}
+      try{await u.delete()}catch(e){
+        if(e?.code!=="auth/requires-recent-login")throw e;
+        await signOut();try{await window.KLSync?.wipe?.()}catch(x){}
+        await dialog({title:"Data sudah dihapus",text:"Semua data akunmu sudah dihapus. Untuk menghapus akun login-nya juga, Firebase meminta kamu masuk sekali lagi: masuk dengan akun yang sama, lalu tekan Hapus akun lagi."});
+        return location.reload();
+      }
+      await signOut().catch(()=>{});
+      try{await window.KLSync?.wipe?.()}catch(e){}
+      toast("Akun dan semua datanya sudah dihapus.");
+      setTimeout(()=>location.replace(location.pathname+"#/beranda"),300);setTimeout(()=>location.reload(),900);
+    }catch(e){console.error(e);b.disabled=false;b.textContent="Hapus akun & semua data";toast("Gagal menghapus akun: "+(e?.code||e?.message||e))}
   };
 
   /* Sinkron cloud */

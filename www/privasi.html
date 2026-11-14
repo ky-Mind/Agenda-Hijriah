@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kebijakan Privasi – Kisah Lillah</title>
+<meta name="description" content="Kebijakan privasi aplikasi Kisah Lillah: data apa yang dikumpulkan, untuk apa, di mana disimpan, dan cara menghapus akun.">
+<link rel="canonical" href="https://kisahlillah.web.id/privasi.html">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<meta name="theme-color" content="#3f6b5a">
+<style>
+:root{--bg:#f4f3ee;--card:#fff;--text:#2b2a27;--muted:#6f6b63;--line:#e2dfd4;--accent:#3f6b5a}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1e1c;--card:#242725;--text:#e7e5de;--muted:#a09d94;--line:#363a37;--accent:#79a592}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 "Inter","Segoe UI",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:32px 16px 64px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:8px}header img{width:44px;height:44px;border-radius:10px}
+h1{font-size:26px;margin:0}h2{font-size:19px;margin:32px 0 8px}p,li{color:var(--text)}.muted{color:var(--muted);font-size:14px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 20px 16px;margin-top:16px}
+a{color:var(--accent)}ul{padding-left:20px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-top:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+</style>
+</head>
+<body>
+<main>
+<header><img src="assets/icon-192.png" alt=""><div><h1>Kebijakan Privasi</h1><div class="muted">Kisah Lillah · berlaku sejak 14 November 2026</div></div></header>
+<p>Kisah Lillah adalah aplikasi jurnal ibadah harian, jadwal shalat dan adzan, kalender Hijriah, Al-Qur'an, hadits, do'a, dan dzikir. Halaman ini menjelaskan data apa yang dipakai aplikasi, untuk apa, di mana disimpan, dan bagaimana kamu bisa menghapusnya. Aplikasi ini gratis, tanpa iklan, dan tidak menjual data siapa pun.</p>
+
+<section>
+<h2>1. Tanpa akun</h2>
+<p>Semua fitur utama bisa dipakai tanpa masuk. Absensi, catatan, pengaturan, dan lokasi hanya disimpan di perangkatmu (penyimpanan lokal browser atau aplikasi) dan tidak dikirim ke server kami.</p>
+</section>
+
+<section>
+<h2>2. Data yang dipakai</h2>
+<table>
+<tr><th>Data</th><th>Untuk apa</th><th>Disimpan di</th></tr>
+<tr><td>Nama, email, dan foto akun Google (atau email &amp; kata sandi)</td><td>Masuk akun, menyinkronkan data antar perangkat, dan menampilkan profil</td><td>Firebase Authentication (Google)</td></tr>
+<tr><td>Absensi ibadah, catatan harian, daftar ibadah, pengaturan</td><td>Sinkron antar perangkat bila kamu masuk akun</td><td>Perangkatmu, dan Cloud Firestore (Google) bila masuk akun</td></tr>
+<tr><td>Nama, nomor WhatsApp, dan foto profil yang kamu isi</td><td>Ditampilkan di aplikasi dan dipakai saat kamu memilih "Kirim ke WhatsApp"</td><td>Perangkatmu, dan Cloud Firestore bila masuk akun</td></tr>
+<tr><td>Lokasi (perkiraan atau GPS, hanya bila kamu izinkan)</td><td>Menghitung jadwal shalat dan arah kiblat, serta menampilkan nama kota</td><td>Hanya di perangkatmu. Koordinat dikirim ke layanan nama tempat (OpenStreetMap Nominatim) dan jadwal shalat (Aladhan) tanpa identitasmu</td></tr>
+<tr><td>Pesan antar pengguna</td><td>Fitur Pesan. Isi pesan dienkripsi end-to-end di perangkat, sehingga kami tidak bisa membacanya</td><td>Cloud Firestore (terenkripsi)</td></tr>
+<tr><td>Token notifikasi perangkat</td><td>Mengirim notifikasi pesan baru</td><td>Cloud Firestore dan Firebase Cloud Messaging</td></tr>
+<tr><td>Pertanyaan ke Asisten AI (bila kamu memakainya)</td><td>Menjawab pertanyaanmu</td><td>Diteruskan ke penyedia model AI (Groq) untuk diproses dan tidak kami simpan</td></tr>
+<tr><td>Laporan masalah yang kamu kirim</td><td>Memperbaiki aplikasi</td><td>Cloud Firestore</td></tr>
+</table>
+<p class="muted">Kami tidak memakai iklan, pelacak iklan, atau analitik pihak ketiga untuk membuat profil pengguna.</p>
+</section>
+
+<section>
+<h2>3. Izin aplikasi Android</h2>
+<ul>
+<li><b>Lokasi</b>: jadwal shalat sesuai tempatmu. Bisa diganti dengan memilih kota secara manual.</li>
+<li><b>Notifikasi, alarm &amp; pengingat tepat waktu</b>: adzan dan pengingat waktu shalat, serta notifikasi pesan.</li>
+<li><b>Berjalan saat perangkat menyala ulang</b>: menjadwalkan ulang adzan setelah HP dinyalakan ulang.</li>
+<li><b>Kamera</b> (hanya saat kamu memilih memotret): foto profil atau tangkapan untuk laporan masalah. Foto tidak dikirim ke mana pun kecuali kamu menyimpannya sebagai foto profil.</li>
+<li><b>Mikrofon</b> (hanya saat kamu menekan tombol suara): masukan suara untuk Asisten AI.</li>
+<li><b>Internet</b>: sinkron, Al-Qur'an audio, hadits, dan pembaruan jadwal.</li>
+</ul>
+</section>
+
+<section>
+<h2>4. Pihak lain yang terlibat</h2>
+<p>Layanan berikut membantu aplikasi berjalan dan memproses data sesuai kebijakan privasinya masing-masing: Google Firebase (login, database, notifikasi), Vercel dan Cloudflare (hosting situs), OpenStreetMap Nominatim (nama tempat), Aladhan (jadwal shalat), equran.id dan everyayah.com (teks dan audio Al-Qur'an), api.hadith.gading.dev (hadits), dan Groq (Asisten AI). Kami tidak membagikan data pribadimu kepada pihak lain di luar keperluan tersebut.</p>
+</section>
+
+<section>
+<h2>5. Keamanan &amp; penyimpanan</h2>
+<p>Data dikirim melalui koneksi terenkripsi (HTTPS). Data cloud hanya bisa dibaca oleh pemilik akun sesuai aturan keamanan database. Data disimpan selama akunmu aktif. Saat kamu keluar dari akun, semua data akun dihapus dari perangkat itu dan tetap tersimpan di cloud sampai kamu menghapus akun.</p>
+</section>
+
+<section id="hapus-akun">
+<h2>6. Menghapus akun &amp; data</h2>
+<p>Kamu bisa menghapus akun dan semua datanya kapan saja, langsung dari aplikasi:</p>
+<ol>
+<li>Buka <b>Profil</b>, lalu masuk ke bagian <b>Akun</b>.</li>
+<li>Tekan <b>Hapus akun &amp; semua data</b>, lalu konfirmasi.</li>
+</ol>
+<p>Yang dihapus: absensi, catatan, pengaturan yang tersinkron, profil, entri pencarian pesan, kunci pesan, token notifikasi, dan akun login. Pesan yang sudah kamu kirim ke orang lain tetap ada di percakapan mereka dalam bentuk terenkripsi. Penghapusan langsung dijalankan dan tidak bisa dibatalkan.</p>
+<p>Jika kamu tidak bisa membuka aplikasi, kirim permintaan penghapusan lewat <a href="https://github.com/ky-Mind/Agenda-Hijriah/issues" target="_blank" rel="noopener">halaman laporan</a> dengan menyebutkan email akunmu. Kami memprosesnya paling lama 30 hari.</p>
+</section>
+
+<section>
+<h2>7. Anak-anak</h2>
+<p>Aplikasi ini cocok untuk semua umur dan tidak dengan sengaja mengumpulkan data pribadi anak. Anak di bawah 13 tahun sebaiknya memakai fitur akun dan pesan dengan pendampingan orang tua.</p>
+</section>
+
+<section>
+<h2>8. Perubahan &amp; kontak</h2>
+<p>Bila kebijakan ini berubah, tanggal di atas akan diperbarui. Pertanyaan atau permintaan terkait privasi bisa dikirim lewat menu <b>Laporkan masalah</b> di aplikasi atau <a href="https://github.com/ky-Mind/Agenda-Hijriah/issues" target="_blank" rel="noopener">halaman laporan</a>.</p>
+</section>
+<p class="muted" style="margin-top:24px"><a href="/">← Kembali ke Kisah Lillah</a></p>
+</main>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import {esc,confirmLeave,ask,dialog,ico} from "../lib/ui.js";
 import {hijriText,masehiText,key,fromKey,HARI,addDays} from "../lib/hijri.js";
-import {agenda,agendaFor,saveAgenda,resetAgenda,day,saveDay,calc,savedAt,progress,icoOf} from "../lib/ibadah.js";
+import {agenda,agendaFor,saveAgenda,resetAgenda,day,saveDay,calc,savedAt,progress,icoOf,NAMA_HARI} from "../lib/ibadah.js";
 import {rekap,waNumber,waUrl,openUrl} from "../lib/wa.js";
 import {get,set,del,toast} from "../store.js";
 import {calPick} from "../lib/calpick.js";
@@ -21,7 +21,7 @@ export default function(root,args){
     const td=today();document.dispatchEvent(new CustomEvent("kl-today",{detail:k===td?0:k>td?-1:1}));$("today").disabled=k===td;
     $("ringkas").textContent=`${p.done} terlaksana · ${p.miss} terlewat · ${p.total-p.done-p.miss} belum diisi${p.rest?` · ${p.rest} datang bulan`:""}`;$("pct").textContent=p.pct+"%";$("bar").style.width=p.pct+"%";
     const B=(i,v,c,t,l)=>`<button class="${c} ${rec[i.id]===v?"on":""}" data-v="${v}" aria-label="${l}: ${esc(i.nama)}" aria-pressed="${rec[i.id]===v}">${t}</button>`;
-    $("list").innerHTML=list.length?list.map(i=>`<div class="ibadah" data-id="${esc(i.id)}"><span><span class="ico" aria-hidden="true">${icoOf(i)}</span><span class="ibn">${esc(i.nama)}${i.ket?`<small>${esc(i.ket)}${edit?" · muncul di hari Jumat":""}</small>`:""}</span></span>${edit?'<button class="btn sm danger" data-del>Hapus</button>':`<div class="seg">${B(i,1,"ok",ico("ok"),"Terlaksana")}${B(i,0,"no",ico("x"),"Terlewat")}${B(i,2,"pr",ico("drop"),"Datang bulan")}${/tadarus/i.test(i.id+i.nama)?B(i,3,"kh",ico("khatam"),"Khatam"):""}</div>`}</div>`).join(""):'<div class="empty">Belum ada ibadah. Pilih "Ubah daftar" untuk menambah.</div>';
+    $("list").innerHTML=list.length?list.map(i=>`<div class="ibadah" data-id="${esc(i.id)}"><span><span class="ico" aria-hidden="true">${icoOf(i)}</span><span class="ibn">${esc(i.nama)}${i.ket?`<small>${esc(i.ket)}${edit&&i.hari!=null?` · muncul di hari ${NAMA_HARI[i.hari]}`:""}</small>`:""}</span></span>${edit?'<button class="btn sm danger" data-del>Hapus</button>':`<div class="seg">${B(i,1,"ok",ico("ok"),"Terlaksana")}${B(i,0,"no",ico("x"),"Terlewat")}${B(i,2,"pr",ico("drop"),"Datang bulan")}${/tadarus/i.test(i.id+i.nama)?B(i,3,"kh",ico("khatam"),"Khatam"):""}</div>`}</div>`).join(""):'<div class="empty">Belum ada ibadah. Pilih "Ubah daftar" untuk menambah.</div>';
     $("edit").setAttribute("aria-pressed",edit);$("edit").textContent=edit?"Selesai":"Ubah daftar";$("addform").hidden=!edit;$("all").hidden=edit;
     if($("note")!==document.activeElement)$("note").value=note;
     const w=[];for(let i=6;i>=0;i--){const x=addDays(new Date(),-i),q=progress(key(x));w.push(`<div title="${q.pct}%"><div class="col"><i class="${q.pct?"":"z"}" style="height:${Math.max(q.pct,4)}%"></i></div><small>${HARI[x.getDay()].slice(0,3)}</small></div>`)}

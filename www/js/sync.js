@@ -73,7 +73,9 @@ async function wipe(){
   try{indexedDB.deleteDatabase("kl-e2e")}catch(e){}
   try{if(window.__klDb){await __klDb.terminate();await __klDb.clearPersistence()}}catch(e){}
   status("off");return L.length}
-window.KLSync={state:"off",code:"",t:0,flush:push,wipe,now(){tries=0;clearTimeout(retryT);legDone=false;start(cur)}};
+/* stop: hentikan sinkron tanpa menghapus apa pun (dipakai sebelum menghapus akun agar data tidak diunggah lagi) */
+function stop(){if(unsub){try{unsub()}catch(e){}unsub=null}ref=null;cur=null;clearTimeout(timer);clearTimeout(retryT);dirty.clear()}
+window.KLSync={state:"off",code:"",t:0,flush:push,wipe,stop,now(){tries=0;clearTimeout(retryT);legDone=false;start(cur)}};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)push()});
 window.addEventListener("pagehide",push);
 window.addEventListener("online",()=>{tries=0;if(KLSync.state==="err")start(cur,true);else if(dirty.size)schedule()});

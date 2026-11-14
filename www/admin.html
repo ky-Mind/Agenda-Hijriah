@@ -56,6 +56,12 @@
     .lb code{font-size:12px;word-break:break-all;background:var(--hover);padding:6px 8px;border-radius:8px;display:block}
     @media(max-width:560px){#me{display:none}.top h1{font-size:15px}.stats{grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px}.stat b{font-size:20px}.st{margin-left:0}.shot{width:calc(50% - 5px)}}
     [hidden]{display:none!important}
+    .ps{margin-top:28px;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:4px 18px 16px;box-shadow:var(--shadow)}
+    .ps summary{cursor:pointer;font-weight:600;font-size:17px;padding:12px 0}.ps h3{font-size:14px;margin:20px 0 8px;color:var(--accent)}.ps-n{color:var(--muted);font-size:13px;margin:0}
+    .ps-f{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.ps-f b{grid-column:1/-1;font-size:12px;color:var(--muted);font-weight:500}
+    .ps-f code,.ps-f pre{font:13px/1.5 ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;margin:0;background:var(--hover);padding:6px 8px;border-radius:6px}.ps-l pre{max-height:260px;overflow:auto}
+    .ps-f button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;font-size:13px;align-self:start}
+    .ps-u{font-size:14px;padding-left:20px;margin:0}.ps-u li{margin:4px 0}
   </style>
 </head>
 <body>
@@ -76,6 +82,80 @@
         <input class="search" id="q" type="search" placeholder="Cari nama, email, atau isi…" aria-label="Cari laporan">
       </div>
       <div class="list" id="list"></div>
+      <details class="ps" id="playstore">
+        <summary>Persiapan Play Store</summary>
+        <p class="ps-n">Semua bahan untuk Google Play Console. Tekan "Salin" lalu tempel di kolom yang sama di Play Console.</p>
+        <h3>Tautan</h3>
+        <div class="ps-f"><b>Kebijakan privasi</b><code>https://kisahlillah.web.id/privasi.html</code><button type="button" data-salin>Salin</button></div>
+        <div class="ps-f"><b>Hapus akun (URL)</b><code>https://kisahlillah.web.id/privasi.html#hapus-akun</code><button type="button" data-salin>Salin</button></div>
+        <div class="ps-f"><b>Situs</b><code>https://kisahlillah.web.id/</code><button type="button" data-salin>Salin</button></div>
+        <h3>Listing toko</h3>
+        <div class="ps-f"><b>Nama aplikasi (maks. 30)</b><code>Kisah Lillah: Jurnal Ibadah</code><button type="button" data-salin>Salin</button></div>
+        <div class="ps-f"><b>Deskripsi singkat (maks. 80)</b><code>Absensi ibadah harian, jadwal shalat &amp; adzan, kalender Hijriah, Al-Qur'an.</code><button type="button" data-salin>Salin</button></div>
+        <div class="ps-f ps-l"><b>Deskripsi lengkap</b><pre>Kisah Lillah membantu kamu mencatat ibadah harian dan menjaga istiqamah, lengkap dengan jadwal shalat, adzan, kalender Hijriah, Al-Qur'an, hadits, do'a, dan dzikir dalam satu aplikasi.
+
+ABSENSI IBADAH HARIAN
+• Centang ibadah yang terlaksana: tahajjud, dhuha, puasa sunnah, sedekah, dzikir pagi &amp; petang, tadarus, witir, dan lainnya
+• Al-Kahfi otomatis muncul di hari Jumat, Yasin di malam Kamis
+• Tambah ibadah sendiri, catatan harian, dan mode datang bulan yang tidak menurunkan nilai
+• Rekap mingguan &amp; bulanan, runtunan hari istiqamah, dan lencana pencapaian
+• Kirim laporan absensi ke WhatsApp
+
+JADWAL SHALAT &amp; ADZAN
+• Jadwal shalat sesuai lokasimu, termasuk Imsak, Terbit, dan Dhuha
+• Adzan tepat waktu walau aplikasi ditutup, bisa diatur per waktu: adzan, notifikasi saja, senyap, atau mati
+• Widget layar utama dengan waktu shalat berikutnya
+• Arah kiblat
+
+KALENDER HIJRIAH
+• Kalender Hijriah dan Masehi berdampingan
+• Hitung mundur hari besar Islam: Ramadhan, Idul Fitri, Idul Adha, Isra Mi'raj, dan lainnya
+
+AL-QUR'AN, HADITS, DO'A &amp; DZIKIR
+• Al-Qur'an 30 juz dengan terjemahan dan audio murattal, penanda terakhir dibaca
+• Kumpulan hadits, do'a harian, dzikir pagi &amp; petang, dan kata mutiara
+• Tasbih digital, termasuk tasbih melayang
+
+LAINNYA
+• Bisa dipakai offline, termasuk Al-Qur'an dan jadwal shalat
+• Sinkron antar perangkat dengan akun Google (opsional)
+• Pesan antar pengguna dengan enkripsi end-to-end
+• Tema terang &amp; gelap
+• Gratis, tanpa iklan
+
+Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi ta'ala.</pre><button type="button" data-salin>Salin</button></div>
+        <div class="ps-f"><b>Kategori</b><code>Gaya Hidup (Lifestyle)</code><button type="button" data-salin>Salin</button></div>
+        <div class="ps-f"><b>Tag</b><code>Islam, Shalat, Al-Qur'an, Produktivitas</code><button type="button" data-salin>Salin</button></div>
+        <h3>Formulir Keamanan Data (Data safety)</h3>
+        <ul class="ps-u">
+          <li>Mengumpulkan data: <b>Ya</b>. Dibagikan ke pihak ketiga: <b>Tidak</b> (Firebase dan penyedia lain dihitung sebagai pemroses layanan).</li>
+          <li>Data dienkripsi saat dikirim: <b>Ya</b>. Pengguna bisa meminta penghapusan: <b>Ya</b> (di aplikasi, Profil &gt; Hapus akun &amp; semua data).</li>
+          <li><b>Info pribadi</b>: Nama, Alamat email, ID pengguna, Nomor telepon (opsional, WhatsApp). Tujuan: Fungsi aplikasi, Pengelolaan akun.</li>
+          <li><b>Foto</b> (foto profil, opsional). Tujuan: Fungsi aplikasi.</li>
+          <li><b>Lokasi perkiraan &amp; tepat</b>: diproses di perangkat untuk jadwal shalat dan tidak disimpan di server. Jawab "dikumpulkan", "diproses sementara (ephemeral)". Tujuan: Fungsi aplikasi.</li>
+          <li><b>Pesan</b> (pesan dalam aplikasi, terenkripsi end-to-end). Tujuan: Fungsi aplikasi.</li>
+          <li><b>Aktivitas aplikasi</b>: konten buatan pengguna (absensi, catatan). Tujuan: Fungsi aplikasi.</li>
+          <li><b>Info &amp; performa aplikasi</b>: laporan masalah yang dikirim pengguna. Tujuan: Analitik/perbaikan.</li>
+          <li><b>ID perangkat</b>: token notifikasi (FCM). Tujuan: Fungsi aplikasi.</li>
+        </ul>
+        <h3>Isian lain</h3>
+        <ul class="ps-u">
+          <li>Rating konten: isi kuesioner, pilih Referensi/Pendidikan, tanpa kekerasan atau perjudian. Hasilnya biasanya "Semua umur".</li>
+          <li>Iklan: <b>Tidak ada iklan</b>. Target usia: 13 tahun ke atas (ada fitur pesan antar pengguna).</li>
+          <li>Akses aplikasi: semua fitur bisa dipakai tanpa login. Pilih "Semua fungsi tersedia tanpa akses khusus".</li>
+          <li>Izin alarm tepat waktu (USE_EXACT_ALARM): jelaskan "Aplikasi membunyikan adzan tepat pada waktu shalat, seperti jam alarm".</li>
+          <li>Layanan latar depan (media playback): untuk memutar suara adzan.</li>
+        </ul>
+        <h3>Langkah</h3>
+        <ol class="ps-u">
+          <li>Daftar akun developer di play.google.com/console (USD 25, verifikasi identitas).</li>
+          <li>Buat aplikasi baru: nama "Kisah Lillah", bahasa Indonesia, Aplikasi, Gratis.</li>
+          <li>Isi listing toko (teks di atas), ikon 512×512, grafis fitur 1024×500, dan minimal 2 tangkapan layar HP.</li>
+          <li>Isi Kebijakan privasi, Akses aplikasi, Iklan, Rating konten, Target usia, Keamanan data, dan Hapus akun.</li>
+          <li>Pengujian tertutup: unggah berkas AAB (Kisah-Lillah-*.aab di folder rilis-apk), undang minimal 12 penguji, dan jalankan selama 14 hari.</li>
+          <li>Setelah 14 hari, ajukan akses produksi lalu rilis ke publik.</li>
+        </ol>
+      </details>
     </section>
   </main>
 
@@ -146,5 +226,6 @@
     addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelector(".lb")?.remove()});
   })();
   </script>
+  <script>document.addEventListener("click",async e=>{const b=e.target.closest("[data-salin]");if(!b)return;const t=b.parentElement.querySelector("code,pre").textContent;try{await navigator.clipboard.writeText(t);b.textContent="Tersalin ✓";setTimeout(()=>b.textContent="Salin",1500)}catch(x){b.textContent="Gagal"}})</script>
 </body>
 </html>
