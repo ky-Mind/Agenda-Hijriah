@@ -59,7 +59,7 @@ async function render(){
   const q=quiet;quiet=false;
   const my=++seq,[name0,...args]=(location.hash.replace(/^#\/?/,"")||"beranda").split("/"),name=LABEL[name0]?name0:"beranda";
   document.querySelectorAll("[data-nav]").forEach(a=>{const on=a.dataset.nav===(document.querySelector(`[data-nav="${name}"]`)?name:(PARENT[name]||name));a.classList.toggle("on",on);on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
-  document.title=LABEL[name]+" · Kisah Lillah";
+  document.title=name==="beranda"?"Kisah Lillah – Jurnal Ibadah, Jadwal Shalat & Kalender Hijriah":LABEL[name]+" · Kisah Lillah";
   const dir=direction(name,args);prev={d:depth(name,args),i:ROOTS.indexOf(name)};
   const slow=setTimeout(()=>view.classList.add("busy"),160);
   let h,m,err="";try{[h,m]=await Promise.all([loadHtml(name),loadMod(name)])}catch(e){err=e.message;h=`<div class="wrap"><div class="empty"><p>Halaman tidak dapat dimuat.</p><p class="muted" style="font-size:12px;word-break:break-all">${String(err).replace(/</g,"&lt;")}</p><button class="btn sm mt" onclick="location.reload()">Muat ulang</button></div></div>`;m=null}

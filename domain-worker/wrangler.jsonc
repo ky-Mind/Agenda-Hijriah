@@ -1,0 +1,11 @@
+{
+  // Proksi domain kisahlillah.web.id -> situs Vercel (agenda-hijriah.vercel.app)
+  "name": "kisahlillah-domain",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "kisahlillah.web.id", "custom_domain": true },
+    { "pattern": "www.kisahlillah.web.id", "custom_domain": true }
+  ]
+}
