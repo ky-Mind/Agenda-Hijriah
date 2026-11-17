@@ -19,7 +19,8 @@ import java.util.Calendar;
  * Data & penggambaran dua widget layar utama (WidgetJadwal, WidgetPengingat).
  * Jadwal dihitung aplikasi web (js/lib/widgetdata.js > buildPayload) lalu dikirim lewat jembatan KLAndroid:
  * {"updated":ms,"location":"Bandung, Jawa Barat · WIB","slots":[{"at":ms,"prayer":"Subuh","time":"04:01","text":"…"},…7 hari]}
- * Widget digambar ulang saat data datang, tiap pergantian waktu (dan +10 menit), dan paling lama tiap 15 menit.
+ * Widget digambar ulang saat data datang, saat aplikasi dibuka/ditutup, tepat di tiap pergantian waktu (dan +10 menit),
+ * tengah malam, dan paling lama tiap 15 menit. Hitung mundur di kedua widget berjalan sendiri (Chronometer).
  */
 final class Widget {
     private Widget() {}
@@ -102,6 +103,9 @@ final class Widget {
         long batas = now + 15 * 60_000L;
         if (k.nextT > 0) batas = Math.min(batas, k.nextT);
         if (k.ubah > now) batas = Math.min(batas, k.ubah);
+        Calendar mn = Calendar.getInstance();
+        mn.add(Calendar.DAY_OF_YEAR, 1); mn.set(Calendar.HOUR_OF_DAY, 0); mn.set(Calendar.MINUTE, 0); mn.set(Calendar.SECOND, 1); mn.set(Calendar.MILLISECOND, 0);
+        batas = Math.min(batas, mn.getTimeInMillis());
         k.ubah = batas;
         return k;
     }
@@ -117,11 +121,6 @@ final class Widget {
             s += " · " + h.get(android.icu.util.Calendar.DAY_OF_MONTH) + " " + HIJRI[h.get(android.icu.util.Calendar.MONTH)] + " " + h.get(android.icu.util.Calendar.YEAR) + " H";
         } catch (Exception ignored) {}
         return s;
-    }
-
-    private static String sisa(long ms) {
-        long m = Math.max(0, (ms + 59_999) / 60_000), j = m / 60;
-        return j > 0 ? j + " j " + (m % 60) + " m lagi" : m + " menit lagi";
     }
 
     /** Pesan pengingat: berganti sesuai keadaan waktu shalat */
@@ -179,7 +178,7 @@ final class Widget {
             v.setTextViewText(R.id.wzona, k.zona);
             /* Hitung mundur berjalan sendiri (Chronometer), tanpa memperbarui widget tiap detik */
             if (k.nextT > 0) {
-                v.setChronometer(R.id.wnext, android.os.SystemClock.elapsedRealtime() + (k.nextT - System.currentTimeMillis()), "Menuju " + k.next + " · -%s", true);
+                v.setChronometer(R.id.wnext, android.os.SystemClock.elapsedRealtime() + (k.nextT - System.currentTimeMillis()), "Menuju " + k.next + " " + k.nextJam + " · %s lagi", true);
                 v.setChronometerCountDown(R.id.wnext, true);
             } else v.setChronometer(R.id.wnext, android.os.SystemClock.elapsedRealtime(), "Buka aplikasi untuk memuat jadwal", false);
             v.setTextViewText(R.id.wtgl, tanggal(c));
@@ -214,9 +213,10 @@ final class Widget {
         v.setOnClickPendingIntent(R.id.pakar, buka(c, "absensi", 5));
         v.setInt(R.id.pakar, "setBackgroundResource", latarWaktu(k.next));
         v.setTextViewText(R.id.pwaktu, k.nextT > 0 ? k.nextJam : "--:--");
-        String s = sisa(k.nextT - System.currentTimeMillis());
-        if (pendek) s = s.replace(" lagi", "").replace("menit", "mnt");
-        v.setTextViewText(R.id.psisa, k.nextT > 0 ? k.next + " · " + s : "Jadwal shalat");
+        if (k.nextT > 0) {
+            v.setChronometer(R.id.psisa, android.os.SystemClock.elapsedRealtime() + (k.nextT - System.currentTimeMillis()), k.next + " · %s" + (pendek ? "" : " lagi"), true);
+            v.setChronometerCountDown(R.id.psisa, true);
+        } else v.setChronometer(R.id.psisa, android.os.SystemClock.elapsedRealtime(), "Jadwal shalat", false);
         v.setTextViewText(R.id.ppesan, pendek ? pesanPendek(k) : pesan(k));
         return v;
     }
@@ -226,6 +226,9 @@ final class Widget {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
         PendingIntent pi = PendingIntent.getBroadcast(c, 4, new Intent(c, WidgetJadwal.class).setAction(SEGAR), PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-        am.set(AlarmManager.RTC, Math.max(t, System.currentTimeMillis() + 30_000L), pi);
+        long w = Math.max(t, System.currentTimeMillis() + 5_000L);
+        boolean tepat = android.os.Build.VERSION.SDK_INT < 31 || am.canScheduleExactAlarms();
+        try { if (tepat) am.setExact(AlarmManager.RTC, w, pi); else am.setWindow(AlarmManager.RTC, w, 60_000L, pi); }
+        catch (SecurityException e) { am.setWindow(AlarmManager.RTC, w, 60_000L, pi); }
     }
 }
