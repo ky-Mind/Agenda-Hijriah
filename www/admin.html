@@ -56,7 +56,7 @@
     .lb code{font-size:12px;word-break:break-all;background:var(--hover);padding:6px 8px;border-radius:8px;display:block}
     @media(max-width:560px){#me{display:none}.top h1{font-size:15px}.stats{grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px}.stat b{font-size:20px}.st{margin-left:0}.shot{width:calc(50% - 5px)}}
     [hidden]{display:none!important}
-    .tabs{display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;width:max-content;max-width:100%}
+    .tabs{overflow-x:auto;display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;width:max-content;max-width:100%}
     .tab{border:0;background:none;border-radius:9px;padding:7px 16px;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted)}.tab[aria-selected=true]{background:var(--raised);color:var(--text);box-shadow:var(--shadow)}
     .usr{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;align-items:start}
     .av{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:17px;grid-row:span 2}
@@ -73,7 +73,7 @@
   </style>
 </head>
 <body>
-  <header class="top"><img src="assets/logo.png" alt=""><h1>Dasbor Admin<small>Kisah Lillah · Pengguna, laporan &amp; saran</small></h1><span class="muted" id="me" style="font-size:13px"></span><button class="btn sm" id="out" hidden>Keluar</button></header>
+  <header class="top"><img src="assets/logo.png" alt=""><h1>Dasbor Admin<small>Kisah Lillah · Pengunjung, akun, laporan</small></h1><span class="muted" id="me" style="font-size:13px"></span><button class="btn sm" id="out" hidden>Keluar</button></header>
   <main class="wrap">
     <section class="card gate" id="gate">
       <img src="assets/logo.png" alt="" width="56" height="56">
@@ -83,15 +83,24 @@
     </section>
     <section id="dash" hidden>
       <p class="err" id="err" hidden></p>
-      <div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="pengguna" aria-selected="true">Pengguna</button><button class="tab" role="tab" data-tab="laporan" aria-selected="false">Laporan &amp; saran</button></div>
-      <div id="tpengguna">
+      <div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="pengunjung" aria-selected="true">Pengunjung</button><button class="tab" role="tab" data-tab="pengguna" aria-selected="false">Akun</button><button class="tab" role="tab" data-tab="laporan" aria-selected="false">Laporan &amp; saran</button></div>
+      <div id="tpengunjung">
+        <div class="stats" id="vstats"></div>
+        <div class="tools">
+          <div class="chips" id="fv"></div>
+          <input class="search" id="vq" type="search" placeholder="Cari nama, email, HP, kota, atau sumber…" aria-label="Cari pengunjung">
+        </div>
+        <div class="list" id="vlist"></div>
+        <p class="muted" style="font-size:12.5px;margin-top:12px">Setiap perangkat yang membuka web atau aplikasi tercatat, termasuk yang belum login. Kota diperkirakan dari alamat IP. Nama dan email muncul setelah pengunjung itu login.</p>
+      </div>
+      <div id="tpengguna" hidden>
         <div class="stats" id="ustats"></div>
         <div class="tools">
           <div class="chips" id="fu"></div>
           <input class="search" id="uq" type="search" placeholder="Cari nama, email, HP, atau kota…" aria-label="Cari pengguna">
         </div>
         <div class="list" id="ulist"></div>
-        <p class="muted" style="font-size:12.5px;margin-top:12px">Akun tercatat saat pengguna masuk atau membuka aplikasi versi terbaru. Akun yang belum membuka aplikasi sejak pembaruan ini belum muncul.</p>
+        <p class="muted" style="font-size:12.5px;margin-top:12px">Akun yang login tercatat di sini saat membuka web atau APK versi 5.4.1 ke atas. Akun yang belum membuka aplikasi sejak pembaruan ini belum muncul.</p>
       </div>
       <div id="tlaporan" hidden>
       <div class="stats" id="stats"></div>
@@ -154,7 +163,7 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
           <li><b>Info pribadi</b>: Nama, Alamat email, ID pengguna, Nomor telepon (opsional, WhatsApp). Tujuan: Fungsi aplikasi, Pengelolaan akun.</li>
           <li><b>Foto</b> (foto profil, opsional). Tujuan: Fungsi aplikasi.</li>
           <li><b>Lokasi perkiraan</b>: kota jadwal shalat dan koordinat yang dibulatkan (sekitar 1 km) disimpan di catatan akun bila pengguna masuk akun. Jawab "dikumpulkan", tidak sementara. Tujuan: Fungsi aplikasi, Analitik. <b>Lokasi tepat</b> (GPS) hanya diproses di perangkat: "diproses sementara (ephemeral)".</li>
-          <li><b>Info aplikasi &amp; performa / Perangkat</b>: merek dan model HP, sistem operasi, versi aplikasi (bila masuk akun). Tujuan: Analitik, Pengelolaan akun.</li>
+          <li><b>Info aplikasi &amp; performa / Perangkat</b>: merek dan model HP, sistem operasi, versi aplikasi, kota perkiraan dari IP, sumber kunjungan, dicatat untuk semua pengunjung (juga tanpa login) dengan ID acak. Tujuan: Analitik. <b>ID perangkat atau ID lain</b>: Ya (ID acak aplikasi).</li>
           <li><b>Pesan</b> (pesan dalam aplikasi, terenkripsi end-to-end). Tujuan: Fungsi aplikasi.</li>
           <li><b>Aktivitas aplikasi</b>: konten buatan pengguna (absensi, catatan). Tujuan: Fungsi aplikasi.</li>
           <li><b>Info &amp; performa aplikasi</b>: laporan masalah yang dikirim pengguna. Tujuan: Analitik/perbaikan.</li>
@@ -232,8 +241,30 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
       $("ulist").innerHTML=vis.length?vis.map(u=>`<article class="card usr">
         <div class="av">${esc((u.name||u.email||"?").trim()[0]?.toUpperCase()||"?")}</div>
         <div><div class="nm">${esc(u.name||"Tanpa nama")}</div><div class="em">${esc(u.email||"Tanpa email")}</div></div>
-        <div class="facts"><span class="fact${u.app==="APK"?" apk":""}">${esc(u.app||"?")} · ${esc(u.ver||"?")}</span><span class="fact">📱 ${esc(hp(u))}</span>${u.os&&u.model!=="Komputer"?`<span class="fact">${esc(u.os)}</span>`:""}<span class="fact">📍 ${u.kota?`<a href="https://www.google.com/maps?q=${+u.lat},${+u.lng}" target="_blank" rel="noopener">${esc(u.kota)}</a>`:"Lokasi belum diatur"}</span></div>
+        <div class="facts"><span class="fact${u.app==="APK"?" apk":""}">${esc(u.app||"?")} · ${esc(u.ver||"?")}</span><span class="fact">📱 ${esc(hp(u))}</span>${u.os&&u.model!=="Komputer"?`<span class="fact">${esc(u.os)}</span>`:""}${u.ipkota?`<span class="fact">📍 ${esc(u.ipkota)} (IP)</span>`:""}<span class="fact">🕌 ${u.kota?`<a href="https://www.google.com/maps?q=${+u.lat},${+u.lng}" target="_blank" rel="noopener">${esc(u.kota)}</a>`:"Lokasi jadwal belum diatur"}</span></div>
         <div class="seen">Terakhir aktif ${when(u.last)}${u.first?` · Pertama tercatat ${u.first.toDate().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}`:""}</div></article>`).join(""):`<div class="card empty">${users.length?"Tidak ada akun yang cocok.":"Belum ada akun yang tercatat."}</div>`;
+    }
+    /* Pengunjung (koleksi kunjungan) */
+    let vis=[],fv="semua",vunsub=null;
+    function vlist(){
+      const day=Date.now()-864e5,week=Date.now()-7*864e5,t=v=>v.last?.toMillis?.()||0;
+      const F={semua:()=>true,login:v=>!!v.email,tamu:v=>!v.email,APK:v=>v.app==="APK",Web:v=>v.app==="Web"};
+      $("vstats").innerHTML=[[vis.length,"Pengunjung (perangkat)"],[vis.filter(F.login).length,"Sudah login"],[vis.filter(F.tamu).length,"Tamu"],[vis.filter(v=>t(v)>day).length,"Aktif 24 jam"],[vis.filter(v=>t(v)>week).length,"Aktif 7 hari"],[vis.reduce((a,v)=>a+(+v.n||0),0),"Total kunjungan"]].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+      $("fv").innerHTML=[["semua","Semua"],["login","Login"],["tamu","Tamu"],["APK","APK"],["Web","Web"]].map(([k,l])=>`<button class="chip" data-fv="${k}" aria-pressed="${fv===k}">${l} (${vis.filter(F[k]).length})</button>`).join("");
+      const q=$("vq").value.toLowerCase().trim();
+      const L=vis.filter(v=>F[fv](v)&&(!q||`${v.name} ${v.email} ${v.brand} ${v.model} ${v.os} ${v.kota} ${v.ipkota} ${v.ref} ${v.ref1}`.toLowerCase().includes(q)));
+      $("vlist").innerHTML=L.length?L.map(v=>`<article class="card usr">
+        <div class="av">${v.email?esc((v.name||v.email).trim()[0].toUpperCase()):"?"}</div>
+        <div><div class="nm">${v.email?esc(v.name||"Tanpa nama"):"Tamu (belum login)"}</div><div class="em">${v.email?esc(v.email):"ID perangkat "+esc(String(v.vid||v.id).slice(0,8))}</div></div>
+        <div class="facts"><span class="fact${v.app==="APK"?" apk":""}">${esc(v.app||"?")} · ${esc(v.ver||"?")}</span><span class="fact">📱 ${esc(hp(v))}</span>${v.os&&v.model!=="Komputer"?`<span class="fact">${esc(v.os)}</span>`:""}
+          <span class="fact">📍 ${esc(v.ipkota||"Kota tidak diketahui")}</span>${v.kota&&v.kota!==v.ipkota?`<span class="fact">🕌 Jadwal: ${esc(v.kota)}</span>`:""}
+          <span class="fact">🔗 ${esc(v.ref1||"?")}${v.ref&&v.ref!==v.ref1?` → ${esc(v.ref)}`:""}</span><span class="fact">${+v.n||1}× kunjungan</span></div>
+        <div class="seen">Terakhir aktif ${when(v.last)}${v.first?` · Pertama datang ${v.first.toDate().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}`:""}${v.masuk?` · Halaman ${esc(v.masuk)}`:""}</div></article>`).join(""):`<div class="card empty">${vis.length?"Tidak ada pengunjung yang cocok.":"Belum ada pengunjung yang tercatat."}</div>`;
+    }
+    function vwatch(){
+      vunsub?.();
+      vunsub=db.collection("kunjungan").orderBy("last","desc").limit(2000).onSnapshot(s=>{vis=s.docs.map(d=>({id:d.id,...d.data()}));vlist()},
+        e=>{$("err").hidden=false;$("err").textContent=e.code==="permission-denied"?"Daftar pengunjung ditolak oleh aturan Firestore. Pasang aturan terbaru di Firebase Console.":"Gagal memuat pengunjung: "+(e.code||e.message)});
     }
     function uwatch(){
       uunsub?.();
@@ -251,17 +282,18 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
       $("gate").hidden=ok;$("dash").hidden=!ok;
       if(u&&!ok){$("gt").textContent="Akun ini bukan admin";$("gp").textContent=`${u.email} tidak punya akses ke dasbor. Keluar lalu masuk dengan akun admin.`;$("login").hidden=true}
       if(!u){$("gt").textContent="Masuk sebagai admin";$("gp").textContent="Halaman ini hanya untuk pengelola aplikasi.";$("login").hidden=false}
-      if(ok){watch();uwatch()}else{unsub?.();unsub=null;rows=[];uunsub?.();uunsub=null;users=[]}
+      if(ok){watch();uwatch();vwatch()}else{unsub?.();unsub=null;rows=[];uunsub?.();uunsub=null;users=[];vunsub?.();vunsub=null;vis=[]}
     });
     $("login").onclick=async()=>{const p=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(p)}catch(e){if(/popup-blocked|cancelled-popup/.test(e.code))await auth.signInWithRedirect(p);else alert("Gagal masuk: "+(e.code||e.message))}};
     $("out").onclick=()=>auth.signOut();
-    $("q").oninput=list;$("uq").oninput=ulist;
+    $("q").oninput=list;$("uq").oninput=ulist;$("vq").oninput=vlist;
     document.addEventListener("click",async e=>{
       const t=e.target;
       if(t.closest("[data-fs]")){fs=t.closest("[data-fs]").dataset.fs;return draw()}
       if(t.closest("[data-ft]")){ft=t.closest("[data-ft]").dataset.ft;return draw()}
       if(t.closest("[data-fu]")){fu=t.closest("[data-fu]").dataset.fu;return ulist()}
-      const tb=t.closest("[data-tab]");if(tb){document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b===tb));$("tpengguna").hidden=tb.dataset.tab!=="pengguna";$("tlaporan").hidden=tb.dataset.tab!=="laporan";return}
+      if(t.closest("[data-fv]")){fv=t.closest("[data-fv]").dataset.fv;return vlist()}
+      const tb=t.closest("[data-tab]");if(tb){document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b===tb));$("tpengunjung").hidden=tb.dataset.tab!=="pengunjung";$("tpengguna").hidden=tb.dataset.tab!=="pengguna";$("tlaporan").hidden=tb.dataset.tab!=="laporan";return}
       if(t.closest(".lb")&&(t.classList.contains("lb")||t.closest("[data-lbx]")))return t.closest(".lb").remove();
       const card=t.closest("[data-id]");if(!card)return;const r=rows.find(x=>x.id===card.dataset.id);if(!r)return;
       if(t.closest("[data-del]")){if(confirm(`Hapus laporan dari ${r.name||"tanpa nama"}? Tidak bisa dibatalkan.`))db.collection("reports").doc(r.id).delete().catch(x=>alert("Gagal menghapus: "+(x.code||x.message)));return}

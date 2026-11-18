@@ -1,8 +1,10 @@
-/* Catatan akun untuk dasbor admin: akun/{uid} -> nama, email, merek & model HP, sistem, aplikasi (APK/Web), versi, kota.
+/* Catatan pengunjung & akun untuk dasbor admin.
+   kunjungan/{id acak perangkat} -> semua pengunjung (tanpa login juga): HP, kota (IP & jadwal shalat), sumber link, jumlah kunjungan;
+   nama & email ikut tercatat begitu pengunjung itu login.
+   akun/{uid} -> nama, email, merek & model HP, sistem, aplikasi (APK/Web), versi, kota.
    Ditulis saat masuk dan saat aplikasi dibuka (paling sering 30 menit sekali, atau langsung bila isinya berubah).
    Hanya pemilik akun yang boleh menulis, hanya admin yang boleh membaca (lihat firestore.rules). */
 import {get} from "../store.js";
-import {loc} from "./prayer.js";
 import {VERSION} from "../version.js";
 
 const T="kl_akun_t",S="kl_akun_sig",JEDA=30*60000;
@@ -31,24 +33,61 @@ export async function perangkat(){
   return{brand:s(brand),model:s(model),os:s(os)};
 }
 
+/* Kota perkiraan dari IP (sekali per sesi) */
+async function ipKota(){
+  try{const c=sessionStorage.getItem("kl_ipkota");if(c!=null)return c}catch(e){}
+  let v="";try{const ac=new AbortController();setTimeout(()=>ac.abort(),5000);
+    const j=await fetch("/api/geo",{cache:"no-store",signal:ac.signal}).then(r=>r.ok?r.json():{});
+    v=[j.city,j.region].filter(Boolean).join(", ");if(j.country&&j.country!=="ID")v=[v,j.country].filter(Boolean).join(", ")}catch(e){}
+  try{sessionStorage.setItem("kl_ipkota",v)}catch(e){}return s(v)}
+
+/* Dari mana pengunjung datang (sekali per sesi): ?utm_source / ?ref, situs perujuk, atau langsung */
+function sumber(){
+  try{const c=sessionStorage.getItem("kl_ref");if(c!=null)return c}catch(e){}
+  let v="";const q=new URLSearchParams(location.search);
+  if(window.KLAndroid)v="Aplikasi Android";
+  else if(q.get("utm_source")||q.get("ref"))v=[q.get("utm_source")||q.get("ref"),q.get("utm_medium"),q.get("utm_campaign")].filter(Boolean).join(" / ");
+  else{try{const r=document.referrer?new URL(document.referrer):null;v=r&&r.host!==location.host?r.host.replace(/^www\./,""):"Langsung"}catch(e){v="Langsung"}}
+  v=s(v,120);try{sessionStorage.setItem("kl_ref",v)}catch(e){}return v}
+
+function vid(){let v=localStorage.getItem("kl_vid");
+  if(!v||!/^[a-z0-9]{20}$/.test(v)){const a=new Uint8Array(20);crypto.getRandomValues(a);v=[...a].map(x=>"abcdefghijklmnopqrstuvwxyz0123456789"[x%36]).join("");localStorage.setItem("kl_vid",v);localStorage.removeItem("kl_vid_ok")}
+  return v}
+
+let sibuk=false;
 async function catat(u){
-  const db=window.__klDb;if(!u||!db||!window.firebase)return;
+  const db=window.__klDb;if(!db||!window.firebase||sibuk)return;sibuk=true;
   try{
-    const apk=window.KLAndroid?.versi?.()||"",p=get("profil",{})||{},l=loc(),d=await perangkat();
-    const data={uid:u.uid,email:u.email||null,name:s(p.name||u.displayName||""),brand:d.brand,model:d.model,os:d.os,
-      app:apk?"APK":"Web",ver:s(apk?`apk ${apk} / web ${VERSION}`:VERSION),kota:s(l?.name||""),
-      lat:Math.round((+l?.lat||0)*100)/100,lng:Math.round((+l?.lng||0)*100)/100};
-    const sig=JSON.stringify(data),now=Date.now();
-    if(localStorage.getItem(S)===sig&&now-(+localStorage.getItem(T)||0)<JEDA)return;
-    const ref=db.collection("akun").doc(u.uid),TS=firebase.firestore.FieldValue.serverTimestamp(),ada=(await ref.get()).exists;
-    await ref.set(ada?{...data,last:TS}:{...data,first:TS,last:TS},{merge:true});
+    const apk=window.KLAndroid?.versi?.()||"",p=get("profil",{})||{},l=get("loc",null),d=await perangkat(),ip=await ipKota(),ref=sumber();
+    const dasar={brand:d.brand,model:d.model,os:d.os,app:apk?"APK":"Web",ver:s(apk?`apk ${apk} / web ${VERSION}`:VERSION),
+      kota:s(l?.name||""),ipkota:ip};
+    const siapa=u?{uid:u.uid,email:u.email||null,name:s(p.name||u.displayName||"")}:null;
+    const baruSesi=!sessionStorage.getItem("kl_ses"),sig=JSON.stringify([dasar,siapa]),now=Date.now(),FV=firebase.firestore.FieldValue,TS=FV.serverTimestamp();
+    if(!baruSesi&&localStorage.getItem(S)===sig&&now-(+localStorage.getItem(T)||0)<JEDA)return;
+    /* 1. Pengunjung (siapa pun, tanpa login juga) */
+    const id=vid(),ref1=db.collection("kunjungan").doc(id);
+    const ubah={vid:id,...dasar,ref,masuk:s(location.pathname+location.hash,120),last:TS,...(siapa||{})};
+    if(baruSesi)ubah.n=FV.increment(1);
+    const buat={...ubah,uid:siapa?.uid||null,email:siapa?.email||null,name:siapa?.name||null,ref1:ref,n:1,first:TS};
+    const coba=async(a,b)=>{try{await a()}catch(e){if(e?.code!=="permission-denied"&&e?.code!=="not-found")throw e;await b()}};
+    const tulisBuat=()=>ref1.set(buat),tulisUbah=()=>ref1.set(ubah,{merge:true});
+    if(localStorage.getItem("kl_vid_ok"))await coba(tulisUbah,tulisBuat);else await coba(tulisBuat,tulisUbah);
+    localStorage.setItem("kl_vid_ok","1");sessionStorage.setItem("kl_ses","1");
+    /* 2. Akun (hanya bila login) */
+    if(u){
+      const data={uid:u.uid,email:u.email||null,name:siapa.name,...dasar,
+        lat:Math.round((+l?.lat||0)*100)/100,lng:Math.round((+l?.lng||0)*100)/100};
+      const ra=db.collection("akun").doc(u.uid),ada=(await ra.get()).exists;
+      await ra.set(ada?{...data,last:TS}:{...data,first:TS,last:TS},{merge:true});
+    }
     localStorage.setItem(S,sig);localStorage.setItem(T,String(now));
-  }catch(e){console.warn("catat akun",e&&e.code||e)}
+  }catch(e){console.warn("catat kunjungan",e&&e.code||e)}
+  finally{sibuk=false}
 }
 
 export function initAkun(){
   let u=null,t=0;const lagi=()=>{clearTimeout(t);t=setTimeout(()=>catat(u),1500)};
-  window.__klAuth?.onAuthStateChanged(x=>{u=x;if(x)lagi()});
-  ["kl-loc","kl-profile"].forEach(e=>document.addEventListener(e,()=>u&&lagi()));
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&u)lagi()});
+  if(window.__klAuth)window.__klAuth.onAuthStateChanged(x=>{u=x;lagi()});else lagi();
+  ["kl-loc","kl-profile"].forEach(e=>document.addEventListener(e,lagi));
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)lagi()});
 }

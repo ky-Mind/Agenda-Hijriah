@@ -21,12 +21,12 @@ a{color:var(--accent)}ul{padding-left:20px}table{border-collapse:collapse;width:
 </head>
 <body>
 <main>
-<header><img src="assets/icon-192.png" alt=""><div><h1>Kebijakan Privasi</h1><div class="muted">Kisah Lillah · berlaku sejak 14 November 2026</div></div></header>
+<header><img src="assets/icon-192.png" alt=""><div><h1>Kebijakan Privasi</h1><div class="muted">Kisah Lillah · diperbarui 18 November 2026</div></div></header>
 <p>Kisah Lillah adalah aplikasi jurnal ibadah harian, jadwal shalat dan adzan, kalender Hijriah, Al-Qur'an, hadits, do'a, dan dzikir. Halaman ini menjelaskan data apa yang dipakai aplikasi, untuk apa, di mana disimpan, dan bagaimana kamu bisa menghapusnya. Aplikasi ini gratis, tanpa iklan, dan tidak menjual data siapa pun.</p>
 
 <section>
 <h2>1. Tanpa akun</h2>
-<p>Semua fitur utama bisa dipakai tanpa masuk. Absensi, catatan, pengaturan, dan lokasi hanya disimpan di perangkatmu (penyimpanan lokal browser atau aplikasi) dan tidak dikirim ke server kami selama kamu tidak masuk akun.</p>
+<p>Semua fitur utama bisa dipakai tanpa masuk. Absensi, catatan, pengaturan, dan lokasi hanya disimpan di perangkatmu (penyimpanan lokal browser atau aplikasi) dan tidak dikirim ke server kami selama kamu tidak masuk akun. Yang tetap tercatat hanyalah catatan kunjungan tanpa nama (lihat bagian 2).</p>
 </section>
 
 <section>
@@ -37,6 +37,7 @@ a{color:var(--accent)}ul{padding-left:20px}table{border-collapse:collapse;width:
 <tr><td>Absensi ibadah, catatan harian, daftar ibadah, pengaturan</td><td>Sinkron antar perangkat bila kamu masuk akun</td><td>Perangkatmu, dan Cloud Firestore (Google) bila masuk akun</td></tr>
 <tr><td>Nama, nomor WhatsApp, dan foto profil yang kamu isi</td><td>Ditampilkan di aplikasi dan dipakai saat kamu memilih "Kirim ke WhatsApp"</td><td>Perangkatmu, dan Cloud Firestore bila masuk akun</td></tr>
 <tr><td>Lokasi (perkiraan atau GPS, hanya bila kamu izinkan)</td><td>Menghitung jadwal shalat dan arah kiblat, serta menampilkan nama kota</td><td>Di perangkatmu. Koordinat dikirim ke layanan nama tempat (OpenStreetMap Nominatim) dan jadwal shalat (Aladhan) tanpa identitasmu. Bila kamu masuk akun, nama kota dan koordinat yang dibulatkan (sekitar 1 km) ikut tercatat di catatan akun (baris berikut)</td></tr>
+<tr><td>Catatan kunjungan (juga tanpa login): ID acak perangkat, merek dan model HP, sistem operasi, jenis aplikasi dan versinya, kota perkiraan dari alamat IP, kota jadwal shalat bila kamu memilihnya, dari mana kamu datang (tautan atau situs perujuk), halaman yang dibuka pertama, jumlah dan waktu kunjungan. Bila kamu masuk akun, nama dan emailmu ikut tercatat di catatan ini</td><td>Mengetahui jumlah pengunjung, dari mana mereka datang, dan perangkat apa yang dipakai, agar aplikasi bisa diperbaiki</td><td>Cloud Firestore (Google). Hanya bisa dibaca oleh pengelola aplikasi. Alamat IP tidak disimpan</td></tr>
 <tr><td>Catatan akun: nama, email, merek dan model HP, sistem operasi, jenis aplikasi (Android atau web) dan versinya, kota jadwal shalat, serta waktu terakhir aktif (hanya bila kamu masuk akun)</td><td>Membantu pengelola aplikasi mengetahui siapa saja penggunanya dan memperbaiki masalah di perangkat tertentu</td><td>Cloud Firestore (Google). Hanya bisa dibaca oleh pengelola aplikasi, dan ikut terhapus saat kamu menghapus akun</td></tr>
 <tr><td>Pesan antar pengguna</td><td>Fitur Pesan. Isi pesan dienkripsi end-to-end di perangkat, sehingga kami tidak bisa membacanya</td><td>Cloud Firestore (terenkripsi)</td></tr>
 <tr><td>Token notifikasi perangkat</td><td>Mengirim notifikasi pesan baru</td><td>Cloud Firestore dan Firebase Cloud Messaging</td></tr>
@@ -65,7 +66,7 @@ a{color:var(--accent)}ul{padding-left:20px}table{border-collapse:collapse;width:
 
 <section>
 <h2>5. Keamanan &amp; penyimpanan</h2>
-<p>Data dikirim melalui koneksi terenkripsi (HTTPS). Data cloud hanya bisa dibaca oleh pemilik akun sesuai aturan keamanan database, kecuali catatan akun (nama, email, info perangkat, dan kota) yang juga bisa dibaca pengelola aplikasi. Data disimpan selama akunmu aktif. Saat kamu keluar dari akun, semua data akun dihapus dari perangkat itu dan tetap tersimpan di cloud sampai kamu menghapus akun.</p>
+<p>Data dikirim melalui koneksi terenkripsi (HTTPS). Data cloud hanya bisa dibaca oleh pemilik akun sesuai aturan keamanan database, kecuali catatan akun dan catatan kunjungan (nama, email, info perangkat, kota, dan sumber kunjungan) yang juga bisa dibaca pengelola aplikasi. Untuk menghapus catatan kunjungan dari perangkat yang tidak login, kirim email ke kontak di bawah. Data disimpan selama akunmu aktif. Saat kamu keluar dari akun, semua data akun dihapus dari perangkat itu dan tetap tersimpan di cloud sampai kamu menghapus akun.</p>
 </section>
 
 <section id="hapus-akun">

@@ -109,19 +109,48 @@ service cloud.firestore {
     match /akun/{uid} {
       function bentuk() {
         let d = request.resource.data;
-        return d.keys().hasOnly(['uid', 'email', 'name', 'brand', 'model', 'os', 'app', 'ver', 'kota', 'lat', 'lng', 'first', 'last'])
+        return d.keys().hasOnly(['uid', 'email', 'name', 'brand', 'model', 'os', 'app', 'ver', 'kota', 'ipkota', 'lat', 'lng', 'first', 'last'])
           && d.uid == uid && d.last == request.time
           && (d.email == null || d.email == request.auth.token.email)
           && d.name is string && d.name.size() <= 80
           && d.brand is string && d.brand.size() <= 80 && d.model is string && d.model.size() <= 80
           && d.os is string && d.os.size() <= 80 && d.app in ['APK', 'Web']
           && d.ver is string && d.ver.size() <= 80 && d.kota is string && d.kota.size() <= 80
+          && (!('ipkota' in d) || (d.ipkota is string && d.ipkota.size() <= 80))
           && d.lat is number && d.lng is number;
       }
       allow get, delete: if owner(uid) || admin();
       allow list: if admin();
       allow create: if owner(uid) && bentuk() && request.resource.data.first == request.time;
       allow update: if owner(uid) && bentuk() && request.resource.data.first == resource.data.first;
+    }
+
+    // Pengunjung (tanpa login juga): ID acak per perangkat, HP, kota perkiraan, sumber link, jumlah kunjungan.
+    // Nama & email hanya boleh diisi oleh pemilik akun yang sedang login. Hanya admin yang boleh membaca.
+    match /kunjungan/{vid} {
+      function bentukK() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['vid', 'uid', 'email', 'name', 'brand', 'model', 'os', 'app', 'ver', 'kota', 'ipkota', 'ref', 'ref1', 'masuk', 'n', 'first', 'last'])
+          && d.vid == vid && vid.matches('^[a-z0-9]{20}$') && d.last == request.time
+          && d.brand is string && d.brand.size() <= 80 && d.model is string && d.model.size() <= 80
+          && d.os is string && d.os.size() <= 80 && d.app in ['APK', 'Web'] && d.ver is string && d.ver.size() <= 80
+          && d.kota is string && d.kota.size() <= 80 && d.ipkota is string && d.ipkota.size() <= 80
+          && d.ref is string && d.ref.size() <= 120 && d.ref1 is string && d.ref1.size() <= 120
+          && d.masuk is string && d.masuk.size() <= 120 && d.n is int;
+      }
+      function siapa() {
+        let d = request.resource.data;
+        return (d.uid == null || (request.auth != null && d.uid == request.auth.uid))
+          && (d.email == null || (request.auth != null && d.email == request.auth.token.email))
+          && (d.name == null || (d.name is string && d.name.size() <= 80));
+      }
+      function tetap(k) { return request.resource.data[k] == resource.data[k]; }
+      allow create: if bentukK() && siapa() && request.resource.data.n == 1 && request.resource.data.first == request.time;
+      allow update: if bentukK() && tetap('first') && tetap('ref1')
+        && (request.resource.data.n == resource.data.n || request.resource.data.n == resource.data.n + 1)
+        && (siapa() || (tetap('uid') && tetap('email') && tetap('name')));
+      allow get, list: if admin();
+      allow delete: if admin() || (request.auth != null && resource.data.uid == request.auth.uid);
     }
 
     match /{document=**} { allow read, write: if false; }
