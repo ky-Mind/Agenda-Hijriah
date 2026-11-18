@@ -259,7 +259,7 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
         <div class="facts"><span class="fact${v.app==="APK"?" apk":""}">${esc(v.app||"?")} · ${esc(v.ver||"?")}</span><span class="fact">📱 ${esc(hp(v))}</span>${v.os&&v.model!=="Komputer"?`<span class="fact">${esc(v.os)}</span>`:""}
           <span class="fact">📍 ${esc(v.ipkota||"Kota tidak diketahui")}</span>${v.kota&&v.kota!==v.ipkota?`<span class="fact">🕌 Jadwal: ${esc(v.kota)}</span>`:""}
           <span class="fact">🔗 ${esc(v.ref1||"?")}${v.ref&&v.ref!==v.ref1?` → ${esc(v.ref)}`:""}</span><span class="fact">${+v.n||1}× kunjungan</span></div>
-        <div class="seen">Terakhir aktif ${when(v.last)}${v.first?` · Pertama datang ${v.first.toDate().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}`:""}${v.masuk?` · Halaman ${esc(v.masuk)}`:""}</div></article>`).join(""):`<div class="card empty">${vis.length?"Tidak ada pengunjung yang cocok.":"Belum ada pengunjung yang tercatat."}</div>`;
+        <div class="seen">Terakhir aktif ${when(v.last)}${v.first?` · Pertama datang ${v.first.toDate().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}`:""}${v.masuk?` · Halaman ${esc(v.masuk)}`:""}</div><div class="acts" style="grid-column:2"><button class="btn sm danger" data-vdel="${esc(v.id)}">Hapus</button></div></article>`).join(""):`<div class="card empty">${vis.length?"Tidak ada pengunjung yang cocok.":"Belum ada pengunjung yang tercatat."}</div>`;
     }
     function vwatch(){
       vunsub?.();
@@ -293,6 +293,7 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
       if(t.closest("[data-ft]")){ft=t.closest("[data-ft]").dataset.ft;return draw()}
       if(t.closest("[data-fu]")){fu=t.closest("[data-fu]").dataset.fu;return ulist()}
       if(t.closest("[data-fv]")){fv=t.closest("[data-fv]").dataset.fv;return vlist()}
+      const vd=t.closest("[data-vdel]");if(vd){const v=vis.find(x=>x.id===vd.dataset.vdel);if(v&&confirm(`Hapus catatan pengunjung ${v.email||"tamu "+v.id.slice(0,8)}? Tidak bisa dibatalkan.`))db.collection("kunjungan").doc(v.id).delete().catch(x=>alert("Gagal menghapus: "+(x.code||x.message)));return}
       const tb=t.closest("[data-tab]");if(tb){document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b===tb));$("tpengunjung").hidden=tb.dataset.tab!=="pengunjung";$("tpengguna").hidden=tb.dataset.tab!=="pengguna";$("tlaporan").hidden=tb.dataset.tab!=="laporan";return}
       if(t.closest(".lb")&&(t.classList.contains("lb")||t.closest("[data-lbx]")))return t.closest(".lb").remove();
       const card=t.closest("[data-id]");if(!card)return;const r=rows.find(x=>x.id===card.dataset.id);if(!r)return;

@@ -10,6 +10,12 @@ export default {
       url.hostname = UTAMA;
       return Response.redirect(url.toString(), 301);
     }
+    // Kota perkiraan dari IP pengunjung (Vercel hanya melihat IP Cloudflare, jadi dijawab di sini)
+    if (url.pathname === "/api/geo") {
+      const c = req.cf || {};
+      return new Response(JSON.stringify({ city: c.city || "", region: c.region || "", country: c.country || "" }),
+        { headers: { "content-type": "application/json", "cache-control": "no-store" } });
+    }
     const ke = new URL(url.pathname + url.search, "https://" + ASAL);
     const h = new Headers(req.headers);
     h.delete("host");

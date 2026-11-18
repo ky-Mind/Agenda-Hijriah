@@ -86,6 +86,7 @@ async function catat(u){
 }
 
 export function initAkun(){
+  sumber();  /* baca ?utm_source / perujuk segera, sebelum alamat halaman berubah */
   let u=null,t=0;const lagi=()=>{clearTimeout(t);t=setTimeout(()=>catat(u),1500)};
   if(window.__klAuth)window.__klAuth.onAuthStateChanged(x=>{u=x;lagi()});else lagi();
   ["kl-loc","kl-profile"].forEach(e=>document.addEventListener(e,lagi));
