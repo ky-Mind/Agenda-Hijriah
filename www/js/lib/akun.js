@@ -54,9 +54,11 @@ function vid(){let v=localStorage.getItem("kl_vid");
   if(!v||!/^[a-z0-9]{20}$/.test(v)){const a=new Uint8Array(20);crypto.getRandomValues(a);v=[...a].map(x=>"abcdefghijklmnopqrstuvwxyz0123456789"[x%36]).join("");localStorage.setItem("kl_vid",v);localStorage.removeItem("kl_vid_ok")}
   return v}
 
+/* Bot perayap, browser otomatis, dan pratinjau tautan tidak dihitung sebagai pengunjung */
+const robot=()=>navigator.webdriver||/bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|vercel|prerender|pagespeed/i.test(navigator.userAgent);
 let sibuk=false;
 async function catat(u){
-  const db=window.__klDb;if(!db||!window.firebase||sibuk)return;sibuk=true;
+  const db=window.__klDb;if(!db||!window.firebase||sibuk||robot())return;sibuk=true;
   try{
     const apk=window.KLAndroid?.versi?.()||"",p=get("profil",{})||{},l=get("loc",null),d=await perangkat(),ip=await ipKota(),ref=sumber();
     const dasar={brand:d.brand,model:d.model,os:d.os,app:apk?"APK":"Web",ver:s(apk?`apk ${apk} / web ${VERSION}`:VERSION),
