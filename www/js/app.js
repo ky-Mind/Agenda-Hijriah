@@ -112,7 +112,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)schedule()
 addEventListener("offline",()=>toast("Kamu sedang offline"));addEventListener("online",()=>toast("Kembali online"));
 if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 /* Widget layar utama ikut diperbarui saat lokasi/data berubah dan setiap kali aplikasi dibuka kembali (jadwal 7 hari ke depan selalu segar) */
-import("./lib/widgetdata.js").then(w=>{w.pushWidget();["kl-loc","kl-data-changed","kl-adzan"].forEach(e=>document.addEventListener(e,()=>w.pushWidget()));
+import("./lib/widgetdata.js").then(w=>{w.pushWidget();let tunda=0;const kirim=()=>{clearTimeout(tunda);tunda=setTimeout(()=>w.pushWidget(),800)};["kl-loc","kl-data-changed","kl-adzan","kl-absen","kl-ingat"].forEach(e=>document.addEventListener(e,kirim));
   let akhir=Date.now();document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-akhir>60e3){akhir=Date.now();w.pushWidget()}})}).catch(()=>{});
 render().then(()=>{if(location.protocol.startsWith("http")&&!localStorage.getItem("kl_onboard"))setTimeout(onboard,1500);cekRilis();tawarOffline()});
 /* Pratinjau geser (seperti WhatsApp): halaman utama yang belum dibuka digambar diam-diam sekali di luar layar, supaya

@@ -44,7 +44,12 @@ final class Notifikasi {
         pesan.setDescription("Pesan dan permintaan chat baru (muncul walau aplikasi ditutup)");
         pesan.enableVibration(true);
         pesan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-        for (NotificationChannel k : new NotificationChannel[]{adzan, subuh, waktu, umum, bunyi, info, senyap, pesan}) nm.createNotificationChannel(k);
+        NotificationChannel ibadah = new NotificationChannel("ibadah", "Pengingat ibadah", NotificationManager.IMPORTANCE_HIGH);
+        ibadah.setDescription("Waktunya dzikir pagi, Dhuha, Al-Kahfi, dan ibadah harian lain (3 kali tiap 5 menit)");
+        ibadah.enableVibration(true);
+        ibadah.setVibrationPattern(new long[]{0, 150, 100, 150});
+        ibadah.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        for (NotificationChannel k : new NotificationChannel[]{adzan, subuh, waktu, umum, bunyi, info, senyap, pesan, ibadah}) nm.createNotificationChannel(k);
     }
 
     private static Uri suara(Context c, int raw) { return Uri.parse("android.resource://" + c.getPackageName() + "/" + raw); }
@@ -91,6 +96,23 @@ final class Notifikasi {
         PendingIntent pi = PendingIntent.getActivity(c, id, i, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder b = dasar(c, "pesan", judul, isi).setContentIntent(pi).setAutoCancel(true).setCategory(Notification.CATEGORY_MESSAGE)
                 .setWhen(System.currentTimeMillis()).setShowWhen(true);
+        if (Build.VERSION.SDK_INT < 26) b.setPriority(Notification.PRIORITY_HIGH).setDefaults(Notification.DEFAULT_ALL);
+        try { nm.notify(id, b.build()); } catch (Exception ignored) {}
+    }
+
+    /** Pengingat ibadah: satu notifikasi per ibadah per hari (tag), pengulangan menggantikan yang lama dan berbunyi lagi.
+        Diketuk = buka Absensi untuk mencatatnya. */
+    @SuppressWarnings("deprecation")
+    static void ibadah(Context c, String judul, String isi, String tag) {
+        siapkanKanal(c);
+        NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null || judul == null) return;
+        int id = 9000 + Math.abs((tag == null ? judul : tag).hashCode() % 900);
+        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.AWAL + "#/absensi"), c, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pi = PendingIntent.getActivity(c, id, i, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification.Builder b = dasar(c, "ibadah", judul, isi == null ? "" : isi).setContentIntent(pi).setAutoCancel(true)
+                .setCategory(Notification.CATEGORY_REMINDER).setWhen(System.currentTimeMillis()).setShowWhen(true).setOnlyAlertOnce(false);
         if (Build.VERSION.SDK_INT < 26) b.setPriority(Notification.PRIORITY_HIGH).setDefaults(Notification.DEFAULT_ALL);
         try { nm.notify(id, b.build()); } catch (Exception ignored) {}
     }

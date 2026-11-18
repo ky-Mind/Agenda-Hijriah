@@ -25,6 +25,12 @@ public class AdzanReceiver extends BroadcastReceiver {
             }
             Widget.segarkan(c);
         }
+        if (IbadahPengingat.AKSI.equals(a)) {
+            Notifikasi.ibadah(c, i.getStringExtra("judul"), i.getStringExtra("isi"), i.getStringExtra("tag"));
+            IbadahPengingat.pasang(c);
+            return;
+        }
         AdzanJadwal.pasang(c);
+        IbadahPengingat.pasang(c);
     }
 }

@@ -255,6 +255,10 @@ export default function(root){
     setTimeout(()=>location.replace(location.pathname+"#/beranda"),300);setTimeout(()=>location.reload(),700)
   };
 
+  /* Pengingat ibadah harian (dijadwalkan di Android lewat data widget; lihat js/lib/widgetdata.js) */
+  const ingatUi=()=>{const on=get("ibadah_ingat",true)!==false,b=$("tingat");b.setAttribute("aria-pressed",String(on));b.textContent=on?"Aktif":"Mati";b.classList.toggle("primary",on)};
+  ingatUi();$("tingat").onclick=()=>{set("ibadah_ingat",!(get("ibadah_ingat",true)!==false));ingatUi();document.dispatchEvent(new CustomEvent("kl-ingat"));toast(get("ibadah_ingat",true)?"Pengingat ibadah dinyalakan":"Pengingat ibadah dimatikan")};
+
   /* Hapus akun (wajib untuk Play Store): hapus semua data di cloud (sinkron, absensi lama, profil, entri pencarian pesan),
      lalu akun Firebase-nya, lalu data di perangkat. Firebase meminta login ulang bila sesi sudah lama. */
   $("delacct").onclick=async()=>{

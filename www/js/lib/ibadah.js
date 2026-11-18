@@ -2,7 +2,7 @@ import {get,set,del,keys} from "../store.js";
 import {key,addDays,fromKey} from "./hijri.js";
 /* Status: 1 terlaksana, 0 terlewat, 2 datang bulan (tidak dihitung), 3 khatam (tadarus, dihitung terlaksana) */
 export const STATUS={1:["✅","Terlaksana"],0:["❌","Tidak terlaksana"],2:["🌑","Datang bulan"],3:["📖💯","Khatam"]};
-export const DEFAULT=[["puasa","Puasa Sunnah","🌙"],["sahur","Sahur","🍽️"],["tahajjud","Tahajjud","🌌"],["sedekah","Sedekah","🤲"],["dzikir_pagi","Dzikir Pagi","🌅"],["ar_rahman","Ar-Rahman","📖"],["dhuha","Dhuha","☀️"],["al_kahfi","Al-Kahfi","📖",5,"Malam & hari Jumat"],["al_mulk","Al-Mulk","📖"],["al_waqiah","Al-Waqi'ah","📖"],["dzikir_petang","Dzikir Petang","🌇"],["yasin","Yasin","📖",3,"Malam Kamis (Rabu setelah Maghrib)"],["tadarus","Tadarus","📚"],["witir","Witir","✨"]].map(([id,nama,ic,hari,ket])=>hari==null?{id,nama,ic}:{id,nama,ic,hari,ket});
+export const DEFAULT=[["puasa","Puasa Sunnah","🌙"],["sahur","Sahur","🍽️"],["tahajjud","Tahajjud","🌌"],["sedekah","Sedekah","🤲"],["dzikir_pagi","Dzikir Pagi","🌅"],["ar_rahman","Ar-Rahman","📖"],["dhuha","Dhuha","☀️"],["al_kahfi","Al-Kahfi","📖",5,"Malam & hari Jumat"],["al_mulk","Al-Mulk","📖"],["al_waqiah","Al-Waqi'ah","📖"],["dzikir_petang","Dzikir Petang","🌇"],["yasin","Yasin","📖",4,"Malam Jumat (Kamis setelah Maghrib)"],["tadarus","Tadarus","📚"],["witir","Witir","✨"]].map(([id,nama,ic,hari,ket])=>hari==null?{id,nama,ic}:{id,nama,ic,hari,ket});
 /* Ikon garis untuk ibadah bawaan; ibadah buatan sendiri tetap memakai emoji pilihan pengguna */
 export const ICO={puasa:"moon",sahur:"bowl",tahajjud:"stars",sedekah:"hands",dzikir_pagi:"sunrise",ar_rahman:"quran",dhuha:"sun",al_kahfi:"quran",al_mulk:"quran",al_waqiah:"quran",yasin:"quran",dzikir_petang:"sunset",tadarus:"books",witir:"sparkles"};
 const escI=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -12,9 +12,11 @@ export const icoOf=i=>ICO[i.id]?`<svg class="ic" aria-hidden="true"><use href="#
    Maghrib, dicatat di absensi hari Jumat. Daftar lama yang tersimpan mendapat Al-Kahfi sekali (setelah Dhuha). */
 export const agenda=()=>{let a=get("agenda",null);if(!a)return DEFAULT;
   if(!get("agenda_kahfi",false)){set("agenda_kahfi",true);if(!a.some(i=>i.id==="al_kahfi")){const k=DEFAULT.find(i=>i.id==="al_kahfi"),j=a.findIndex(i=>i.id==="dhuha");a=[...a];a.splice(j<0?a.length:j+1,0,k);set("agenda",a)}}
-  /* Yasin (hari:3): dibaca malam Kamis, yaitu Rabu setelah Maghrib, jadi dicatat di absensi hari Rabu. Ditambahkan sekali
+  /* Yasin (hari:4): dibaca malam Jumat, yaitu Kamis setelah Maghrib, jadi dicatat di absensi hari Kamis. Ditambahkan sekali
      ke daftar lama yang tersimpan (setelah Dzikir Petang). */
   if(!get("agenda_yasin",false)){set("agenda_yasin",true);if(!a.some(i=>i.id==="yasin")){const k=DEFAULT.find(i=>i.id==="yasin"),j=a.findIndex(i=>i.id==="dzikir_petang");a=[...a];a.splice(j<0?a.length:j+1,0,k);set("agenda",a)}}
+  /* Versi 5.3.8 sempat menaruh Yasin di Rabu (malam Kamis): pindahkan ke Kamis (malam Jumat) sekali */
+  if(!get("agenda_yasin_jumat",false)){set("agenda_yasin_jumat",true);const y=a.find(i=>i.id==="yasin");if(y&&y.hari===3){a=a.map(i=>i.id==="yasin"?{...i,hari:4,ket:"Malam Jumat (Kamis setelah Maghrib)"}:i);set("agenda",a)}}
   return a};
 export const NAMA_HARI=["Ahad","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
 /* Daftar untuk tanggal tertentu: ibadah khusus hari (mis. Al-Kahfi) hanya muncul di harinya */
@@ -23,7 +25,7 @@ export const saveAgenda=a=>set("agenda",a);
 export const resetAgenda=()=>set("agenda",DEFAULT);
 export const day=k=>get("abs_"+k,{});
 export const savedAt=k=>get("absm_"+k,null)?.t||0;
-export function saveDay(k,rec){const c={};for(const id in rec)if(rec[id]!=null)c[id]=rec[id];if(Object.keys(c).length){set("abs_"+k,c);set("absm_"+k,{t:Date.now()})}else{del("abs_"+k);del("absm_"+k)}}
+export function saveDay(k,rec){queueMicrotask(()=>document.dispatchEvent(new CustomEvent("kl-absen")));const c={};for(const id in rec)if(rec[id]!=null)c[id]=rec[id];if(Object.keys(c).length){set("abs_"+k,c);set("absm_"+k,{t:Date.now()})}else{del("abs_"+k);del("absm_"+k)}}
 export function calc(rec,l=agenda()){
   const done=l.filter(i=>rec[i.id]===1||rec[i.id]===3).length,miss=l.filter(i=>rec[i.id]===0).length,rest=l.filter(i=>rec[i.id]===2).length,khatam=l.filter(i=>rec[i.id]===3).length,total=l.length-rest;
   return{done,miss,rest,khatam,total,filled:done+miss+rest,pct:total?Math.round(done/total*100):0}}

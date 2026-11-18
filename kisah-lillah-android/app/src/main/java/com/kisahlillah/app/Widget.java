@@ -38,6 +38,7 @@ final class Widget {
         pref(c).edit().putString("widget", json).apply();
         segarkan(c);
         AdzanJadwal.pasang(c);
+        IbadahPengingat.pasang(c);
     }
 
     /** Waktu shalat dari data tersimpan: [nama, jam, epoch ms, kalimat] */

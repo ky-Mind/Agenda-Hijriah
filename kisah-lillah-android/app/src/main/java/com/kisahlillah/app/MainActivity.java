@@ -312,6 +312,7 @@ public class MainActivity extends Activity {
         diDepan = true;
         /* Pasang ulang alarm adzan tiap aplikasi dibuka (bila sempat dibatalkan sistem/hemat baterai) */
         try { AdzanJadwal.pasang(this); } catch (Exception ignored) {}
+        try { IbadahPengingat.pasang(this); } catch (Exception ignored) {}
         try { Widget.segarkan(this); } catch (Exception ignored) {}
         js("window.dispatchEvent(new Event('kl-android-kembali'))");
         if (web != null) js("window.dispatchEvent(new Event('focus'))");
