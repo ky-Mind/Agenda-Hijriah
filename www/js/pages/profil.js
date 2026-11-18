@@ -273,6 +273,7 @@ export default function(root){
       const ud=db.collection("users").doc(u.uid);
       for(const sub of ["data","absensi_harian"]){const q=await ud.collection(sub).get();await Promise.all(q.docs.map(d=>d.ref.delete()))}
       await ud.delete();
+      try{await db.collection("akun").doc(u.uid).delete()}catch(e){}
       if(u.email){try{await db.collection("userIndex").doc(u.email.trim().toLowerCase()).delete()}catch(e){}}
       try{await u.delete()}catch(e){
         if(e?.code!=="auth/requires-recent-login")throw e;

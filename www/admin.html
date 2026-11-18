@@ -56,6 +56,14 @@
     .lb code{font-size:12px;word-break:break-all;background:var(--hover);padding:6px 8px;border-radius:8px;display:block}
     @media(max-width:560px){#me{display:none}.top h1{font-size:15px}.stats{grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px}.stat b{font-size:20px}.st{margin-left:0}.shot{width:calc(50% - 5px)}}
     [hidden]{display:none!important}
+    .tabs{display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;width:max-content;max-width:100%}
+    .tab{border:0;background:none;border-radius:9px;padding:7px 16px;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted)}.tab[aria-selected=true]{background:var(--raised);color:var(--text);box-shadow:var(--shadow)}
+    .usr{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;align-items:start}
+    .av{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:17px;grid-row:span 2}
+    .usr .nm{font-weight:600;overflow-wrap:anywhere}.usr .em{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+    .facts{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+    .fact{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}.fact.apk{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+    .usr .seen{grid-column:2;font-size:12px;color:var(--muted)}
     .ps{margin-top:28px;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:4px 18px 16px;box-shadow:var(--shadow)}
     .ps summary{cursor:pointer;font-weight:600;font-size:17px;padding:12px 0}.ps h3{font-size:14px;margin:20px 0 8px;color:var(--accent)}.ps-n{color:var(--muted);font-size:13px;margin:0}
     .ps-f{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.ps-f b{grid-column:1/-1;font-size:12px;color:var(--muted);font-weight:500}
@@ -65,7 +73,7 @@
   </style>
 </head>
 <body>
-  <header class="top"><img src="assets/logo.png" alt=""><h1>Dasbor Admin<small>Kisah Lillah · Laporan &amp; saran</small></h1><span class="muted" id="me" style="font-size:13px"></span><button class="btn sm" id="out" hidden>Keluar</button></header>
+  <header class="top"><img src="assets/logo.png" alt=""><h1>Dasbor Admin<small>Kisah Lillah · Pengguna, laporan &amp; saran</small></h1><span class="muted" id="me" style="font-size:13px"></span><button class="btn sm" id="out" hidden>Keluar</button></header>
   <main class="wrap">
     <section class="card gate" id="gate">
       <img src="assets/logo.png" alt="" width="56" height="56">
@@ -75,6 +83,17 @@
     </section>
     <section id="dash" hidden>
       <p class="err" id="err" hidden></p>
+      <div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="pengguna" aria-selected="true">Pengguna</button><button class="tab" role="tab" data-tab="laporan" aria-selected="false">Laporan &amp; saran</button></div>
+      <div id="tpengguna">
+        <div class="stats" id="ustats"></div>
+        <div class="tools">
+          <div class="chips" id="fu"></div>
+          <input class="search" id="uq" type="search" placeholder="Cari nama, email, HP, atau kota…" aria-label="Cari pengguna">
+        </div>
+        <div class="list" id="ulist"></div>
+        <p class="muted" style="font-size:12.5px;margin-top:12px">Akun tercatat saat pengguna masuk atau membuka aplikasi versi terbaru. Akun yang belum membuka aplikasi sejak pembaruan ini belum muncul.</p>
+      </div>
+      <div id="tlaporan" hidden>
       <div class="stats" id="stats"></div>
       <div class="tools">
         <div class="chips" id="fs"></div>
@@ -82,6 +101,7 @@
         <input class="search" id="q" type="search" placeholder="Cari nama, email, atau isi…" aria-label="Cari laporan">
       </div>
       <div class="list" id="list"></div>
+      </div>
       <details class="ps" id="playstore">
         <summary>Persiapan Play Store</summary>
         <p class="ps-n">Semua bahan untuk Google Play Console. Tekan "Salin" lalu tempel di kolom yang sama di Play Console.</p>
@@ -133,7 +153,8 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
           <li>Data dienkripsi saat dikirim: <b>Ya</b>. Pengguna bisa meminta penghapusan: <b>Ya</b> (di aplikasi, Profil &gt; Hapus akun &amp; semua data).</li>
           <li><b>Info pribadi</b>: Nama, Alamat email, ID pengguna, Nomor telepon (opsional, WhatsApp). Tujuan: Fungsi aplikasi, Pengelolaan akun.</li>
           <li><b>Foto</b> (foto profil, opsional). Tujuan: Fungsi aplikasi.</li>
-          <li><b>Lokasi perkiraan &amp; tepat</b>: diproses di perangkat untuk jadwal shalat dan tidak disimpan di server. Jawab "dikumpulkan", "diproses sementara (ephemeral)". Tujuan: Fungsi aplikasi.</li>
+          <li><b>Lokasi perkiraan</b>: kota jadwal shalat dan koordinat yang dibulatkan (sekitar 1 km) disimpan di catatan akun bila pengguna masuk akun. Jawab "dikumpulkan", tidak sementara. Tujuan: Fungsi aplikasi, Analitik. <b>Lokasi tepat</b> (GPS) hanya diproses di perangkat: "diproses sementara (ephemeral)".</li>
+          <li><b>Info aplikasi &amp; performa / Perangkat</b>: merek dan model HP, sistem operasi, versi aplikasi (bila masuk akun). Tujuan: Analitik, Pengelolaan akun.</li>
           <li><b>Pesan</b> (pesan dalam aplikasi, terenkripsi end-to-end). Tujuan: Fungsi aplikasi.</li>
           <li><b>Aktivitas aplikasi</b>: konten buatan pengguna (absensi, catatan). Tujuan: Fungsi aplikasi.</li>
           <li><b>Info &amp; performa aplikasi</b>: laporan masalah yang dikirim pengguna. Tujuan: Analitik/perbaikan.</li>
@@ -175,7 +196,10 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
     const when=ts=>{if(!ts)return"baru saja";const d=ts.toDate(),m=Math.round((Date.now()-d)/60000);
       const rel=m<1?"baru saja":m<60?m+" menit lalu":m<1440?Math.round(m/60)+" jam lalu":Math.round(m/1440)+" hari lalu";
       return rel+" · "+d.toLocaleString("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})};
-    const device=ua=>/Android/.test(ua)?"Android":/iPhone|iPad/.test(ua)?"iOS":/Windows/.test(ua)?"Windows":/Mac OS/.test(ua)?"macOS":/Linux/.test(ua)?"Linux":"Perangkat lain";
+    const merek=m=>{const L=[[/^(SM-|GT-|Galaxy)/i,"Samsung"],[/^(Redmi|POCO|Mi |MI |Xiaomi|M\d{4}[A-Z]|2\d{4}[A-Z0-9]{3,})/i,"Xiaomi"],[/^CPH/i,"OPPO"],[/^RMX/i,"realme"],[/^(V\d{4}|vivo|I\d{4})/i,"vivo"],[/^Infinix|^X\d{3,4}[A-Z]?$/i,"Infinix"],[/^TECNO/i,"Tecno"],[/^itel/i,"itel"],[/^Pixel/i,"Google"],[/^ASUS/i,"ASUS"],[/^moto/i,"Motorola"],[/^Nokia/i,"Nokia"],[/^LM-/i,"LG"],[/^(HUAWEI|[A-Z]{3}-[A-Z]{1,2}\d{2})/,"Huawei"],[/^Lenovo/i,"Lenovo"],[/^(OnePlus|NE2|LE2|KB2)/i,"OnePlus"]];for(const[r,b]of L)if(r.test(m))return b;return""};
+    const device=ua=>{const a=/Android ([\d.]+);\s*([^;)]*?)(?:\s+Build\/[^;)]*)?(?:;|\))/.exec(ua);
+      if(a){const m=a[2]&&a[2]!=="K"?a[2]:"";return[merek(m),m,"Android "+a[1]].filter(Boolean).join(" · ")}
+      return/iPhone|iPad/.test(ua)?"Apple · iOS":/Windows/.test(ua)?"Komputer · Windows":/Mac OS/.test(ua)?"Komputer · macOS":/Linux/.test(ua)?"Komputer · Linux":"Perangkat lain"};
     function chips(){
       const n=k=>rows.filter(r=>k==="semua"||r.status===k).length;
       $("fs").innerHTML=[["semua","Semua"],...ST].map(([k,l])=>`<button class="chip" data-fs="${k}" aria-pressed="${fs===k}">${l} (${n(k)})</button>`).join("");
@@ -187,7 +211,7 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
       const q=$("q").value.toLowerCase().trim();
       const vis=rows.filter(r=>(fs==="semua"||r.status===fs)&&(ft==="semua"||r.type===ft)&&(!q||`${r.name} ${r.email} ${r.text}`.toLowerCase().includes(q)));
       $("list").innerHTML=vis.length?vis.map(r=>`<article class="card rep${r.status==="selesai"?" done":""}" data-id="${r.id}">
-        <div class="rep-h"><span class="badge ${r.type}">${r.type==="bug"?"Bug":"Saran"}</span><span class="who">${esc(r.name||"Tanpa nama")}</span><span class="when">${esc(r.email||"Tanpa akun")} · ${when(r.at)}</span>
+        <div class="rep-h"><span class="badge ${r.type}">${r.type==="bug"?"Bug":"Saran"}</span><span class="who">${esc(r.name||"Tanpa nama")}</span><span class="when">${esc(device(r.ua||""))}</span><span class="when">${esc(r.email||"Tanpa akun")} · ${when(r.at)}</span>
           <select class="st" data-st data-s="${r.status}" aria-label="Status">${ST.map(([k,l])=>`<option value="${k}"${r.status===k?" selected":""}>${l}</option>`).join("")}</select></div>
         <p class="txt">${esc(r.text)}</p>
         ${r.shots?.length?`<div class="shots">${r.shots.map((s,i)=>`<button class="shot" data-shot="${i}">${s.img?`<img src="${s.img}" alt="" loading="lazy">`:'<div class="noimg">Tanpa gambar</div>'}<div><b>${esc(s.title||s.page)}</b><small>${esc(s.text||s.sel)}</small></div></button>`).join("")}</div>`:""}
@@ -195,6 +219,27 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
         <div class="acts"><button class="btn sm danger" data-del>Hapus</button></div></article>`).join(""):`<div class="card empty">${rows.length?"Tidak ada laporan yang cocok dengan filter.":"Belum ada laporan masuk."}</div>`;
     }
     const draw=()=>{chips();list()};
+    /* Pengguna (koleksi akun) */
+    let users=[],fu="semua",uunsub=null;
+    const hp=u=>u.model==="Komputer"?`Komputer${u.os?" · "+u.os:""}`:[u.brand,u.model].filter(Boolean).join(" ")||"HP tidak dikenal";
+    function ulist(){
+      const day=Date.now()-864e5,week=Date.now()-7*864e5,t=u=>u.last?.toMillis?.()||0;
+      const n=k=>users.filter(u=>k==="semua"||u.app===k).length;
+      $("ustats").innerHTML=[[users.length,"Total akun"],[n("APK"),"Pakai APK"],[n("Web"),"Pakai web"],[users.filter(u=>t(u)>day).length,"Aktif 24 jam"],[users.filter(u=>t(u)>week).length,"Aktif 7 hari"]].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+      $("fu").innerHTML=[["semua","Semua"],["APK","APK"],["Web","Web"]].map(([k,l])=>`<button class="chip" data-fu="${k}" aria-pressed="${fu===k}">${l} (${n(k)})</button>`).join("");
+      const q=$("uq").value.toLowerCase().trim();
+      const vis=users.filter(u=>(fu==="semua"||u.app===fu)&&(!q||`${u.name} ${u.email} ${u.brand} ${u.model} ${u.os} ${u.kota}`.toLowerCase().includes(q)));
+      $("ulist").innerHTML=vis.length?vis.map(u=>`<article class="card usr">
+        <div class="av">${esc((u.name||u.email||"?").trim()[0]?.toUpperCase()||"?")}</div>
+        <div><div class="nm">${esc(u.name||"Tanpa nama")}</div><div class="em">${esc(u.email||"Tanpa email")}</div></div>
+        <div class="facts"><span class="fact${u.app==="APK"?" apk":""}">${esc(u.app||"?")} · ${esc(u.ver||"?")}</span><span class="fact">📱 ${esc(hp(u))}</span>${u.os&&u.model!=="Komputer"?`<span class="fact">${esc(u.os)}</span>`:""}<span class="fact">📍 ${u.kota?`<a href="https://www.google.com/maps?q=${+u.lat},${+u.lng}" target="_blank" rel="noopener">${esc(u.kota)}</a>`:"Lokasi belum diatur"}</span></div>
+        <div class="seen">Terakhir aktif ${when(u.last)}${u.first?` · Pertama tercatat ${u.first.toDate().toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}`:""}</div></article>`).join(""):`<div class="card empty">${users.length?"Tidak ada akun yang cocok.":"Belum ada akun yang tercatat."}</div>`;
+    }
+    function uwatch(){
+      uunsub?.();
+      uunsub=db.collection("akun").orderBy("last","desc").limit(1000).onSnapshot(s=>{users=s.docs.map(d=>({id:d.id,...d.data()}));ulist()},
+        e=>{$("err").hidden=false;$("err").textContent=e.code==="permission-denied"?"Daftar pengguna ditolak oleh aturan Firestore. Pasang aturan terbaru di Firebase Console.":"Gagal memuat pengguna: "+(e.code||e.message)});
+    }
     function watch(){
       unsub?.();
       unsub=db.collection("reports").orderBy("at","desc").limit(300).onSnapshot(s=>{$("err").hidden=true;rows=s.docs.map(d=>({id:d.id,...d.data()}));draw()},
@@ -206,15 +251,17 @@ Semoga menjadi teman kecil yang mengingatkan kita untuk terus beribadah lillahi 
       $("gate").hidden=ok;$("dash").hidden=!ok;
       if(u&&!ok){$("gt").textContent="Akun ini bukan admin";$("gp").textContent=`${u.email} tidak punya akses ke dasbor. Keluar lalu masuk dengan akun admin.`;$("login").hidden=true}
       if(!u){$("gt").textContent="Masuk sebagai admin";$("gp").textContent="Halaman ini hanya untuk pengelola aplikasi.";$("login").hidden=false}
-      if(ok)watch();else{unsub?.();unsub=null;rows=[]}
+      if(ok){watch();uwatch()}else{unsub?.();unsub=null;rows=[];uunsub?.();uunsub=null;users=[]}
     });
     $("login").onclick=async()=>{const p=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(p)}catch(e){if(/popup-blocked|cancelled-popup/.test(e.code))await auth.signInWithRedirect(p);else alert("Gagal masuk: "+(e.code||e.message))}};
     $("out").onclick=()=>auth.signOut();
-    $("q").oninput=list;
+    $("q").oninput=list;$("uq").oninput=ulist;
     document.addEventListener("click",async e=>{
       const t=e.target;
       if(t.closest("[data-fs]")){fs=t.closest("[data-fs]").dataset.fs;return draw()}
       if(t.closest("[data-ft]")){ft=t.closest("[data-ft]").dataset.ft;return draw()}
+      if(t.closest("[data-fu]")){fu=t.closest("[data-fu]").dataset.fu;return ulist()}
+      const tb=t.closest("[data-tab]");if(tb){document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b===tb));$("tpengguna").hidden=tb.dataset.tab!=="pengguna";$("tlaporan").hidden=tb.dataset.tab!=="laporan";return}
       if(t.closest(".lb")&&(t.classList.contains("lb")||t.closest("[data-lbx]")))return t.closest(".lb").remove();
       const card=t.closest("[data-id]");if(!card)return;const r=rows.find(x=>x.id===card.dataset.id);if(!r)return;
       if(t.closest("[data-del]")){if(confirm(`Hapus laporan dari ${r.name||"tanpa nama"}? Tidak bisa dibatalkan.`))db.collection("reports").doc(r.id).delete().catch(x=>alert("Gagal menghapus: "+(x.code||x.message)));return}

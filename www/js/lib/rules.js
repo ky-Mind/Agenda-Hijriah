@@ -105,6 +105,25 @@ service cloud.firestore {
       allow update: if admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'note']);
     }
 
+    // Catatan akun untuk dasbor admin (nama, email, merek HP, kota): ditulis pemilik akun, dibaca hanya oleh admin
+    match /akun/{uid} {
+      function bentuk() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['uid', 'email', 'name', 'brand', 'model', 'os', 'app', 'ver', 'kota', 'lat', 'lng', 'first', 'last'])
+          && d.uid == uid && d.last == request.time
+          && (d.email == null || d.email == request.auth.token.email)
+          && d.name is string && d.name.size() <= 80
+          && d.brand is string && d.brand.size() <= 80 && d.model is string && d.model.size() <= 80
+          && d.os is string && d.os.size() <= 80 && d.app in ['APK', 'Web']
+          && d.ver is string && d.ver.size() <= 80 && d.kota is string && d.kota.size() <= 80
+          && d.lat is number && d.lng is number;
+      }
+      allow get, delete: if owner(uid) || admin();
+      allow list: if admin();
+      allow create: if owner(uid) && bentuk() && request.resource.data.first == request.time;
+      allow update: if owner(uid) && bentuk() && request.resource.data.first == resource.data.first;
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }

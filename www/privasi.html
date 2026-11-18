@@ -26,7 +26,7 @@ a{color:var(--accent)}ul{padding-left:20px}table{border-collapse:collapse;width:
 
 <section>
 <h2>1. Tanpa akun</h2>
-<p>Semua fitur utama bisa dipakai tanpa masuk. Absensi, catatan, pengaturan, dan lokasi hanya disimpan di perangkatmu (penyimpanan lokal browser atau aplikasi) dan tidak dikirim ke server kami.</p>
+<p>Semua fitur utama bisa dipakai tanpa masuk. Absensi, catatan, pengaturan, dan lokasi hanya disimpan di perangkatmu (penyimpanan lokal browser atau aplikasi) dan tidak dikirim ke server kami selama kamu tidak masuk akun.</p>
 </section>
 
 <section>
@@ -36,7 +36,8 @@ a{color:var(--accent)}ul{padding-left:20px}table{border-collapse:collapse;width:
 <tr><td>Nama, email, dan foto akun Google (atau email &amp; kata sandi)</td><td>Masuk akun, menyinkronkan data antar perangkat, dan menampilkan profil</td><td>Firebase Authentication (Google)</td></tr>
 <tr><td>Absensi ibadah, catatan harian, daftar ibadah, pengaturan</td><td>Sinkron antar perangkat bila kamu masuk akun</td><td>Perangkatmu, dan Cloud Firestore (Google) bila masuk akun</td></tr>
 <tr><td>Nama, nomor WhatsApp, dan foto profil yang kamu isi</td><td>Ditampilkan di aplikasi dan dipakai saat kamu memilih "Kirim ke WhatsApp"</td><td>Perangkatmu, dan Cloud Firestore bila masuk akun</td></tr>
-<tr><td>Lokasi (perkiraan atau GPS, hanya bila kamu izinkan)</td><td>Menghitung jadwal shalat dan arah kiblat, serta menampilkan nama kota</td><td>Hanya di perangkatmu. Koordinat dikirim ke layanan nama tempat (OpenStreetMap Nominatim) dan jadwal shalat (Aladhan) tanpa identitasmu</td></tr>
+<tr><td>Lokasi (perkiraan atau GPS, hanya bila kamu izinkan)</td><td>Menghitung jadwal shalat dan arah kiblat, serta menampilkan nama kota</td><td>Di perangkatmu. Koordinat dikirim ke layanan nama tempat (OpenStreetMap Nominatim) dan jadwal shalat (Aladhan) tanpa identitasmu. Bila kamu masuk akun, nama kota dan koordinat yang dibulatkan (sekitar 1 km) ikut tercatat di catatan akun (baris berikut)</td></tr>
+<tr><td>Catatan akun: nama, email, merek dan model HP, sistem operasi, jenis aplikasi (Android atau web) dan versinya, kota jadwal shalat, serta waktu terakhir aktif (hanya bila kamu masuk akun)</td><td>Membantu pengelola aplikasi mengetahui siapa saja penggunanya dan memperbaiki masalah di perangkat tertentu</td><td>Cloud Firestore (Google). Hanya bisa dibaca oleh pengelola aplikasi, dan ikut terhapus saat kamu menghapus akun</td></tr>
 <tr><td>Pesan antar pengguna</td><td>Fitur Pesan. Isi pesan dienkripsi end-to-end di perangkat, sehingga kami tidak bisa membacanya</td><td>Cloud Firestore (terenkripsi)</td></tr>
 <tr><td>Token notifikasi perangkat</td><td>Mengirim notifikasi pesan baru</td><td>Cloud Firestore dan Firebase Cloud Messaging</td></tr>
 <tr><td>Pertanyaan ke Asisten AI (bila kamu memakainya)</td><td>Menjawab pertanyaanmu</td><td>Diteruskan ke penyedia model AI (Groq) untuk diproses dan tidak kami simpan</td></tr>
@@ -64,7 +65,7 @@ a{color:var(--accent)}ul{padding-left:20px}table{border-collapse:collapse;width:
 
 <section>
 <h2>5. Keamanan &amp; penyimpanan</h2>
-<p>Data dikirim melalui koneksi terenkripsi (HTTPS). Data cloud hanya bisa dibaca oleh pemilik akun sesuai aturan keamanan database. Data disimpan selama akunmu aktif. Saat kamu keluar dari akun, semua data akun dihapus dari perangkat itu dan tetap tersimpan di cloud sampai kamu menghapus akun.</p>
+<p>Data dikirim melalui koneksi terenkripsi (HTTPS). Data cloud hanya bisa dibaca oleh pemilik akun sesuai aturan keamanan database, kecuali catatan akun (nama, email, info perangkat, dan kota) yang juga bisa dibaca pengelola aplikasi. Data disimpan selama akunmu aktif. Saat kamu keluar dari akun, semua data akun dihapus dari perangkat itu dan tetap tersimpan di cloud sampai kamu menghapus akun.</p>
 </section>
 
 <section id="hapus-akun">

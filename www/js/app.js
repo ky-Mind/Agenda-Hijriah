@@ -12,6 +12,7 @@ import {loc} from "./lib/prayer.js";
 import {initKili} from "./lib/kili.js";
 import {initSwipe,initBackSwipe} from "./lib/swipe.js";
 import {initPullRefresh} from "./lib/ptr.js";
+import {initAkun} from "./lib/akun.js";
 const view=document.getElementById("view"),LABEL={beranda:"Beranda",absensi:"Absensi",rekap:"Rekap",kalender:"Kalender",shalat:"Shalat",koleksi:"Koleksi",quran:"Al-Qur'an",hadits:"Hadits",doa:"Do'a",dzikir:"Dzikir",mutiara:"Kata Mutiara",pesan:"Pesan",tasbih:"Tasbih",profil:"Profil"};
 const PARENT={rekap:"absensi",quran:"koleksi",hadits:"koleksi",doa:"koleksi",dzikir:"koleksi",mutiara:"koleksi",tasbih:"koleksi"};
 const html={},mods={};let cleanup=null,seq=0,shown=location.hash,skip=false,quiet=false;
@@ -147,6 +148,7 @@ const offp=document.getElementById("offp"),offUp=()=>{offp.hidden=navigator.onLi
 window.__klAuth?.onAuthStateChanged(u=>{chat.init(u);push.refresh(u)});
 document.addEventListener("kl-chat",setBadge);
 initKili();
+initAkun();
 initSwipe(view);initBackSwipe(view,backBtn);
 /* Tarik untuk muat ulang: tarik data cloud terbaru lalu pasang ulang halaman yang sedang dibuka (tanpa animasi pindah halaman) */
 initPullRefresh(view,()=>{window.KLSync?.now?.();return Promise.resolve()});

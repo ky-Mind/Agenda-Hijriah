@@ -634,6 +634,16 @@ public class MainActivity extends Activity {
     private class Jembatan {
         @JavascriptInterface public String versi() { return MainActivity.this.versi(); }
 
+        /** Merek & model HP untuk catatan akun di dasbor admin */
+        @JavascriptInterface public String perangkat() {
+            String m = android.os.Build.MANUFACTURER == null ? "" : android.os.Build.MANUFACTURER;
+            if (!m.isEmpty()) m = Character.toUpperCase(m.charAt(0)) + m.substring(1);
+            try {
+                return new org.json.JSONObject().put("brand", m).put("model", android.os.Build.MODEL)
+                        .put("os", "Android " + android.os.Build.VERSION.RELEASE).toString();
+            } catch (org.json.JSONException e) { return "{}"; }
+        }
+
         /** Data widget (js/lib/widgetdata.js): jadwal 7 hari, lokasi, kalimat pengingat */
         @JavascriptInterface public void widget(String json) { Widget.simpan(MainActivity.this, json); }
 
